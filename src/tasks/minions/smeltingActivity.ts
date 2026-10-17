@@ -71,7 +71,7 @@ export const smeltingTask: MinionTask = {
 			for (let i = 0; i < numMinutes; i++) {
 				if (rng.roll(petChance)) {
 					str +=
-						'\n\n<:zak:751035589952012298> While Smelting ores on Neitiznot, a Yak approaches you and says "Moooo". and is now following you around. You decide to name him \'Zak\'.';
+						'\n\n<:zak:1560880970725593129> While Smelting ores on Neitiznot, a Yak approaches you and says "Moooo". and is now following you around. You decide to name him \'Zak\'.';
 					loot.add('Zak');
 					break;
 				}

@@ -67,7 +67,7 @@ export const degradeableItems: DegradeableItem[] = [
 			cost: new Bank().add('Abyssal whip').freeze(),
 			charges: 10_000
 		},
-		emoji: '<:Abyssal_tentacle:1068551359755989033>'
+		emoji: '<:Abyssal_tentacle:1560872874783277076>'
 	},
 	{
 		item: Items.getOrThrow('Sanguinesti staff'),
@@ -100,7 +100,7 @@ export const degradeableItems: DegradeableItem[] = [
 		},
 		convertOnCharge: true,
 		unchargedItem: Items.getOrThrow('Void staff (u)'),
-		emoji: '<:Sanguinesti_staff_uncharged:455403545298993162>',
+		emoji: '<:Sanguinesti_staff_uncharged:1560873442847367298>',
 		refundVariants: []
 	},
 	{
@@ -116,7 +116,7 @@ export const degradeableItems: DegradeableItem[] = [
 		},
 		unchargedItem: Items.getOrThrow('Celestial ring (uncharged)'),
 		convertOnCharge: true,
-		emoji: '<:Celestial_ring:1068551362587132084>'
+		emoji: '<:Celestial_ring:1560872915405242528>'
 	},
 	{
 		item: Items.getOrThrow('Ash sanctifier'),
@@ -130,7 +130,7 @@ export const degradeableItems: DegradeableItem[] = [
 			charges: 10
 		},
 		unchargedItem: Items.getOrThrow('Ash sanctifier'),
-		emoji: '<:Ash_sanctifier:1068551364168405032>'
+		emoji: '<:Ash_sanctifier:1560872889937559573>'
 	},
 	{
 		item: Items.getOrThrow('Serpentine helm'),
@@ -145,7 +145,7 @@ export const degradeableItems: DegradeableItem[] = [
 		},
 		unchargedItem: Items.getOrThrow('Serpentine helm (uncharged)'),
 		convertOnCharge: true,
-		emoji: '<:Serpentine_helm:1068491236123619379>'
+		emoji: '<:Serpentine_helm:1560872948267491340>'
 	},
 	{
 		item: Items.getOrThrow('Amulet of blood fury'),
@@ -160,7 +160,7 @@ export const degradeableItems: DegradeableItem[] = [
 		},
 		unchargedItem: Items.getOrThrow('Amulet of fury'),
 		convertOnCharge: true,
-		emoji: '<:Amulet_of_blood_fury:1068491286530752562>'
+		emoji: '<:Amulet_of_blood_fury:1560872884862320701>'
 	},
 	{
 		item: Items.getOrThrow("Tumeken's shadow"),
@@ -175,7 +175,7 @@ export const degradeableItems: DegradeableItem[] = [
 		},
 		unchargedItem: Items.getOrThrow("Tumeken's shadow (uncharged)"),
 		convertOnCharge: true,
-		emoji: '<:Tumekens_shadow:1068491239302901831>'
+		emoji: '<:Tumekens_shadow:1560872974079230064>'
 	},
 	{
 		item: Items.getOrThrow('Blood essence (active)'),

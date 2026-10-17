@@ -874,6 +874,7 @@ export const adminCommand = defineCommand({
 	name: 'admin',
 	description: 'Allows you to trade items with other players.',
 	guildId: globalConfig.supportServerID,
+	defaultMemberPermissions: '0',
 	options: [
 		{
 			type: 'Subcommand',
@@ -1432,7 +1433,7 @@ ${META_CONSTANTS.RENDERED_STR}`
 						options.give_items.reason ?? 'No reason'
 					}`
 				};
-				await globalClient.sendMessage(Channel.BotLogs, auditMessage);
+				await globalClient.sendMessage(Channel.BotLogs, auditMessage).catch(noOp);
 				await dmCyrAudit(auditMessage.content);
 
 				await targetUser.addItemsToBank({ items, collectionLog: false });
@@ -1450,7 +1451,7 @@ ${META_CONSTANTS.RENDERED_STR}`
 					options.give_items.reason ?? 'No reason'
 				}`
 			};
-			await globalClient.sendMessage(Channel.BotLogs, auditMessage);
+			await globalClient.sendMessage(Channel.BotLogs, auditMessage).catch(noOp);
 			await dmCyrAudit(auditMessage.content);
 
 			if (targetUser) {

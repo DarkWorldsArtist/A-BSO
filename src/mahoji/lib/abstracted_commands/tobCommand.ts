@@ -307,9 +307,9 @@ export async function tobStatsCommand({ user, rng }: OSInteraction) {
 **Normal:** ${kc} KC, ${attempts} attempts
 **Hard Mode:** ${hardKC} KC, ${hardAttempts} attempts
 **Total Uniques:** ${totalUniques}\n
-**Melee:** <:Elder_maul:403018312247803906> ${gear.melee.toFixed(1)}%
-**Range:** <:Twisted_bow:403018312402862081> ${gear.range.toFixed(1)}%
-**Mage:** <:Kodai_insignia:403018312264712193> ${gear.mage.toFixed(1)}%
+**Melee:** <:Elder_maul:1560874357872525335> ${gear.melee.toFixed(1)}%
+**Range:** <:Twisted_bow:1560874492438257768> ${gear.range.toFixed(1)}%
+**Mage:** <:Kodai_insignia:1560874396728426567> ${gear.mage.toFixed(1)}%
 **Total Gear Score:** ${Emoji.Gear} ${gear.total.toFixed(1)}%\n
 **Death Chances:** ${deathChances.deathChances.map(i => `${i.name} ${i.deathChance.toFixed(2)}%`).join(', ')}
 **Wipe Chances:** ${deathChances.wipeDeathChances.map(i => `${i.name} ${i.deathChance.toFixed(2)}%`).join(', ')}

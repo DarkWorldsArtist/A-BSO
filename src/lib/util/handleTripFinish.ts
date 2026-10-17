@@ -142,7 +142,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 				const otherLoot = new Bank().add(MysteryBoxes.roll());
 				const bonusLoot = new Bank().add(loot).add(otherLoot);
 
-				messages.push(`<:mysterybox:680783258488799277> **You received 2x loot and ${otherLoot}.**`);
+				messages.push(`<:mysterybox:1560872620759584798> **You received 2x loot and ${otherLoot}.**`);
 
 				await Promise.all([
 					await user.statsBankUpdate('doubled_loot_bank', bonusLoot),
@@ -172,7 +172,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					}
 					await user.statsBankUpdate('peky_loot_bank', bonusLoot);
 					messages.push(
-						`<:peky:787028037031559168> Peky flew off and got you some seeds during this trip: ${bonusLoot}.`
+						`<:peky:1560880908729581588> Peky flew off and got you some seeds during this trip: ${bonusLoot}.`
 					);
 					break;
 				}
@@ -183,7 +183,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					}
 					await user.statsBankUpdate('obis_loot_bank', bonusLoot);
 					messages.push(
-						`<:obis:787028036792614974> Obis did some runecrafting during this trip and got you: ${bonusLoot}.`
+						`<:obis:1560880915326963726> Obis did some runecrafting during this trip and got you: ${bonusLoot}.`
 					);
 					break;
 				}
@@ -194,7 +194,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					}
 					await user.statsBankUpdate('brock_loot_bank', bonusLoot);
 					messages.push(
-						`<:brock:787310793183854594> Brock did some woodcutting during this trip and got you: ${bonusLoot}.`
+						`<:brock:1560880869655191594> Brock did some woodcutting during this trip and got you: ${bonusLoot}.`
 					);
 					break;
 				}
@@ -205,7 +205,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					}
 					await user.statsBankUpdate('wilvus_loot_bank', bonusLoot);
 					messages.push(
-						`<:wilvus:787320791011164201> Wilvus did some pickpocketing during this trip and got you: ${bonusLoot}.`
+						`<:wilvus:1560880920339419198> Wilvus did some pickpocketing during this trip and got you: ${bonusLoot}.`
 					);
 					break;
 				}
@@ -218,7 +218,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					await user.statsBankUpdate('smokey_loot_bank', bonusLoot);
 					if (bonusLoot.length > 0) {
 						messages.push(
-							`<:smokey:787333617037869139> Smokey did some walking around while you were on your trip and found you ${bonusLoot}.`
+							`<:smokey:1560872757007360020> Smokey did some walking around while you were on your trip and found you ${bonusLoot}.`
 						);
 					}
 					break;
@@ -236,7 +236,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 						bonusLoot.add('Banana', randInt(1, 3));
 					}
 					await user.statsBankUpdate('harry_loot_bank', bonusLoot);
-					messages.push(`<:harry:749945071104819292>: ${bonusLoot}.`);
+					messages.push(`<:harry:1560880926743863326>: ${bonusLoot}.`);
 					break;
 				}
 				default: {
@@ -273,11 +273,11 @@ const tripFinishEffects: TripFinishEffect[] = [
 				]);
 				const hasMasterCape = user.hasEquipped('Magic master cape');
 				messages.push(
-					`<:Voidling:886284972380545034> ${alchResult.maxCasts}x ${
+					`<:Voidling:1560880931454062632> ${alchResult.maxCasts}x ${
 						alchResult.itemToAlch.name
 					} ${toKMB(alchResult.bankToAdd.amount('Coins'))} GP ${
-						!voidlingEquipped && !hasMasterCape ? '<:bank:739459924693614653>⏬' : ''
-					}${hasMasterCape ? '<:Magicmastercape:1115026341314703492>⏫' : ''}`
+						!voidlingEquipped && !hasMasterCape ? '<:bank:1560873202912206919>⏬' : ''
+					}${hasMasterCape ? '<:Magicmastercape:1560880936256540745>⏫' : ''}`
 				);
 				return {
 					itemsToAddWithCL: alchResult.bankToAdd,
@@ -480,9 +480,9 @@ const tripFinishEffects: TripFinishEffect[] = [
 				}
 
 				if (cost.length > 0 && loot.length === 0) {
-					messages.push(`<:moonlightMutator:1220590471613513780> Mutated ${cost}, but all died`);
+					messages.push(`<:moonlightMutator:1560880941587505162> Mutated ${cost}, but all died`);
 				} else if (loot.length > 0) {
-					messages.push(`<:moonlightMutator:1220590471613513780> Mutated ${cost}; ${loot} survived`);
+					messages.push(`<:moonlightMutator:1560880941587505162> Mutated ${cost}; ${loot} survived`);
 				}
 
 				return {

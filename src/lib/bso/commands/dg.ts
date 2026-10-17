@@ -259,7 +259,7 @@ export const dgCommand = defineCommand({
 		if (interaction) await interaction.defer();
 		if (options.start) return startCommand(interaction, channelId, user, options.start.floor, options.start.solo);
 		if (options.buy) return buyCommand(user, options.buy.item, options.buy.quantity);
-		let str = `<:dungeoneeringToken:829004684685606912> **Dungeoneering Tokens:** ${user.user.dungeoneering_tokens.toLocaleString()}
+		let str = `<:dungeoneeringToken:1560872995713458286> **Dungeoneering Tokens:** ${user.user.dungeoneering_tokens.toLocaleString()}
 **Max floor:** ${calcMaxFloorUserCanDo(user)}`;
 		const { boosts } = calcUserGorajanShardChance(user);
 		if (boosts.length > 0) {

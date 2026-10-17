@@ -52,7 +52,7 @@ FROM users;
 	const artifact = Items.getOrThrow('Magical artifact')!;
 	const statuette = Items.getOrThrow('Demon statuette')!;
 
-	const economyBank = (
+	const economyBankRaw = (
 		(await prisma.$queryRaw`
 			SELECT
 				json_object_agg(itemID, itemQTY)::jsonb as banks
@@ -61,15 +61,15 @@ FROM users;
 				FROM users
 				CROSS JOIN json_each_text(bank)
 				GROUP BY key
-			 ) s;`) as { banks: ItemBank }[]
-	)[0].banks;
+			 ) s;`) as { banks: ItemBank | null }[]
+	)[0]?.banks;
+	const economyBank: ItemBank = economyBankRaw ?? {};
 
 	const coinsInGrandExchange: { quantity: bigint }[] =
 		await prisma.$queryRaw`SELECT quantity FROM ge_bank WHERE item_id = 995;`;
 
-	const totalDemonStatuetteGp =
-		(economyBank[statuette.id] ?? 1) ? economyBank[statuette.id] * statuette.highalch! : 0;
-	const totalArtifactGp = (economyBank[artifact.id] ?? 1) ? economyBank[artifact.id] * artifact.highalch! : 0;
+	const totalDemonStatuetteGp = (economyBank[statuette.id] ?? 0) * (statuette.highalch ?? 0);
+	const totalArtifactGp = (economyBank[artifact.id] ?? 0) * (artifact.highalch ?? 0);
 
 	const taskCounts = await calculateMinionTaskCounts();
 	const currentClientSettings = await prisma.clientStorage.upsert({

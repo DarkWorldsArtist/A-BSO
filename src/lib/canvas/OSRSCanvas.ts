@@ -1,7 +1,7 @@
 import { applyCustomItemEffects } from '@/lib/bso/canvas/customItemEffects.js';
 import { handleSlayerMaskGlow } from '@/lib/bso/skills/slayer/slayerMaskHelms.js';
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { formatItemStackQuantity, generateHexColorForCashStack } from '@oldschoolgg/toolkit';
 import {
@@ -386,6 +386,7 @@ export class OSRSCanvas {
 			result => result.arrayBuffer().then(Buffer.from)
 		);
 
+		await mkdir(OSRSCanvas.ITEM_ICON_CACHE_DIR, { recursive: true });
 		await writeFile(path.join(OSRSCanvas.ITEM_ICON_CACHE_DIR, `${itemID}.png`), imageBuffer);
 		const image = await loadImage(imageBuffer);
 		OSRSCanvas.LOCAL_ICON_CACHE.set(itemID, image);

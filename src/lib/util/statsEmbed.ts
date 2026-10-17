@@ -68,7 +68,7 @@ AND CARDINALITY(badges) > 0;`;
 				inline: true
 			})
 			.addFields({
-				name: '<:minigame_icon:630400565070921761> Minigame Scores',
+				name: '<:minigame_icon:1560872608227008613> Minigame Scores',
 				value: `**BH:** ${player.minigames.bountyHunter.score.toLocaleString()}
 **BH-Rogue:** ${player.minigames.bountyHunterRogue.score.toLocaleString()}
 **LMS:** ${player.minigames.LMS.score.toLocaleString()}
@@ -76,7 +76,7 @@ AND CARDINALITY(badges) > 0;`;
 				inline: true
 			})
 			.addFields({
-				name: '<:Clue_scroll:365003979840552960> Clue Scores',
+				name: '<:Clue_scroll:1560873107638583376> Clue Scores',
 				value: Object.keys(player.clues)
 					.slice(1)
 					.map(

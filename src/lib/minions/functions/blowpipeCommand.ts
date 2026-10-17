@@ -54,7 +54,7 @@ export async function blowpipeCommand(
 
 		return `Your blowpipe got corrupted somehow, this shouldn't happen! It's a bug. Your blowpipe was reset.`;
 	}
-	let str = `**Toxic Blowpipe** <:Toxic_blowpipe:887011870068838450>
+	let str = `**Toxic Blowpipe** <:Toxic_blowpipe:1560872964973662320>
 
 Zulrah's scales: ${rawBlowpipeData.scales.toLocaleString()}x
 `;

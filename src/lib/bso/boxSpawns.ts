@@ -146,7 +146,7 @@ const collectionLogChallenge: Challenge = async (msg: IMessage): Promise<MUser |
 	return runChallenge({
 		msg,
 		description: `Name any item from this collection log: ${cl.name}`,
-		filter: _msg => cl.items.values().some(c => stringMatches(_msg.content, Items.itemNameFromId(c)))
+		filter: _msg => Array.from(cl.items).some(c => stringMatches(_msg.content, Items.itemNameFromId(c)))
 	});
 };
 // export async function reactChallenge(msg: Message): Promise<User | null> {

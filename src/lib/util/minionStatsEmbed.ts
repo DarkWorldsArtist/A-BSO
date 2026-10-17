@@ -113,7 +113,7 @@ export async function minionStatsEmbed({
 	const clueEntries = openableScores.items();
 	if (clueEntries.length > 0) {
 		embed.addFields({
-			name: '<:Clue_scroll:365003979840552960> Clue Scores',
+			name: '<:Clue_scroll:1560873107638583376> Clue Scores',
 			value: clueEntries
 				.map(([item, qty]) => {
 					const clueTier = ClueTiers.find(t => t.id === item.id)!;
@@ -126,7 +126,7 @@ export async function minionStatsEmbed({
 
 	if (minigameScores.length > 0) {
 		embed.addFields({
-			name: '<:minigameIcon:630400565070921761> Minigames',
+			name: '<:minigameIcon:1560872608227008613> Minigames',
 			value: minigameScores
 				.slice(0, 4)
 				.map(minigame => {

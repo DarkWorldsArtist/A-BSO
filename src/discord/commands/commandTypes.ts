@@ -31,6 +31,7 @@ export function defineCommand<const T extends AnyArr<unknown>>(
 		description: string;
 		options: T;
 		requiredPermissions?: PermissionKey[];
+		defaultMemberPermissions?: string | bigint;
 		guildId?: string;
 		run(options: CommandRunOptions<ExtractOptions<T>>): CommandResponse;
 	}> &
@@ -49,6 +50,7 @@ type OSBMahojiCommand<T extends readonly CommandOption[] = CommandOption[]> = Re
 	description: string;
 	options: T;
 	requiredPermissions?: PermissionKey[];
+	defaultMemberPermissions?: string | bigint;
 	guildId?: string;
 	run(options: CommandRunOptions<ExtractOptions<T>>): CommandResponse;
 }>;
@@ -73,6 +75,7 @@ export type AnyCommand = Readonly<{
 	description: string;
 	options: readonly CommandOption[];
 	requiredPermissions?: PermissionKey[];
+	defaultMemberPermissions?: string | bigint;
 	guildId?: string;
 	run(options: CommandRunOptions): CommandResponse;
 }>;

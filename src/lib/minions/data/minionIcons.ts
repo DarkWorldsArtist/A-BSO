@@ -1,26 +1,26 @@
 const minionIcons = [
 	{
-		emoji: '<:whiteMinion:673561609913892899>',
+		emoji: '<:whiteMinion:1560872802708492358>',
 		valueRequired: 10_000_000_000,
 		name: '3rd age'
 	},
 	{
-		emoji: '<:sapphireMinion:673561609834070047>',
+		emoji: '<:sapphireMinion:1560872708571660368>',
 		valueRequired: 5_000_000_000,
 		name: 'Sapphire'
 	},
 	{
-		emoji: '<:amethystMinion:673561610228465664>',
+		emoji: '<:amethystMinion:1560873186000769024>',
 		valueRequired: 1_000_000_000,
 		name: 'Amethyst'
 	},
 	{
-		emoji: '<:emeraldMinion:673561610366746635>',
+		emoji: '<:emeraldMinion:1560872481081008129>',
 		valueRequired: 500_000_000,
 		name: 'Emerald'
 	},
 	{
-		emoji: '<:yellowMinion:673561629115416616>',
+		emoji: '<:yellowMinion:1560872806684819493>',
 		valueRequired: 100_000_000,
 		name: 'Yellow'
 	}

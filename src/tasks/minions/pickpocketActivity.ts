@@ -166,7 +166,7 @@ export const pickpocketTask: MinionTask = {
 
 		if (gotWil) {
 			str +=
-				'<:wilvus:787320791011164201> A raccoon saw you thieving and partners with you to help you steal more stuff!';
+				'<:wilvus:1560880920339419198> A raccoon saw you thieving and partners with you to help you steal more stuff!';
 		}
 
 		str += `\n${

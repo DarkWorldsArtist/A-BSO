@@ -159,7 +159,7 @@ export const fishingTask: MinionTask = {
 					if (rng.roll(24 * 60)) {
 						result.updateBank.itemLootBank.add(BSOItem.PARTYCRAB);
 						result.messages.push(
-							'<:partycrab:1507689107806097541> The old crab cage rattled, and a Partycrab climbed out like it had been waiting years for this moment.'
+							'<:partycrab:1560880965751021680> The old crab cage rattled, and a Partycrab climbed out like it had been waiting years for this moment.'
 						);
 						break;
 					}

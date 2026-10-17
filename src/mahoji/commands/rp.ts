@@ -143,7 +143,6 @@ async function handleStealItems({
 export const rpCommand = defineCommand({
 	name: 'rp',
 	description: 'Admin tools second set',
-	guildId: globalConfig.supportServerID,
 	options: [
 		// {
 		// 	type: 'SubcommandGroup',
@@ -537,7 +536,7 @@ export const rpCommand = defineCommand({
 		const isGameHacker = adminUser.isGameHacker || isAdmin;
 		const canBestow = canUserBestow(adminUser);
 
-		if (!guildId || (globalConfig.isProduction && guildId.toString() !== globalConfig.supportServerID)) {
+		if (!isAdmin && !isGameHacker && !canBestow) {
 			return rng.pick(gifs);
 		}
 

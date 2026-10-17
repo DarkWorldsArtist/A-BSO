@@ -100,7 +100,7 @@ export const bsoOpenables: UnifiedOpenable[] = [
 		openedItem: Items.getOrThrow('Monkey crate'),
 		aliases: ['monkey crate'],
 		output: MonkeyCrateTable,
-		emoji: '<:Monkey_crate:885774318041202708>',
+		emoji: '<:Monkey_crate:1560880714914725962>',
 		allItems: MonkeyCrateTable.allItems,
 		smokeyApplies: true
 	},

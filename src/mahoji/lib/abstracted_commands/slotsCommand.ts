@@ -29,12 +29,12 @@ const buttonsData: Button[] = [
 	{
 		name: 'Flappy',
 		mod: (qty: number) => qty * 5,
-		emoji: '884799334737129513'
+		emoji: '1560880761031368744'
 	},
 	{
 		name: 'Smokey',
 		mod: (qty: number) => qty * 15,
-		emoji: '886284971914969149'
+		emoji: '1560880765884039168'
 	}
 ];
 

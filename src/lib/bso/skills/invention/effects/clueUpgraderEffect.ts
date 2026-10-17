@@ -56,5 +56,5 @@ export function clueUpgraderEffect({
 	updateBank.itemLootBank.remove(removeBank);
 	updateBank.materialsCostBank.add(boostRes.materialCost!);
 	const totalCluesUpgraded = sumArr(upgradedClues.items().map(i => i[1]));
-	messages.push(`<:Clue_upgrader:986830303001722880> Upgraded ${totalCluesUpgraded} clues (${boostRes.messages})`);
+	messages.push(`<:Clue_upgrader:1560880879297896470> Upgraded ${totalCluesUpgraded} clues (${boostRes.messages})`);
 }

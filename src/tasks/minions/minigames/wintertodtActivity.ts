@@ -130,7 +130,7 @@ export const wintertodtTask: MinionTask = {
 		}
 
 		if (gotToad) {
-			output += '\n\n<:wintertoad:749945071230779493> A Wintertoad sneakily hops into your bank!';
+			output += '\n\n<:wintertoad:1560880951532462111> A Wintertoad sneakily hops into your bank!';
 		}
 		if (flappyRes.shouldGiveBoost) output += `\n${flappyRes.userMsg}`;
 

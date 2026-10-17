@@ -185,7 +185,7 @@ export async function fightCavesCommand({
 **Removed from your bank:** ${fightCavesCost}
 ${
 	hasToad
-		? '<:wintertoad:749945071230779493> The extreme cold of your Wintertoad counters the Fight Caves, allowing you to kill the creatures much faster!'
+		? '<:wintertoad:1560880951532462111> The extreme cold of your Wintertoad counters the Fight Caves, allowing you to kill the creatures much faster!'
 		: ''
 }`,
 		files: [

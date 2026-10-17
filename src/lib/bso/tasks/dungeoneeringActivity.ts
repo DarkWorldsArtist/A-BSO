@@ -90,7 +90,7 @@ export const dungeoneeringTask: MinionTask = {
 	async run(data: DungeoneeringOptions, { user, handleTripFinish }) {
 		const { channelId, duration, floor, quantity, users } = data;
 
-		let str = `<:dungeoneering:828683755198873623> ${user}, your party finished ${quantity}x Floor ${floor} dungeons.\n\n`;
+		let str = `<:dungeoneering:1560872468346966108> ${user}, your party finished ${quantity}x Floor ${floor} dungeons.\n\n`;
 
 		for (const id of users) {
 			const u = await mUserFetch(id);
@@ -142,7 +142,7 @@ export const dungeoneeringTask: MinionTask = {
 					portentResult.portent.charges_remaining
 				} charges remaining)`;
 			} else {
-				str += `${u} received: ${xpStr} and <:dungeoneeringToken:829004684685606912> ${tokens.toLocaleString()} Dungeoneering tokens${
+				str += `${u} received: ${xpStr} and <:dungeoneeringToken:1560872995713458286> ${tokens.toLocaleString()} Dungeoneering tokens${
 					loot.length > 0 ? ` and **${loot}**.` : '.'
 				}`;
 			}

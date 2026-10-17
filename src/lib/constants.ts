@@ -19,12 +19,9 @@ export const BOT_TYPE_LOWERCASE: 'bso' | 'osb' = BOT_TYPE.toLowerCase() as 'bso'
 const isProduction = process.env.NODE_ENV === 'production';
 const GENERAL_CHANNEL_ID =
 	BOT_TYPE === 'OSB'
-		? isProduction
-			? '346304390858145792'
-			: (process.env.GENERAL_CHANNEL ?? '1154056119019393035')
-		: isProduction
-			? '792691343284764693'
-			: (process.env.GENERAL_CHANNEL ?? '1154056119019393035');
+		? (process.env.GENERAL_CHANNEL ?? (isProduction ? '346304390858145792' : '1154056119019393035'))
+		: (process.env.BSO_GENERAL_CHANNEL ??
+			(isProduction ? '1560885061572763749' : (process.env.GENERAL_CHANNEL ?? '1154056119019393035')));
 const OLDSCHOOLGG_TESTING_SERVER_ID = '940758552425955348';
 const TEST_SERVER_ID = process.env.TESTING_SERVER ?? OLDSCHOOLGG_TESTING_SERVER_ID;
 const TEST_SERVER_LOG_CHANNEL = process.env.TESTING_LOG_CHANNEL ?? '1042760447830536212';
@@ -55,7 +52,7 @@ const OSBChannelConfig: ChannelConfig = {
 };
 
 const BSOChannelConfig: ChannelConfig = {
-	ServerGeneral: '342983479501389826',
+	ServerGeneral: process.env.SERVER_GENERAL_CHANNEL ?? (isProduction ? '1560852844402315264' : TEST_SERVER_LOG_CHANNEL),
 	Notifications: '811589869314899980',
 	GrandExchange: '738780181946171493',
 	EconomyLogs: '802029843712573510',
@@ -111,6 +108,29 @@ export const Roles = {
 	BSOTopFarmer: '894194259731828786',
 	BSODoubleLoot: '923768318442229792'
 };
+
+export const PatronRoles = {
+	Tier1: '1534681590687465562',
+	Tier2: '1534681613319803151',
+	Tier3: '1534681630407393411',
+	Tier4: '1534681652838797372',
+	Tier5: '1534681668168974386',
+	Tier6: '1534682102648406036',
+	Tier7: '1534682122512502894'
+} as const;
+
+export const PatronRoleTiers = [
+	{ roleId: PatronRoles.Tier7, perkTier: PerkTier.Seven, bit: 23, tierNumber: 7 },
+	{ roleId: PatronRoles.Tier6, perkTier: PerkTier.Seven, bit: 22, tierNumber: 6 },
+	{ roleId: PatronRoles.Tier5, perkTier: PerkTier.Six, bit: 21, tierNumber: 5 },
+	{ roleId: PatronRoles.Tier4, perkTier: PerkTier.Five, bit: 20, tierNumber: 4 },
+	{ roleId: PatronRoles.Tier3, perkTier: PerkTier.Four, bit: 19, tierNumber: 3 },
+	{ roleId: PatronRoles.Tier2, perkTier: PerkTier.Three, bit: 18, tierNumber: 2 },
+	{ roleId: PatronRoles.Tier1, perkTier: PerkTier.Two, bit: 17, tierNumber: 1 }
+] as const;
+
+export const PATREON_URL = 'https://www.patreon.com/cw/WizardAlabastor';
+export const SUPPORT_PROJECT_MSG = `If you are enjoying the game and want to support its ongoing development, you can do so [here](${PATREON_URL}).`;
 
 export enum ActivityGroup {
 	Skilling = 'Skilling',
@@ -604,7 +624,7 @@ const globalConfigSchema = z.object({
 	isCI: z.coerce.boolean().default(false),
 	isProduction: z.boolean(),
 	timeZone: z.literal('UTC'),
-	adminUserIDs: z.array(z.string()).default(['425134194436341760', '157797566833098752']),
+	adminUserIDs: z.array(z.string()).default(['559881359582298123', '425134194436341760', '157797566833098752']),
 	maxingMessage: z.string().default('Congratulations on maxing!'),
 	moderatorLogsChannels: z.string().default(''),
 	supportServerID: z.string(),
@@ -639,16 +659,30 @@ export const globalConfig = globalConfigSchema.parse({
 	isProduction,
 	timeZone: process.env.TZ,
 
-	moderatorLogsChannels: isProduction ? '830145040495411210' : GENERAL_CHANNEL_ID,
-	supportServerID: isProduction ? '342983479501389826' : TEST_SERVER_ID,
-	guildIdsToCache: [guildId.OldschoolGG, guildId.TestServer, TEST_SERVER_ID, ...emojiServers]
+	moderatorLogsChannels:
+		process.env.MODERATOR_LOGS_CHANNEL ?? (isProduction ? '1560853458481975447' : GENERAL_CHANNEL_ID),
+	supportServerID: process.env.SUPPORT_SERVER_ID ?? (isProduction ? '1520360916917551266' : TEST_SERVER_ID),
+	guildIdsToCache: [
+		guildId.OldschoolGG,
+		guildId.TestServer,
+		TEST_SERVER_ID,
+		process.env.SUPPORT_SERVER_ID ?? '1520360916917551266',
+		...emojiServers
+	]
 });
 
 if ((process.env.NODE_ENV === 'production') !== globalConfig.isProduction) {
 	throw new Error('The NODE_ENV and isProduction variables must match');
 }
 
-export const gitHash = process.env.TEST ? 'TESTGITHASH' : execSync('git rev-parse HEAD').toString().trim();
+export const gitHash = (() => {
+	if (process.env.TEST) return 'TESTGITHASH';
+	try {
+		return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+	} catch {
+		return '460bf1a';
+	}
+})();
 
 const gitRemote = 'oldschoolgg/oldschoolbot';
 

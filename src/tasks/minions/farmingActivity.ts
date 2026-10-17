@@ -523,7 +523,7 @@ export const farmingTask: MinionTask = {
 			if (loot.has('Plopper')) {
 				loot.set('Plopper', 1);
 				infoStr.push(
-					'<:plopper:787310793321349120> You found a pig on a farm and have adopted it to help you with farming.'
+					'<:plopper:1560880960818511944> You found a pig on a farm and have adopted it to help you with farming.'
 				);
 			}
 

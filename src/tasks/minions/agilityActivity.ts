@@ -233,7 +233,7 @@ export const agilityTask: MinionTask = {
 					if (roll(scruffyDroprate)) {
 						loot.add('Scruffy');
 						petMessages.push(
-							"<:scruffy:749945071146762301> As you jump off the rooftop in Varrock, a stray dog covered in flies approaches you. You decide to adopt the dog, and name him 'Scruffy'."
+							"<:scruffy:1560880946654220288> As you jump off the rooftop in Varrock, a stray dog covered in flies approaches you. You decide to adopt the dog, and name him 'Scruffy'."
 						);
 						break;
 					}
@@ -245,7 +245,7 @@ export const agilityTask: MinionTask = {
 					if (roll(1600)) {
 						loot.add('Harry');
 						petMessages.push(
-							'<:harry:749945071104819292> As you jump across a rooftop, you notice a monkey perched on the roof - which has escaped from the Ardougne Zoo! You decide to adopt the monkey, and call him Harry.'
+							'<:harry:1560880926743863326> As you jump across a rooftop, you notice a monkey perched on the roof - which has escaped from the Ardougne Zoo! You decide to adopt the monkey, and call him Harry.'
 						);
 						break;
 					}
@@ -258,7 +258,7 @@ export const agilityTask: MinionTask = {
 					if (roll(dropRate)) {
 						loot.add('Skipper');
 						petMessages.push(
-							"<:skipper:755853421801766912> As you finish the Penguin agility course, a lone penguin asks if you'd like to hire it as your accountant, you accept."
+							"<:skipper:1560880865024806992> As you finish the Penguin agility course, a lone penguin asks if you'd like to hire it as your accountant, you accept."
 						);
 						break;
 					}

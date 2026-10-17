@@ -190,7 +190,7 @@
 		"name": "Birthday present",
 		"id": 11918,
 		"opened_item": "Birthday present",
-		"emoji": "<:birthdayPresent:680041979710668880>",
+		"emoji": "<:birthdayPresent:1560873211426512896>",
 		"all_items": ["Slice of birthday cake", "War ship"]
 	},
 	{
@@ -685,7 +685,7 @@
 		"name": "Casket",
 		"id": 405,
 		"opened_item": "Casket",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"Coins",
 			"Cosmic talisman",
@@ -6248,7 +6248,7 @@
 		"name": "Infernal eel",
 		"id": 21293,
 		"opened_item": "Infernal eel",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": ["Lava scale shard", "Onyx bolt tips", "Tokkul"]
 	},
 	{
@@ -7150,7 +7150,7 @@
 		"name": "Monkey crate",
 		"id": 50048,
 		"opened_item": "Monkey crate",
-		"emoji": "<:Monkey_crate:885774318041202708>",
+		"emoji": "<:Monkey_crate:1560880714914725962>",
 		"all_items": [
 			"Average lamp",
 			"Avocado seed",
@@ -7452,7 +7452,7 @@
 		"name": "Reward casket (beginner)",
 		"id": 23245,
 		"opened_item": "Reward casket (beginner)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"Air rune",
 			"Amulet of defence (t)",
@@ -7534,7 +7534,7 @@
 		"name": "Reward casket (easy)",
 		"id": 20546,
 		"opened_item": "Reward casket (easy)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"A powdered wig",
 			"Air rune",
@@ -7750,7 +7750,7 @@
 		"name": "Reward casket (elder)",
 		"id": 73124,
 		"opened_item": "Reward casket (elder)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"2nd age bow",
 			"2nd age mage bottom",
@@ -7820,7 +7820,7 @@
 		"name": "Reward casket (elite)",
 		"id": 20543,
 		"opened_item": "Reward casket (elite)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"3rd age amulet",
 			"3rd age bow",
@@ -8009,7 +8009,7 @@
 		"name": "Reward casket (grandmaster)",
 		"id": 19838,
 		"opened_item": "Reward casket (grandmaster)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"3rd age amulet",
 			"3rd age axe",
@@ -8545,7 +8545,7 @@
 		"name": "Reward casket (hard)",
 		"id": 20544,
 		"opened_item": "Reward casket (hard)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"3rd age amulet",
 			"3rd age full helmet",
@@ -8787,7 +8787,7 @@
 		"name": "Reward casket (master)",
 		"id": 19836,
 		"opened_item": "Reward casket (master)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"3rd age amulet",
 			"3rd age axe",
@@ -8967,7 +8967,7 @@
 		"name": "Reward casket (medium)",
 		"id": 20545,
 		"opened_item": "Reward casket (medium)",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": [
 			"Adamant axe",
 			"Adamant battleaxe",
@@ -9173,7 +9173,7 @@
 		"name": "Scaly blue dragonhide",
 		"id": 27897,
 		"opened_item": "Scaly blue dragonhide",
-		"emoji": "<:Casket:365003978678730772>",
+		"emoji": "<:Casket:1560873099597979648>",
 		"all_items": ["Blue dragon scale"]
 	},
 	{

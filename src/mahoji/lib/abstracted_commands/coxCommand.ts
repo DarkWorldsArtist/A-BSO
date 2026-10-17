@@ -52,7 +52,7 @@ export async function coxStatsCommand(user: MUser) {
 	const normalTeam = await calcCoxDuration(Array(2).fill(user), false);
 	const cmSolo = await calcCoxDuration([user], true);
 	const cmTeam = await calcCoxDuration(Array(2).fill(user), true);
-	return `<:Twisted_bow:403018312402862081> Chambers of Xeric <:Olmlet:324127376873357316>
+	return `<:Twisted_bow:1560874492438257768> Chambers of Xeric <:Olmlet:1560874152544444467>
 **Normal:** ${minigameScores.raids} KC (Solo: ${Emoji.Skull} ${(await createTeam([user], false))[0].deathChance.toFixed(
 		1
 	)}% ${Emoji.CombatSword} ${calcWhatPercent(normalSolo.reductions[user.id], normalSolo.maxUserReduction).toFixed(
@@ -70,9 +70,9 @@ export async function coxStatsCommand(user: MUser) {
 **Total Uniques:** ${totalUniques} ${
 		totalUniques > 0 ? `(1 unique per ${Math.floor(totalPoints / totalUniques).toLocaleString()} pts)` : ''
 	}\n
-**Melee:** <:Elder_maul:403018312247803906> ${melee.toFixed(1)}%
-**Range:** <:Twisted_bow:403018312402862081> ${range.toFixed(1)}%
-**Mage:** <:Kodai_insignia:403018312264712193> ${mage.toFixed(1)}%
+**Melee:** <:Elder_maul:1560874357872525335> ${melee.toFixed(1)}%
+**Range:** <:Twisted_bow:1560874492438257768> ${range.toFixed(1)}%
+**Mage:** <:Kodai_insignia:1560874396728426567> ${mage.toFixed(1)}%
 **Total Gear Score:** ${Emoji.Gear} ${total.toFixed(1)}%`;
 }
 

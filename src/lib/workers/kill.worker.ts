@@ -8,6 +8,7 @@ import { bsoKillableMonsters } from '@/lib/bso/monsters/bsoKillableMonsters.js';
 import { stringMatches } from '@oldschoolgg/toolkit';
 import { Bank, Monsters } from 'oldschooljs';
 
+import { SUPPORT_PROJECT_MSG } from '@/lib/constants.js';
 import killableMonsters from '@/lib/minions/data/killableMonsters/index.js';
 import { simulatedKillables } from '@/lib/simulation/simulatedKillables.js';
 import type { KillWorkerArgs, KillWorkerReturn } from '@/lib/workers/index.js';
@@ -29,7 +30,7 @@ export default async ({
 	if (simulatedKillable) {
 		if (quantity > limit) {
 			return {
-				error: `The quantity you gave exceeds your limit of ${limit.toLocaleString()}! *You can increase your limit by up to 1 million by becoming a patron at <https://www.patreon.com/OldschoolCyr>`
+				error: `The quantity you gave exceeds your limit of ${limit.toLocaleString()}! *${SUPPORT_PROJECT_MSG}*`
 			};
 		}
 		return {
@@ -45,7 +46,7 @@ export default async ({
 		}
 		if (quantity > limit) {
 			return {
-				error: `The quantity you gave exceeds your limit of ${limit.toLocaleString()}! *You can increase your limit by up to 1 million by becoming a patron at <https://www.patreon.com/OldschoolCyr>`
+				error: `The quantity you gave exceeds your limit of ${limit.toLocaleString()}! *${SUPPORT_PROJECT_MSG}*`
 			};
 		}
 

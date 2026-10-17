@@ -79,7 +79,7 @@ export const fletchCommand = defineCommand({
 		if (user.usingPet('Scruffy')) {
 			boost += 1;
 			boostMsg.push(
-				'<:scruffy:749945071146762301> To help out, Scruffy is fetching items from the bank for you - making your training much faster! Good boy! (+100% for Scruffy)'
+				'<:scruffy:1560880946654220288> To help out, Scruffy is fetching items from the bank for you - making your training much faster! Good boy! (+100% for Scruffy)'
 			);
 		}
 

@@ -232,7 +232,7 @@ export function calcFishingTripResult({
 		}
 
 		messages.push(
-			'<:klik:749945070932721676> Klik breathes an incredibly hot fire breath, and cooks all your fish!'
+			'<:klik:1560880874923360267> Klik breathes an incredibly hot fire breath, and cooks all your fish!'
 		);
 	}
 
@@ -248,7 +248,7 @@ export function calcFishingTripResult({
 			if (roll(petChance)) {
 				updateBank.itemLootBank.add('Shelldon');
 				messages.push(
-					'<:shelldon:748496988407988244> A crab steals your fish just as you catch it! After some talking, the crab, called shelldon, decides to join you on your fishing adventures. You can equip Shelldon and he will help you fish!'
+					'<:shelldon:1560872720978157591> A crab steals your fish just as you catch it! After some talking, the crab, called shelldon, decides to join you on your fishing adventures. You can equip Shelldon and he will help you fish!'
 				);
 				break;
 			}

@@ -20,14 +20,17 @@ export const onStartup = async () => {
 		globalConfig.isProduction ? Time.Second * 10 : 0
 	);
 
+	try {
+		await bulkUpdateCommands();
+	} catch (err) {
+		Logging.logError(err as Error, { msg: 'Failed to sync slash commands with Discord' });
+	}
+
 	if (globalConfig.isProduction) {
 		globalClient
 			.sendMessage(Channel.GeneralChannel, {
 				content: `I have just turned on!\n\n${META_CONSTANTS.RENDERED_STR}`
 			})
 			.catch(err => Logging.logError(err));
-	} else {
-		// In development, always sync commands on startup.
-		await bulkUpdateCommands();
 	}
 };

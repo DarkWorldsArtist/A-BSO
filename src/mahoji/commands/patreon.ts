@@ -1,8 +1,10 @@
+import { SUPPORT_PROJECT_MSG } from '@/lib/constants.js';
+
 export const patreonCommand = defineCommand({
 	name: 'patreon',
 	description: 'Shows the patreon link for the bot, where you can donate.',
 	options: [],
 	run: async () => {
-		return `You can become a patron to support me or thank me if you're enjoying the bot, and receive some perks. It's highly appreciated! <:seer:924198628191531030> <https://www.patreon.com/OldSchoolCyr> 🥺`;
+		return `${SUPPORT_PROJECT_MSG} <:seer:1560872712866635786> 🥺`;
 	}
 });

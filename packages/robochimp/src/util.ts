@@ -1,4 +1,4 @@
-import { PerkTier } from '@oldschoolgg/toolkit';
+import { PerkTier, uniqueArr } from '@oldschoolgg/toolkit';
 
 export enum Bits {
 	Admin = 1,
@@ -46,22 +46,22 @@ export const bitsDescriptions: BitDescriptions = {
 	[Bits.Contributor]: { description: 'Contributor' },
 	[Bits.BothBotsMaxedFreeTierOnePerks]: { description: 'Maxed patron perks for both bots' },
 	[Bits.HasPermanentTierOne]: { description: 'Has permanent Tier 1 perks' },
-	[Bits.MagnaPatronTier1]: { description: 'Magna Tier 1 patron' },
-	[Bits.MagnaPatronTier2]: { description: 'Magna Tier 2 patron' },
-	[Bits.MagnaPatronTier3]: { description: 'Magna Tier 3 patron' },
-	[Bits.MagnaPatronTier4]: { description: 'Magna Tier 4 patron' },
-	[Bits.MagnaPatronTier5]: { description: 'Magna Tier 5 patron' },
-	[Bits.MagnaPatronTier6]: { description: 'Magna Tier 6 patron' },
+	[Bits.MagnaPatronTier1]: { description: 'Tier 1 patron' },
+	[Bits.MagnaPatronTier2]: { description: 'Tier 2 patron' },
+	[Bits.MagnaPatronTier3]: { description: 'Tier 3 patron' },
+	[Bits.MagnaPatronTier4]: { description: 'Tier 4 patron' },
+	[Bits.MagnaPatronTier5]: { description: 'Tier 5 patron' },
+	[Bits.MagnaPatronTier6]: { description: 'Tier 6 patron' },
 	[Bits.HasEverBeenPatron]: { description: 'Has been a patron before' },
-	[Bits.CyrPatronTier0]: { description: 'Cyr Tier 0 patron' },
-	[Bits.CyrPatronTier1]: { description: 'Cyr Tier 1 patron' },
-	[Bits.CyrPatronTier2]: { description: 'Cyr Tier 2 patron' },
-	[Bits.CyrPatronTier3]: { description: 'Cyr Tier 3 patron' },
-	[Bits.CyrPatronTier4]: { description: 'Cyr Tier 4 patron' },
-	[Bits.CyrPatronTier5]: { description: 'Cyr Tier 5 patron' },
-	[Bits.CyrPatronTier6]: { description: 'Cyr Tier 6 patron' },
-	[Bits.CyrPatronTier7]: { description: 'Cyr Tier 7 patron' },
-	[Bits.CyrsOriginalPatrons]: { description: "Cyr's original patron" },
+	[Bits.CyrPatronTier0]: { description: 'Tier 0 patron' },
+	[Bits.CyrPatronTier1]: { description: 'Tier 1 patron' },
+	[Bits.CyrPatronTier2]: { description: 'Tier 2 patron' },
+	[Bits.CyrPatronTier3]: { description: 'Tier 3 patron' },
+	[Bits.CyrPatronTier4]: { description: 'Tier 4 patron' },
+	[Bits.CyrPatronTier5]: { description: 'Tier 5 patron' },
+	[Bits.CyrPatronTier6]: { description: 'Tier 6 patron' },
+	[Bits.CyrPatronTier7]: { description: 'Tier 7 patron' },
+	[Bits.CyrsOriginalPatrons]: { description: 'Original patron' },
 	[Bits.BonusMinute]: { description: 'Bonus minute' }
 };
 
@@ -125,7 +125,7 @@ export const paidTiers: PatronTier[] = [...magnaTiers, ...cyrTiers];
 export const allPatronBits: Bits[] = paidTiers.map(t => t.bit);
 
 export function getPatronTierLabel(tier: Pick<PatronTier, 'source' | 'number'>) {
-	return `${tier.source === 'cyr' ? 'Cyr' : 'Magna'} Tier ${tier.number}`;
+	return `Tier ${tier.number} patron`;
 }
 
 export function getUserPaidTiers(bits: readonly number[]): PatronTier[] {
@@ -133,12 +133,13 @@ export function getUserPaidTiers(bits: readonly number[]): PatronTier[] {
 }
 
 export function formatUserPaidTiers(bits: readonly number[]) {
-	const labels = getUserPaidTiers(bits)
-		.sort((a, b) => {
-			if (b.perkTier !== a.perkTier) return b.perkTier - a.perkTier;
-			if (a.source !== b.source) return a.source === 'cyr' ? -1 : 1;
-			return b.number - a.number;
-		})
-		.map(getPatronTierLabel);
+	const labels = uniqueArr(
+		getUserPaidTiers(bits)
+			.sort((a, b) => {
+				if (b.perkTier !== a.perkTier) return b.perkTier - a.perkTier;
+				return b.number - a.number;
+			})
+			.map(getPatronTierLabel)
+	);
 	return labels.length === 0 ? 'None' : labels.join(', ');
 }

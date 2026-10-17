@@ -375,17 +375,17 @@ export async function calcFishingTripStart({
 		if (isPatriciaLobsterBoost) {
 			tripSpeedMultiplier *= 3;
 			boosts.push(
-				`<:starfish:1515651612918677564> 3x faster for ${eclipsePetName} and Old crab cage while fishing Lobster`
+				`<:starfish:1560880883681067040> 3x faster for ${eclipsePetName} and Old crab cage while fishing Lobster`
 			);
 		} else {
 			tripSpeedMultiplier *= 2.15;
 			boosts.push(
-				`<:starfish:1515651612918677564> ${eclipsePetName} is your new best friend! You two become an expert fishing pair!`
+				`<:starfish:1560880883681067040> ${eclipsePetName} is your new best friend! You two become an expert fishing pair!`
 			);
 		}
 	} else if (hasShelldonEquipped) {
 		tripSpeedMultiplier *= 2;
-		boosts.push('<:shelldon:748496988407988244> Shelldon helps you fish!');
+		boosts.push('<:shelldon:1560872720978157591> Shelldon helps you fish!');
 	}
 
 	if (hasOldCrabCageEquipped) {

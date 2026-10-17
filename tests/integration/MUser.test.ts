@@ -90,7 +90,7 @@ describe('MUser', () => {
 		const result = await user.addXP({ skillName: 'agility', amount: 1000 });
 		expect(user.skillsAsLevels.agility).toEqual(20);
 		const xpMultiplied = 1000 * GLOBAL_BSO_XP_MULTIPLIER;
-		expect(result).toEqual(`You received ${xpMultiplied.toLocaleString()} <:agility:630911040355565568> XP.
+		expect(result).toEqual(`You received ${xpMultiplied.toLocaleString()} <:agility:1560880739673702400> XP.
 **Congratulations! Your Agility level is now 20** 🎉`);
 		const xpAdded = await global.prisma!.xPGain.findMany({
 			where: {

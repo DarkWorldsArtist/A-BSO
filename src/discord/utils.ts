@@ -1,4 +1,9 @@
-import { ApplicationCommandType, type RESTPostAPIApplicationGuildCommandsJSONBody, Routes } from '@oldschoolgg/discord';
+import {
+	ApplicationCommandType,
+	PermissionFlags,
+	type RESTPostAPIApplicationGuildCommandsJSONBody,
+	Routes
+} from '@oldschoolgg/discord';
 
 import { convertCommandOptionToAPIOption } from '@/discord/index.js';
 import { globalConfig } from '@/lib/constants.js';
@@ -38,11 +43,19 @@ export function mentionCommand(name: string, subCommand?: string, subSubCommand?
 function convertCommandToAPICommand(
 	cmd: AnyCommand
 ): RESTPostAPIApplicationGuildCommandsJSONBody & { description: string } {
+	const defaultMemberPermissions =
+		cmd.defaultMemberPermissions !== undefined
+			? String(cmd.defaultMemberPermissions)
+			: cmd.requiredPermissions && cmd.requiredPermissions.length > 0
+				? cmd.requiredPermissions.reduce((acc, p) => acc | PermissionFlags[p], 0n).toString()
+				: undefined;
+
 	return {
 		type: ApplicationCommandType.ChatInput,
 		name: cmd.name,
 		description: cmd.description,
-		options: cmd.options.map(convertCommandOptionToAPIOption)
+		options: cmd.options.map(convertCommandOptionToAPIOption),
+		...(defaultMemberPermissions !== undefined ? { default_member_permissions: defaultMemberPermissions } : {})
 	};
 }
 

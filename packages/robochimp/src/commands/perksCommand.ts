@@ -55,7 +55,7 @@ export const perksCommand = defineCommand({
 			const giftTier = getGiftTier(donor.bits);
 
 			if (!giftTier) {
-				return "You need Cyr's Tier 4 or higher to donate patron time.";
+				return 'You need Tier 4 or higher to donate patron time.';
 			}
 
 			if (hasCurrentMonthGift(donor.last_patreon_gift)) {
@@ -73,7 +73,7 @@ export const perksCommand = defineCommand({
 			});
 
 			await interaction.confirmation(
-				`Donate 1 week of Cyr Tier ${giftTier.number} patron to ${targetUser.mention}? This uses your monthly Patreon gift.`
+				`Donate 1 week of Tier ${giftTier.number} patron to ${targetUser.mention}? This uses your monthly Patreon gift.`
 			);
 
 			await roboChimpClient.$transaction(async tx => {
@@ -94,7 +94,7 @@ export const perksCommand = defineCommand({
 
 			await Promise.all([globalClient.fetchRUser(targetUser.id), globalClient.fetchRUser(user.id)]);
 
-			return `Donated 1 week of Cyr Tier ${giftTier.number} patron to ${targetUser.mention}. They have ${formatDuration(
+			return `Donated 1 week of Tier ${giftTier.number} patron to ${targetUser.mention}. They have ${formatDuration(
 				grant.remainingTime
 			)} remaining.`;
 		}

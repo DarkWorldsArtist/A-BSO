@@ -346,7 +346,7 @@ export const sellCommand = defineCommand({
 				totalPrice
 			)})** (${taxRatePercent}% below market price). ${
 				hasSkipper
-					? '\n\n<:skipper:755853421801766912> Skipper has negotiated with the bank and you were charged less tax on the sale!'
+					? '\n\n<:skipper:1560880865024806992> Skipper has negotiated with the bank and you were charged less tax on the sale!'
 					: ''
 			}`
 		);

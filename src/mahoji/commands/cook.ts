@@ -165,7 +165,7 @@ export const cookCommand = defineCommand({
 			duration
 		)} to finish.${
 			hasRemy
-				? "\n<:remy:748491189925183638> Remy jumps on your minions' head to help them with their cooking!"
+				? "\n<:remy:1560872678007504917> Remy jumps on your minions' head to help them with their cooking!"
 				: ''
 		}${boosts.length > 0 ? `\n\nBoosts: ${boosts.join(', ')}` : ''}`;
 	}

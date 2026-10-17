@@ -321,7 +321,7 @@ export const mineCommand = defineCommand({
 		} to finish.`;
 
 		if (user.usingPet('Doug')) {
-			response += '\n<:doug:748892864813203591> Doug joins you on your mining trip!';
+			response += '\n<:doug:1560872460247765094> Doug joins you on your mining trip!';
 		}
 
 		if (messages.length > 0) {

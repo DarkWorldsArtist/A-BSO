@@ -3,6 +3,7 @@ import { MathRNG, randInt, roll } from 'node-rng';
 import { averageBank, Bank, ChambersOfXeric, toKMB } from 'oldschooljs';
 
 import { ColosseumWaveBank, startColosseumRun } from '@/lib/colosseum.js';
+import { SUPPORT_PROJECT_MSG } from '@/lib/constants.js';
 import pets from '@/lib/data/pets.js';
 import { assert } from '@/lib/util/logError.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
@@ -98,7 +99,7 @@ function simulateColosseumRuns(samples = 100) {
 async function coxCommand(user: MUser, quantity: number, cm = false, points = 25_000, teamSize = 4): CommandResponse {
 	const limit = await determineCoxLimit(user);
 	if (quantity > limit) {
-		return `The quantity provided is over your limit of ${limit}. You can increase your limit up to 2000 by becoming a patron: <https://patreon.com/OldschoolCyr>`;
+		return `The quantity provided is over your limit of ${limit}. ${SUPPORT_PROJECT_MSG}`;
 	}
 
 	const team = [

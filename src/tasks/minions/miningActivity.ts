@@ -118,7 +118,7 @@ export function calculateMiningResult({
 			if (rng.roll(droprate)) {
 				loot.add('Doug');
 				messages.push(
-					"<:doug:748892864813203591> A pink-colored mole emerges from where you're mining, and decides to join you on your adventures after seeing your groundbreaking new methods of mining."
+					"<:doug:1560872460247765094> A pink-colored mole emerges from where you're mining, and decides to join you on your adventures after seeing your groundbreaking new methods of mining."
 				);
 				break;
 			}
@@ -189,7 +189,7 @@ export function calculateMiningResult({
 				loot.remove(ore.id, loot.amount(ore.id));
 				loot.add(barsFromKlikBank);
 				messages.push(
-					'<:klik:749945070932721676> Klik breathes an incredibly hot fire breath, and smelts all your ores!'
+					'<:klik:1560880874923360267> Klik breathes an incredibly hot fire breath, and smelts all your ores!'
 				);
 			}
 		}

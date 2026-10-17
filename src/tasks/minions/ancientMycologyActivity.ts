@@ -153,7 +153,7 @@ export const ancientMycologyTask: MinionTask = {
 			if (rng.roll(droprate)) {
 				loot.add('Peky');
 				str +=
-					'\n<:peky:787028037031559168> A small pigeon has taken a liking to you, and hides itself in your bank.';
+					'\n<:peky:1560880908729581588> A small pigeon has taken a liking to you, and hides itself in your bank.';
 			}
 		}
 

@@ -12,8 +12,9 @@ import { Bank, convertLVLtoXP, itemID } from 'oldschooljs';
 import { BitField, Channel, globalConfig } from '@/lib/constants.js';
 
 export async function spawnLampIsReady(user: MUser, channelId: string): Promise<[true] | [false, string]> {
-	if (globalConfig.isProduction && ![Channel.GeneralChannel, Channel.ServerGeneral].includes(channelId)) {
-		return [false, "You can't use spawnlamp in this channel."];
+	const allowedChannel = Channel.GeneralChannel;
+	if (globalConfig.isProduction && channelId !== allowedChannel && channelId !== '1560885061572763749') {
+		return [false, "You can't use spawnlamp in this channel. You can only use it in <#1560885061572763749>."];
 	}
 
 	const perkTier = await user.fetchPerkTier();
@@ -88,8 +89,9 @@ export async function spawnBoxCommand(user: MUser, interaction: MInteraction): C
 	if (perkTier < PerkTier.Four && !user.bitfield.includes(BitField.HasPermanentEventBackgrounds)) {
 		return 'You need to be a T3 patron or higher to use this command.';
 	}
-	if (globalConfig.isProduction && ![Channel.GeneralChannel, Channel.ServerGeneral].includes(interaction.channelId)) {
-		return "You can't use spawnbox in this channel.";
+	const allowedChannel = Channel.GeneralChannel;
+	if (globalConfig.isProduction && interaction.channelId !== allowedChannel && interaction.channelId !== '1560885061572763749') {
+		return "You can't use spawnbox in this channel. You can only use it in <#1560885061572763749>.";
 	}
 	const lastUse = Number(user.user.last_spawn_box_date ?? 0);
 	const difference = Date.now() - lastUse;

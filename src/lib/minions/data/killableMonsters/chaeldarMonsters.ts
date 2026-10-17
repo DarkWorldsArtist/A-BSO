@@ -360,7 +360,7 @@ export const chaeldarMonsters: KillableMonster[] = [
 		aliases: Monsters.Lizardman.aliases,
 		timeToFinish: Time.Second * 13,
 		table: Monsters.Lizardman,
-		emoji: '<:Xerics_talisman_inert:456176488669249539>',
+		emoji: '<:Xerics_talisman_inert:1560874506627579997>',
 		wildy: false,
 
 		difficultyRating: 3,
@@ -378,7 +378,7 @@ export const chaeldarMonsters: KillableMonster[] = [
 		aliases: Monsters.LizardmanBrute.aliases,
 		timeToFinish: Time.Second * 16,
 		table: Monsters.LizardmanBrute,
-		emoji: '<:Xerics_talisman_inert:456176488669249539>',
+		emoji: '<:Xerics_talisman_inert:1560874506627579997>',
 		wildy: false,
 
 		difficultyRating: 3,
@@ -396,7 +396,7 @@ export const chaeldarMonsters: KillableMonster[] = [
 		aliases: Monsters.LizardmanShaman.aliases,
 		timeToFinish: Time.Second * 52,
 		table: Monsters.LizardmanShaman,
-		emoji: '<:Dragon_warhammer:405998717154623488>',
+		emoji: '<:Dragon_warhammer:1560873959413522524>',
 		wildy: false,
 
 		difficultyRating: 6,

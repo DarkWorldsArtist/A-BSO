@@ -85,7 +85,7 @@ export const runecraftTask: MinionTask = {
 			const droprate = clAdjustedDroprate(user, 'Obis', Math.floor(5000 / minutes), 1.5);
 			if (roll(droprate)) {
 				str +=
-					'\n**<:obis:787028036792614974> An enchantment guardian takes note of your prowess in runecrafting and elects to join you.**';
+					'\n**<:obis:1560880915326963726> An enchantment guardian takes note of your prowess in runecrafting and elects to join you.**';
 				loot.add('Obis');
 			}
 		}

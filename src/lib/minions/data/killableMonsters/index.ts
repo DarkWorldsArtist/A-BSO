@@ -41,7 +41,7 @@ const killableMonsters: KillableMonster[] = [
 		aliases: Monsters.Barrows.aliases,
 		timeToFinish: Time.Minute * 4.15,
 		table: Monsters.Barrows,
-		emoji: '<:Dharoks_helm:403038864199122947>',
+		emoji: '<:Dharoks_helm:1560873705079439461>',
 		wildy: false,
 		difficultyRating: 4,
 		itemsRequired: resolveItems([]),
@@ -77,7 +77,7 @@ const killableMonsters: KillableMonster[] = [
 		aliases: Monsters.DagannothPrime.aliases,
 		timeToFinish: Time.Minute * 1.9,
 		table: Monsters.DagannothPrime,
-		emoji: '<:Pet_dagannoth_prime:324127376877289474>',
+		emoji: '<:Pet_dagannoth_prime:1560874161839149076>',
 		wildy: false,
 
 		difficultyRating: 5,
@@ -118,7 +118,7 @@ const killableMonsters: KillableMonster[] = [
 		aliases: Monsters.DagannothRex.aliases,
 		timeToFinish: Time.Minute * 1.9,
 		table: Monsters.DagannothRex,
-		emoji: '<:Pet_dagannoth_rex:324127377091330049>',
+		emoji: '<:Pet_dagannoth_rex:1560874165748236342>',
 		wildy: false,
 
 		difficultyRating: 5,
@@ -155,7 +155,7 @@ const killableMonsters: KillableMonster[] = [
 		aliases: Monsters.DagannothSupreme.aliases,
 		timeToFinish: Time.Minute * 1.9,
 		table: Monsters.DagannothSupreme,
-		emoji: '<:Pet_dagannoth_supreme:324127377066164245>',
+		emoji: '<:Pet_dagannoth_supreme:1560874170215178410>',
 		wildy: false,
 
 		difficultyRating: 5,
@@ -232,7 +232,7 @@ const killableMonsters: KillableMonster[] = [
 		aliases: Monsters.Sarachnis.aliases,
 		timeToFinish: Time.Minute * 1.63,
 		table: Monsters.Sarachnis,
-		emoji: '<:Sraracha:608231007803670529>',
+		emoji: '<:Sraracha:1560874488843866142>',
 		wildy: false,
 		difficultyRating: 5,
 		notifyDrops: resolveItems(['Sraracha', 'Jar of eyes']),
@@ -325,7 +325,7 @@ export const NightmareMonster: KillableMonster = {
 	aliases: ['nightmare', 'the nightmare'],
 	timeToFinish: Time.Minute * 20,
 	table: Monsters.GeneralGraardor,
-	emoji: '<:Little_nightmare:758149284952014928>',
+	emoji: '<:Little_nightmare:1560880790240239689>',
 	wildy: false,
 	difficultyRating: 7,
 	notifyDrops: resolveItems([
@@ -387,16 +387,16 @@ export const effectiveMonsters = [
 		name: 'Zalcano',
 		aliases: ['zalcano'],
 		id: EMonster.ZALCANO,
-		emoji: '<:Smolcano:604670895113633802>'
+		emoji: '<:Smolcano:1560874247520256062>'
 	},
 	{
 		id: 46_274,
 		name: 'Nex',
 		aliases: ['nex']
 	},
-	{ name: 'TzTok-Jad', aliases: ['jad'], id: 3127, emoji: '<:Tzrekjad:324127379188613121>' },
-	{ name: 'Mimic', aliases: ['mimic'], id: 23_184, emoji: '<:Tangleroot:324127378978635778>' },
-	{ name: 'Hespori', aliases: ['hespori'], id: 8583, emoji: '<:Casket:365003978678730772>' },
+	{ name: 'TzTok-Jad', aliases: ['jad'], id: 3127, emoji: '<:Tzrekjad:1560874256449933384>' },
+	{ name: 'Mimic', aliases: ['mimic'], id: 23_184, emoji: '<:Tangleroot:1560874251920216074>' },
+	{ name: 'Hespori', aliases: ['hespori'], id: 8583, emoji: '<:Casket:1560873099597979648>' },
 	{
 		name: "Phosani's Nightmare",
 		aliases: ['phosani', 'phosanis nightmare'],
@@ -429,14 +429,14 @@ const otherMonsters = [
 		name: 'Zalcano',
 		aliases: ['zalcano'],
 		id: EMonster.ZALCANO,
-		emoji: '<:Smolcano:604670895113633802>',
+		emoji: '<:Smolcano:1560874247520256062>',
 		link: '/miscellaneous/zalcano/'
 	},
 	{
 		name: 'Wintertodt',
 		aliases: ['wt', 'wintertodt', 'todt'],
 		id: -1,
-		emoji: '<:Phoenix:324127378223792129>',
+		emoji: '<:Phoenix:1560874216352387114>',
 		link: '/activities/wintertodt/'
 	},
 	{

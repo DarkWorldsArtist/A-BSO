@@ -19,12 +19,12 @@ export const beachOutfitTable = new LootTable()
 export const BEACH_COMBING_PET = {
 	itemID: BSOItem.PATRICIA,
 	name: 'Patricia',
-	emoji: '<:starfish:1515651612918677564>',
+	emoji: '<:starfish:1560880883681067040>',
 	baseRate: 6_000,
 	clIncreaseMultiplier: 2
 } as const;
 
-export const SUMMER_CRATE_S9_EMOJI = '<:s9chest:1515787545970081843>';
+export const SUMMER_CRATE_S9_EMOJI = '<:s9chest:1560880888945057792>';
 export const LYDIA_QUOTES = [
 	'The ocean is deep. So is my disappointment',
 	'I found myself. I put myself back',

@@ -2330,7 +2330,7 @@ export async function getCollection(options: {
 	}
 
 	if (flags.missing) {
-		clItems = new Set(clItems.values().filter(i => !userCheckBank.has(i)));
+		clItems = new Set(Array.from(clItems).filter(i => !userCheckBank.has(i)));
 	}
 
 	const [totalCl, userAmount] = getUserClData(userCheckBank, clItems);

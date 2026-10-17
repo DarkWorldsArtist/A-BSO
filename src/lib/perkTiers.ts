@@ -1,4 +1,4 @@
-import { Time } from '@oldschoolgg/toolkit';
+import { Time, uniqueArr } from '@oldschoolgg/toolkit';
 import { LRUCache } from 'lru-cache';
 
 import { BitField, BOT_TYPE, PerkTier } from '@/lib/constants.js';
@@ -81,10 +81,10 @@ export function getRoboChimpPaidTierDisplay(
 		return perkTier && perkTier > 0 ? `Perk Tier ${perkTier}` : 'None';
 	}
 
-	const labels = [
-		...CYR_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Cyr Tier ${tier.number}`),
-		...MAGNA_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Magna Tier ${tier.number}`)
-	];
+	const labels = uniqueArr([
+		...CYR_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Tier ${tier.number} patron`),
+		...MAGNA_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Tier ${tier.number} patron`)
+	]);
 
 	if (bits.includes(RobochimpBitfieldEnum.BonusMinute)) {
 		labels.push('*Bonus Minute??*');

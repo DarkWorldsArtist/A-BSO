@@ -124,7 +124,7 @@ export const motherlodeMiningTask: MinionTask = {
 				if (rng.roll(droprate)) {
 					loot.add('Doug');
 					str +=
-						"\n<:doug:748892864813203591> A pink-colored mole emerges from where you're mining, and decides to join you on your adventures after seeing your groundbreaking new methods of mining.";
+						"\n<:doug:1560872460247765094> A pink-colored mole emerges from where you're mining, and decides to join you on your adventures after seeing your groundbreaking new methods of mining.";
 					break;
 				}
 			}

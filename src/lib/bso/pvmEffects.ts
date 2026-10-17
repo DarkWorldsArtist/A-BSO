@@ -106,11 +106,11 @@ export function rollForBSOThings(args: MidPVMEffectArgs) {
 	}
 
 	if (updateBank.itemLootBank.has('Brock')) {
-		messages.push('<:brock:787310793183854594> On the way to Zulrah, you found a Badger that wants to join you.');
+		messages.push('<:brock:1560880869655191594> On the way to Zulrah, you found a Badger that wants to join you.');
 	}
 
 	if (updateBank.itemLootBank.has('Klik')) {
-		messages.push('<:klik:749945070932721676> A small fairy dragon appears! Klik joins you on your adventures.');
+		messages.push('<:klik:1560880874923360267> A small fairy dragon appears! Klik joins you on your adventures.');
 	}
 }
 
