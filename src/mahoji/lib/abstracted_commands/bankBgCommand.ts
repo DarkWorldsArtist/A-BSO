@@ -63,11 +63,6 @@ export async function bankBgCommand(interaction: MInteraction, user: MUser, name
 		)}`;
 	}
 
-	// Check they have the required perk tier.
-	if (selectedImage.perkTierNeeded && (await user.fetchPerkTier()) < selectedImage.perkTierNeeded) {
-		return `This background is only available for Tier ${Number(selectedImage.perkTierNeeded) - 1} patrons.`;
-	}
-
 	if (selectedImage.name === 'Pets') {
 		const { cl } = user;
 		const hasPet = resolveItems(['Rocky', 'Bloodhound', 'Giant squirrel', 'Baby chinchompa']).some(id =>

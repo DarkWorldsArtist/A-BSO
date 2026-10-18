@@ -1,6 +1,5 @@
 import { BSOItem } from '@/lib/bso/BSOItem.js';
 import { pumpkinHeadUniqueTable } from '@/lib/bso/pumpkinHead.js';
-import { beachOutfitTable } from '@/lib/bso/summerDays.js';
 
 import { uniqueArr } from '@oldschoolgg/toolkit';
 import { itemID, resolveItems } from 'oldschooljs';
@@ -41,6 +40,7 @@ export const allChristmasEvent2025Items = resolveItems([
 
 export const halloweenCL = uniqueArr(
 	resolveItems([
+		'Cob',
 		'Human appendage',
 		'Sliced femur',
 		'Human blood',
@@ -239,10 +239,7 @@ export const easterCL = uniqueArr(
 		'Vyrewatch bunny ears',
 		'Arceuus bunny ears',
 		'Waddles',
-		'Tasty',
-		'Wabbit eggs',
-		'Magnegg',
-		'Magnabbit'
+		'Tasty'
 	])
 );
 
@@ -264,22 +261,4 @@ export const birthdayCL = uniqueArr(
 	])
 );
 
-export const summerCL = uniqueArr(
-	resolveItems([
-		...beachOutfitTable.allItems,
-		'Summer Partyhat',
-		'Imitation crab hat',
-		'Partycrab',
-		'Patricia',
-		'Mona',
-		'Lydia',
-		'Old crab cage',
-		'Mysterious bottle',
-		'Bottle of sea water',
-		'Purple sand dollar',
-		'Black shell',
-		'Purple dust',
-		'Sun scream (unf)',
-		'Sun scream'
-	])
-);
+export const summerCL: number[] = [];

@@ -1,6 +1,6 @@
 {
-	"hash": "f51bd4e15cdeacc707319c857767bb65",
-	"date": "2026-08-22T06:29:43.750Z",
+	"hash": "29c453d88eb4d0ad50c74accb910cc21",
+	"date": "2026-10-18T13:18:10.072Z",
 	"data": [
 		{
 			"name": "activities",
@@ -10,7 +10,6 @@
 				"alch",
 				"ancient_mycology",
 				"archaic_mining",
-				"beach_combing",
 				"birdhouses",
 				"bury",
 				"camdozaal",
@@ -244,6 +243,11 @@
 			"name": "gp",
 			"desc": "See your current GP balance.",
 			"subOptions": []
+		},
+		{
+			"name": "halloween",
+			"desc": "Halloween event commands.",
+			"subOptions": ["admin", "pumpkin", "steal", "use"]
 		},
 		{
 			"name": "help",
@@ -496,6 +500,12 @@
 			"subOptions": []
 		},
 		{
+			"name": "queue",
+			"desc": "Queue minion trips to run back-to-back (Patron perk).",
+			"examples": ["/queue add", "/queue clear", "/queue list", "/queue repeat"],
+			"subOptions": ["add", "clear", "list", "remove", "repeat"]
+		},
+		{
 			"name": "raid",
 			"desc": "Send your minion to do raids - CoX or ToB.",
 			"subOptions": ["cox", "doa", "toa", "tob"]
@@ -518,7 +528,7 @@
 		{
 			"name": "rp",
 			"desc": "Admin tools second set",
-			"subOptions": ["player", "user_event"]
+			"subOptions": ["bestow", "player", "user_event"]
 		},
 		{
 			"name": "runecraft",

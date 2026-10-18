@@ -6,7 +6,6 @@ import { chunk } from 'remeda';
 import { choicesOf, filterOption, itemOption } from '@/discord/index.js';
 import type { BankFlag } from '@/lib/canvas/bankImage.js';
 import { bankFlags } from '@/lib/canvas/bankImage.js';
-import { PerkTier } from '@/lib/constants.js';
 import { type Flags, OverrideStatus } from '@/lib/minions/types.js';
 import { BankSortMethods } from '@/lib/sorts.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
@@ -193,12 +192,7 @@ export const bankCommand = defineCommand({
 
 		const bankSize = Math.ceil(bank.length / 56);
 
-		if (
-			mahojiFlags.includes('show_all') ||
-			mahojiFlags.includes('wide') ||
-			(await user.fetchPerkTier()) < PerkTier.Two ||
-			bankSize === 1
-		) {
+		if (mahojiFlags.includes('show_all') || mahojiFlags.includes('wide') || bankSize === 1) {
 			return result;
 		}
 

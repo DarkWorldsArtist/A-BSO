@@ -1,4 +1,4 @@
-import { Bank, Items, itemID } from 'oldschooljs';
+import { Bank, Items } from 'oldschooljs';
 
 export async function unequipPet(user: MUser) {
 	const equippedPet = user.user.minion_equippedPet;
@@ -14,10 +14,6 @@ export async function unequipPet(user: MUser) {
 			minion_equippedPet: null
 		}
 	});
-
-	if (equippedPet === itemID('Wubufu')) {
-		return `🐋 You have been dragging that poor... thing around behind you for how long?!?  Well it's no use to anyone anymore, let's throw it away. *Discards ${new Bank().add('Wubufu')}*`;
-	}
 
 	return `${user.minionName} picks up their ${Items.itemNameFromId(equippedPet)} pet and places it back in their bank.`;
 }

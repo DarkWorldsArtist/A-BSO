@@ -756,7 +756,6 @@
 			"Dwarven warhammer (shadow)",
 			"Dwarven warhammer (volcanic)",
 			"Dwarven warnana",
-			"Gothic Dwarven warhammer",
 			"Ho-ho hammer"
 		]
 	},
@@ -1548,10 +1547,6 @@
 		"similar_items": ["Osmumten's fang", "Osmumten's fang (or)"]
 	},
 	{
-		"main_item": "Patricia",
-		"similar_items": ["Lydia", "Patricia"]
-	},
-	{
 		"main_item": "Pernix body",
 		"similar_items": [
 			"Gorajan archer top",
@@ -1800,6 +1795,10 @@
 	{
 		"main_item": "Searcrown band",
 		"similar_items": ["Searcrown band", "Searcrown band (archaic)"]
+	},
+	{
+		"main_item": "Seer",
+		"similar_items": ["Black swan", "Seer"]
 	},
 	{
 		"main_item": "Skull sceptre",

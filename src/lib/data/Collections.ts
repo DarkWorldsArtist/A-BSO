@@ -1786,12 +1786,7 @@ export const allCollectionLogs: ICollection = {
 					'Golden cape',
 					'Golden shard',
 					'Golden partyhat',
-					'Black swan',
-					'Wubufu',
-					'The whale card',
-					'Radiant magnabbit',
-					'Mona',
-					'Lydia'
+					'Black swan'
 				]),
 				counts: false
 			}

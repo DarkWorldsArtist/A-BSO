@@ -1133,7 +1133,6 @@ export const toolsCommand = defineCommand({
 				return xpGains(patron.xp_gains.time, patron.xp_gains.skill, patron.xp_gains.ironman);
 			}
 			if (patron.drystreak) {
-				if ((await user.fetchPerkTier()) < PerkTier.Four) return patronMsg(PerkTier.Four);
 				return dryStreakCommand(
 					patron.drystreak.source,
 					patron.drystreak.item,

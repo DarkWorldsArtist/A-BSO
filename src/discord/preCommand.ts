@@ -61,7 +61,7 @@ export async function preCommand({
 				continue_delta_millis: continueDeltaMs ?? null
 			}
 		})
-		.catch(err => Logging.logError({ err, interaction, context: logContext }));
+		.catch(err => Logging.logError({ err, context: { ...logContext, interactionId: interaction.id } }));
 
 	if (user.isAdmin) return;
 

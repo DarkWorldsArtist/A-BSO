@@ -39,6 +39,13 @@ export function makeRepeatTripButton() {
 		.setEmoji({ name: '🔁' });
 }
 
+export function makeQueueTripButton() {
+	return new ButtonBuilder()
+		.setCustomId(InteractionID.Commands.QueueTrip)
+		.setLabel('Queue Repeat')
+		.setStyle(ButtonStyle.Secondary);
+}
+
 export function makeAutoRummageToggleButton() {
 	return new ButtonBuilder()
 		.setCustomId(InteractionID.Commands.ToggleAutoRummage)

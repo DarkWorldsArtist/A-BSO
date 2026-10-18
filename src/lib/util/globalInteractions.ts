@@ -14,6 +14,7 @@ import { InteractionID } from '@/lib/InteractionID.js';
 import { toggleAutoRummage } from '@/lib/minions/data/valeTotems.js';
 import { type RunCommandArgs, runCommand } from '@/lib/settings/settings.js';
 import { Farming } from '@/lib/skilling/skills/farming/index.js';
+import { processNextQueuedTrip, queueTrip } from '@/lib/tripQueue.js';
 import { updateGiveawayMessage } from '@/lib/util/giveaway.js';
 import { fetchRepeatTrips, repeatTrip } from '@/lib/util/repeatStoredTrip.js';
 import { collectAllIslandCamps } from '@/mahoji/commands/islandupgrade.js';
@@ -137,6 +138,37 @@ async function repeatTripHandler(user: MUser, id: string, interaction: OSInterac
 	return repeatTrip(user, interaction, matchingActivity);
 }
 
+async function queueTripHandler(user: MUser, id: string, interaction: OSInteraction): CommandResponse {
+	const perkTier = await user.fetchPerkTier();
+	if (perkTier < PerkTier.Four) {
+		return {
+			content: 'Trip queuing is a patron perk (Tier 3: 1 trip, Tier 4: 2 trips, Tier 5: 4 trips).',
+			ephemeral: true
+		};
+	}
+
+	const trips = await fetchRepeatTrips(user);
+	if (trips.length === 0) {
+		return { content: "Couldn't find a trip to queue.", ephemeral: true };
+	}
+
+	const split = id.split('_');
+	const matchingActivity = split[2] ? trips.find(i => i.type === split[2]) : null;
+	const activityToQueue = matchingActivity ?? trips[0];
+
+	const result = await queueTrip({
+		user,
+		activity: activityToQueue,
+		channelId: interaction.channelId
+	});
+
+	if (!(await user.minionIsBusy())) {
+		await processNextQueuedTrip(user.id, interaction.channelId);
+	}
+
+	return { content: result, ephemeral: true };
+}
+
 async function handleGearPresetEquip(user: MUser, id: string, interaction: OSInteraction): CommandResponse {
 	const [, setupName, presetName] = id.split('_');
 	if (!setupName || !presetName) return { content: 'Invalid gear preset.', ephemeral: true };
@@ -251,6 +283,7 @@ async function globalButtonInteractionHandler({
 
 	const user = interaction.user;
 	if (id.includes(InteractionID.Commands.RepeatTrip)) return repeatTripHandler(user, id, interaction);
+	if (id.includes(InteractionID.Commands.QueueTrip)) return queueTripHandler(user, id, interaction);
 
 	if (id.includes('GIVEAWAY_')) return giveawayButtonHandler(user, id, interaction);
 	if (id.includes('DONATE_IC')) return ItemContracts.donateICHandler(interaction);

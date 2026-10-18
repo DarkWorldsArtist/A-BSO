@@ -356,10 +356,6 @@ const tripHandlers: {
 		commandName: 'activities',
 		args: () => ({ my_notes: {} })
 	},
-	[activity_type_enum.BeachCombing]: {
-		commandName: 'activities',
-		args: data => ({ beach_combing: { focus: data.method, minutes: data.minutes } })
-	},
 	[activity_type_enum.Collecting]: {
 		commandName: 'activities',
 		args: (data: CollectingOptions) => ({
@@ -1107,7 +1103,10 @@ export async function repeatTrip(user: MUser, interaction: OSInteraction, activi
 		}
 		throw err;
 	}
-	const continueDeltaMillis = interaction.createdTimestamp - idToUnixTs(interaction.messageId);
+	const continueDeltaMillis =
+		interaction.isButton() && interaction.messageId
+			? interaction.createdTimestamp - idToUnixTs(interaction.messageId)
+			: null;
 
 	return runCommand({
 		commandName: handler.commandName,

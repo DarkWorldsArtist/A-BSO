@@ -19,6 +19,7 @@ import {
 	makeCollectAllCampsButton,
 	makeFishingContestButton,
 	makeosbBsoLeaguesButton,
+	makeQueueTripButton,
 	makeSendICButton,
 	makeSpawnLampButton
 } from '@/lib/util/interactions.js';
@@ -112,6 +113,9 @@ export async function minionStatusCommand(
 				.setEmoji({ id: EmojiId.Minion })
 				.setStyle(ButtonStyle.Secondary)
 		);
+		if (perkTier >= PerkTier.Four) {
+			buttons.push(makeQueueTripButton());
+		}
 	}
 
 	if (!minionIsBusy && !user.bitfield.includes(BitField.DisableAutoSlayButton)) {

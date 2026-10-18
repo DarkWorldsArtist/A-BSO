@@ -12,11 +12,7 @@ export const MaledictMortimerOutfitTable = new LootTable()
 	.add('Maledict ring')
 	.add('Maledict gloves');
 
-export const MaledictMortimerBackupTable = new LootTable()
-	.add('Spooky crate (s3)', 1, 3)
-	.add('Spooky crate key (s3)', 1, 1)
-	.add('Splooky fwizzle', 1, 10)
-	.add('Pumpkin', 1, 4);
+export const MaledictMortimerBackupTable = new LootTable().add('Splooky fwizzle', 1, 10).add('Pumpkin', 1, 4);
 
 export const mortimerStartMessages = [
 	"Welcome, wanderer! I've foreseen your doom.",

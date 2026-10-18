@@ -1,5 +1,3 @@
-import { BSOItem } from '@/lib/bso/BSOItem.js';
-
 import { Time } from '@oldschoolgg/toolkit';
 import { Bank, type Item, Items, resolveItems } from 'oldschooljs';
 
@@ -57,17 +55,6 @@ export const growablePets: GrowablePet[] = [
 	{
 		growthRate: (Time.Hour * 2) / Time.Minute,
 		stages: resolveItems(['Penguin egg', 'Skip'])
-	},
-	{
-		growthRate: (Time.Hour * 12) / Time.Minute,
-		stages: resolveItems(['Magnegg', 'Magnabbit']),
-		shinyChance: 50,
-		shinyVersion: BSOItem.RADIANT_MAGNABBIT,
-		message: (item, shiny, _user) => {
-			return shiny
-				? `\n\n🐇.... You might want to pinch yourself because **YOU JUST GOT A SHINY MAGNA!!**`
-				: `\n\n🐣 Your ${item.name} has hatched!`;
-		}
 	}
 ];
 
@@ -121,4 +108,4 @@ export const handleGrowablePetGrowth: TripFinishEffect['fn'] = async ({ user, da
 
 export const growablePetsCL = growablePets
 	.flatMap(i => i.stages)
-	.filter(i => !resolveItems(['Magnabbit', 'Magnegg', 'Skip', 'Penguin egg']).includes(i));
+	.filter(i => !resolveItems(['Skip', 'Penguin egg']).includes(i));

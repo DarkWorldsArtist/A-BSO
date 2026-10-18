@@ -1,6 +1,5 @@
 import { ASSIGNMENT_TRIP_COSTS, ASSIGNMENT_TRIP_ITEM, getActiveAssignment } from '@/lib/bso/commands/islandUpgrades.js';
 import { tearsOfGuthixIronmanReqs, tearsOfGuthixSkillReqs } from '@/lib/bso/commands/tearsOfGuthixCommand.js';
-import { handleCrateSpawns } from '@/lib/bso/handleCrateSpawns.js';
 import { gods } from '@/lib/bso/minigames/divineDominion.js';
 import { mysteriousStepData } from '@/lib/bso/mysteryTrail.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
@@ -36,6 +35,7 @@ import {
 	makeNewSlayerTaskButton,
 	makeOpenCasketButton,
 	makeOpenSeedPackButton,
+	makeQueueTripButton,
 	makeRepeatTripButton,
 	makeTearsOfGuthixButton
 } from '@/lib/util/interactions.js';
@@ -124,15 +124,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 	{
 		name: 'Loot Doubling',
 		fn: async ({ data, messages, user, loot }) => {
-			const cantBeDoubled = [
-				'GroupMonsterKilling',
-				'KingGoldemar',
-				'Ignecarus',
-				'Inferno',
-				'Alching',
-				'Agility',
-				'BeachCombing'
-			];
+			const cantBeDoubled = ['GroupMonsterKilling', 'KingGoldemar', 'Ignecarus', 'Inferno', 'Alching', 'Agility'];
 			if (!loot || data.cantBeDoubled || cantBeDoubled.includes(data.type) || data.duration < Time.Minute * 20) {
 				return;
 			}
@@ -337,19 +329,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 			};
 		}
 	},
-	{
-		name: 'Crate Spawns',
-		fn: async ({ data, messages, user }) => {
-			if (data.type === activity_type_enum.BeachCombing) return;
-			const crateRes = handleCrateSpawns(user, data.duration, 'trip', messages);
-			if (crateRes && crateRes.length > 0) {
-				messages.push(bold(`You found ${crateRes}!`));
-				return {
-					itemsToAddWithCL: crateRes
-				};
-			}
-		}
-	},
+
 	{
 		name: 'God Favour',
 		fn: async ({ data, user }) => {
@@ -767,6 +747,9 @@ export async function handleTripFinish(
 
 	const components: ButtonBuilder[] = [];
 	components.push(makeRepeatTripButton());
+	if (perkTier >= PerkTier.Four) {
+		components.push(makeQueueTripButton());
+	}
 
 	const portents = await getAllPortentCharges(user);
 	const itemsToAddWithCL = new Bank();

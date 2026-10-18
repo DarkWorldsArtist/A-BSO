@@ -22,6 +22,7 @@ model Activity {
   channel_id     BigInt?
   data           Json?              @db.JsonB
   pinnedTrip     PinnedTrip[]
+  queuedTrip     QueuedTrip[]
   all_user_ids   BigInt[]           @default([])
 
   @@index([user_id, completed, finish_date])
@@ -366,6 +367,7 @@ model User {
   farmedCrops    FarmedCrop[]
   botItemSell    BotItemSell[]
   pinnedTrip     PinnedTrip[]
+  queuedTrips    QueuedTrip[]
   historicalData HistoricalData[]
   minigame       Minigame?
   slayer_tasks   SlayerTask[]
@@ -390,6 +392,8 @@ model User {
   bank_sort_weightings       Json               @default("{}") @db.Json
   gambling_lockout_expiry    DateTime?
   icon_pack_id               String?
+  queued_trips_daily_date    String?            @db.VarChar(10)
+  queued_trips_daily_count   Int                @default(0)
 
   // Skills
   skills_agility      BigInt @default(0) @map("skills.agility")
@@ -1132,6 +1136,22 @@ model PinnedTrip {
   @@map("pinned_trip")
 }
 
+model QueuedTrip {
+  id            Int                @id @default(autoincrement())
+  user_id       String             @db.VarChar(19)
+  activity_id   Int?
+  activity_type activity_type_enum
+  data          Json               @db.Json
+  channel_id    BigInt
+  created_at    DateTime           @default(now()) @db.Timestamp(6)
+
+  activity Activity? @relation(fields: [activity_id], references: [id], onDelete: SetNull)
+  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, created_at])
+  @@map("queued_trip")
+}
+
 model HistoricalData {
   user_id String   @db.VarChar(19)
   date    DateTime @default(now())
@@ -1292,7 +1312,6 @@ enum activity_type_enum {
   CreateForestersRations
   SnoozeSpellActive
   Buy
-  BeachCombing
   Archon
 }
 
@@ -1754,6 +1773,7 @@ enum command_name_enum {
   prefix
   price
   pvp
+  queue
   quest
   raid
   randomevents

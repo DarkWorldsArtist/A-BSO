@@ -1,4 +1,3 @@
-import { handleCrateSpawns } from '@/lib/bso/handleCrateSpawns.js';
 import type { MTame } from '@/lib/bso/structures/MTame.js';
 import {
 	type ArbitraryTameActivity,
@@ -46,8 +45,6 @@ export async function handleFinish({
 }) {
 	const results: string[] = [message];
 	const previousTameCl = tame.totalLoot.clone();
-	const crateRes = handleCrateSpawns(user, activity.duration, 'tame');
-	if (crateRes !== null) lootToAdd.add(crateRes);
 
 	await prisma.tame.update({
 		where: {

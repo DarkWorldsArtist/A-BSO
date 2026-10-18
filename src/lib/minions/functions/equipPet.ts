@@ -13,10 +13,6 @@ export async function equipPet(user: MUser, itemName: string) {
 	if (!petItem) return "That's not a valid item.";
 	const cost = new Bank().add(petItem.id);
 
-	if (petItem.name === 'Wubufu' && user.owns('Wubufu')) {
-		return "🐳 You thought Wubufu was a pet? Wow that's a really good knock off... You haven't been dragging that poor thing on the ground, have you?";
-	}
-
 	if (!isPet(petItem)) {
 		return "That's not a pet...";
 	}

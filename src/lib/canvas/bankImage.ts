@@ -1,4 +1,3 @@
-import { BSOItem } from '@/lib/bso/BSOItem.js';
 import { bsoShortNameMap } from '@/lib/bso/bsoShortNameMap.js';
 
 import { existsSync } from 'node:fs';
@@ -266,16 +265,12 @@ class BankImageTask {
 		this.wubblesEffect = await loadImage(await fs.readFile('./src/lib/resources/images/wubbles-glow.png'));
 		this.octoBubblesEffect = await loadImage(await fs.readFile('./src/lib/resources/images/octo-bubbles.png'));
 		const coolItemEffects: [number, Image][] = [
-			[itemID('Radiant Magnabbit'), this.redEffect!],
 			[itemID('Monkey egg'), this.bananaEffect!],
 			[itemID('Dragon egg'), this.redEffect!],
 			[itemID('Eagle egg'), this.easterEffect],
 			[itemID('Hoppy'), this.easterEffect],
-			[itemID('Wubbles'), this.wubblesEffect!],
 			[itemID('Seer'), this.whiteEffect!],
-			[itemID('Octo'), this.octoBubblesEffect!],
-			[BSOItem.LYDIA, this.radiantEffect!],
-			[BSOItem.MONA, this.radiantEffect!]
+			[itemID('Octo'), this.octoBubblesEffect!]
 		];
 
 		for (const [itemId, itemEffect] of coolItemEffects) {

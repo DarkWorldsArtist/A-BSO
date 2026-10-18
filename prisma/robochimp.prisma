@@ -33,9 +33,9 @@ model BlacklistedEntity {
 }
 
 model User {
-  id         BigInt  @id @unique
-  bits       Int[]
-  github_id  Int?
+  id             BigInt  @id @unique
+  bits           Int[]
+  github_id      Int?
   patreon_id     String?
   cyr_patreon_id String?
 

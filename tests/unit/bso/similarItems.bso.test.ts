@@ -25,11 +25,6 @@ test('inverted master capes', () => {
 	expect(gear.hasEquipped('Divination master cape')).toEqual(true);
 });
 
-test('Patricia matches Lydia as a one-way similar pet', () => {
-	expect(getSimilarItems(itemID('Patricia'))).toContain(itemID('Lydia'));
-	expect(getSimilarItems(itemID('Lydia'))).not.toContain(itemID('Patricia'));
-});
-
 test('Dwarven warhammer cosmetics count as Dwarven warhammer', () => {
 	const dwarvenWarhammer = dyedItems.find(i => i.baseItem.id === itemID('Dwarven warhammer'));
 	expect(dwarvenWarhammer).toBeDefined();

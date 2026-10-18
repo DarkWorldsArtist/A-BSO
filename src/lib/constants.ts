@@ -60,7 +60,8 @@ const OSBChannelConfig: ChannelConfig = {
 };
 
 const BSOChannelConfig: ChannelConfig = {
-	ServerGeneral: process.env.SERVER_GENERAL_CHANNEL ?? (isProduction ? '1560852844402315264' : TEST_SERVER_LOG_CHANNEL),
+	ServerGeneral:
+		process.env.SERVER_GENERAL_CHANNEL ?? (isProduction ? '1560852844402315264' : TEST_SERVER_LOG_CHANNEL),
 	Notifications: '811589869314899980',
 	GrandExchange: '738780181946171493',
 	EconomyLogs: '802029843712573510',
@@ -689,7 +690,9 @@ if ((process.env.NODE_ENV === 'production') !== globalConfig.isProduction) {
 export const gitHash = (() => {
 	if (process.env.TEST) return 'TESTGITHASH';
 	try {
-		return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+		return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+			.toString()
+			.trim();
 	} catch {
 		return '460bf1a';
 	}

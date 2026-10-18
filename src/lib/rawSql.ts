@@ -62,9 +62,6 @@ export const SQL = {
 	WHERE_IRON: (ironOnly: boolean) => (ironOnly ? '"minion.ironman" = true' : '')
 } as const;
 
-/**
- * ⚠️ Uses queryRawUnsafe
- */
 export async function countUsersWithItemInCl(itemID: number, ironmenOnly: boolean) {
 	if (!Number.isInteger(itemID) || Number.isNaN(itemID)) {
 		throw new Error(`Invalid itemID passed to countUsersWithItemInCl: ${itemID}`);

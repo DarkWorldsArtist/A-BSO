@@ -1,4 +1,3 @@
-import { BSOItem } from '@/lib/bso/BSOItem.js';
 import { defaultMaintenanceTimestamps, getGlobalGatheringSpeedBonus } from '@/lib/bso/commands/islandUpgrades.js';
 import { InventionID, inventionBoosts, inventionItemBoost } from '@/lib/bso/skills/invention/inventions.js';
 
@@ -364,37 +363,10 @@ export async function calcFishingTripStart({
 		boosts.push('**Powerfishing**');
 	}
 
-	const hasOldCrabCageEquipped = gearBank.hasEquipped(BSOItem.OLD_CRAB_CAGE);
-	const patriciaPetID = gearBank.usingPet('Patricia', { returnID: true });
-	const hasPatriciaEquipped = Boolean(patriciaPetID);
-	const eclipsePetName = patriciaPetID ? Items.getOrThrow(patriciaPetID).name : 'Patricia';
 	const hasShelldonEquipped = gearBank.usingPet('Shelldon');
-	const isPatriciaLobsterBoost = fish.name === 'Lobster' && hasPatriciaEquipped && hasOldCrabCageEquipped;
-
-	if (hasPatriciaEquipped) {
-		if (isPatriciaLobsterBoost) {
-			tripSpeedMultiplier *= 3;
-			boosts.push(
-				`<:starfish:1560880883681067040> 3x faster for ${eclipsePetName} and Old crab cage while fishing Lobster`
-			);
-		} else {
-			tripSpeedMultiplier *= 2.15;
-			boosts.push(
-				`<:starfish:1560880883681067040> ${eclipsePetName} is your new best friend! You two become an expert fishing pair!`
-			);
-		}
-	} else if (hasShelldonEquipped) {
+	if (hasShelldonEquipped) {
 		tripSpeedMultiplier *= 2;
 		boosts.push('<:shelldon:1560872720978157591> Shelldon helps you fish!');
-	}
-
-	if (hasOldCrabCageEquipped) {
-		maxTripLength += Time.Minute * 5;
-		boosts.push('+5 minutes for Old crab cage');
-		if (!isPatriciaLobsterBoost) {
-			tripSpeedMultiplier *= speedMultiplierFromPercentReduction(20);
-			boosts.push('20% faster for Old crab cage');
-		}
 	}
 
 	if (gearBank.hasEquippedOrInBank('Shark tooth necklace')) {

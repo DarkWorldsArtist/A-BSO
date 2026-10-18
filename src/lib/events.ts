@@ -20,6 +20,7 @@ import { lastRoboChimpSyncCache } from '@/lib/cache.js';
 import { CONSTANTS, globalConfig } from '@/lib/constants.js';
 import { customItems } from '@/lib/customItems/util.js';
 import { roboChimpSyncData } from '@/lib/roboChimp.js';
+import { processNextQueuedTrip } from '@/lib/tripQueue.js';
 import type { ActivityTaskData } from '@/lib/types/minions.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
 import { minionStatsEmbed } from '@/lib/util/minionStatsEmbed.js';
@@ -377,5 +378,11 @@ export async function onMinionActivityFinish(activity: ActivityTaskData) {
 		}
 	} catch (err) {
 		Logging.logError(err as Error, { activity: JSON.stringify(activity) });
+	}
+
+	try {
+		await processNextQueuedTrip(activity.userID, activity.channelId);
+	} catch (err) {
+		Logging.logError(err as Error, { context: 'processNextQueuedTrip', activity: JSON.stringify(activity) });
 	}
 }

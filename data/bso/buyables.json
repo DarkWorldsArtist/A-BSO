@@ -435,22 +435,6 @@
 		}
 	},
 	{
-		"name": "Birthday crate key (s2)",
-		"gp_cost": 50000000,
-		"ironman_price": 5000000,
-		"output_items": {
-			"71468": 1
-		}
-	},
-	{
-		"name": "Birthday crate key (s6)",
-		"gp_cost": 12000000,
-		"ironman_price": 1200000,
-		"output_items": {
-			"73201": 1
-		}
-	},
-	{
 		"name": "Black cape",
 		"gp_cost": 100000,
 		"qp_required": 15,
@@ -1589,14 +1573,6 @@
 		}
 	},
 	{
-		"name": "Easter crate key (s5)",
-		"gp_cost": 10000000,
-		"ironman_price": 1000000,
-		"output_items": {
-			"73122": 1
-		}
-	},
-	{
 		"name": "Elder rumble greegree",
 		"minigame_score_req": ["monkey_rumble", 500],
 		"skills_needed": {
@@ -1795,14 +1771,6 @@
 		},
 		"output_items": {
 			"28177": 1
-		}
-	},
-	{
-		"name": "Festive crate key (s4)",
-		"gp_cost": 20000000,
-		"ironman_price": 2000000,
-		"output_items": {
-			"72017": 1
 		}
 	},
 	{
@@ -2263,14 +2231,6 @@
 		},
 		"output_items": {
 			"6188": 1
-		}
-	},
-	{
-		"name": "Frozen crate key (s8)",
-		"gp_cost": 20666666,
-		"ironman_price": 2066666,
-		"output_items": {
-			"73300": 1
 		}
 	},
 	{
@@ -4599,14 +4559,6 @@
 		}
 	},
 	{
-		"name": "Sinister crate key (s7)",
-		"gp_cost": 20666666,
-		"ironman_price": 2066666,
-		"output_items": {
-			"73251": 1
-		}
-	},
-	{
 		"name": "Skull",
 		"gp_cost": 100000,
 		"output_items": {
@@ -4655,14 +4607,6 @@
 			"4551": 1
 		},
 		"gp_cost": 65000
-	},
-	{
-		"name": "Spooky crate key (s3)",
-		"gp_cost": 20000000,
-		"ironman_price": 2000000,
-		"output_items": {
-			"71581": 1
-		}
 	},
 	{
 		"name": "Star fragment",
@@ -4737,28 +4681,12 @@
 		}
 	},
 	{
-		"name": "Summer crate key (s9)",
-		"gp_cost": 55555555,
-		"ironman_price": 5555555,
-		"output_items": {
-			"73971": 1
-		}
-	},
-	{
 		"name": "Superior mining gloves",
 		"item_cost": {
 			"21341": 120
 		},
 		"output_items": {
 			"21345": 1
-		}
-	},
-	{
-		"name": "Supply crate key (s1)",
-		"gp_cost": 50000000,
-		"ironman_price": 5000000,
-		"output_items": {
-			"71434": 1
 		}
 	},
 	{

@@ -22,8 +22,6 @@ export interface ActivityTaskOptions {
 	cantBeDoubled?: boolean;
 }
 
-export type BeachCombingMethod = 'Surfing' | 'BeachCombing' | 'BuildSandcastles' | 'PickupTrash';
-
 export interface ActivityTaskOptionsWithNoChanges extends ActivityTaskOptions {
 	type:
 		| 'Questing'
@@ -53,12 +51,6 @@ export interface ActivityTaskOptionsWithNoChanges extends ActivityTaskOptions {
 		| 'BirthdayCollectIngredients'
 		| 'CombatRing'
 		| 'Revenants';
-}
-
-export interface BeachCombingActivityTaskOptions extends ActivityTaskOptions {
-	type: 'BeachCombing';
-	minutes?: number;
-	method: BeachCombingMethod;
 }
 
 export interface ActivityTaskOptionsWithQuantity extends ActivityTaskOptions {
@@ -755,7 +747,6 @@ export type ActivityTaskData =
 	| ActivityTaskOptionsWithNoChanges
 	| TokkulShopOptions
 	| BuyActivityTaskOptions
-	| BeachCombingActivityTaskOptions
 	| BirdhouseActivityTaskOptions
 	| FightCavesActivityTaskOptions
 	| ActivityTaskOptionsWithQuantity

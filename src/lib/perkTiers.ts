@@ -110,10 +110,16 @@ export function getCyrTripBonus(bitsOrUser: number[] | RobochimpUser | null | un
 			cyrBonus = Time.Minute * 11;
 			break;
 		case 3:
+			cyrBonus = Time.Minute * 16;
+			break;
+		case 4:
+			cyrBonus = Time.Minute * 20;
+			break;
 		default:
-			// Default of 3 minutes
 			cyrBonus = Time.Minute * 3;
-			if (highestTier && highestTier >= 3) {
+			if (highestTier && highestTier >= 5) {
+				cyrBonus = Time.Minute * 25;
+			} else if (highestTier && highestTier >= 3) {
 				cyrBonus = Time.Minute * 16;
 			}
 			break;

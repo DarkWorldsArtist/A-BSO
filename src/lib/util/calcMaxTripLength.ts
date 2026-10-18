@@ -6,8 +6,10 @@ import { getCyrTripBonus, RobochimpBitfieldEnum } from '@/lib/perkTiers.js';
 
 export function patronMaxTripBonus(perkTier: PerkTier) {
 	if (perkTier === PerkTier.Two) return Time.Minute * 3;
-	else if (perkTier === PerkTier.Three) return Time.Minute * 6;
-	else if (perkTier >= PerkTier.Four) return Time.Minute * 10;
+	if (perkTier === PerkTier.Three) return Time.Minute * 6;
+	if (perkTier === PerkTier.Four) return Time.Minute * 15;
+	if (perkTier === PerkTier.Five) return Time.Minute * 20;
+	if (perkTier >= PerkTier.Six) return Time.Minute * 25;
 	return 0;
 }
 
@@ -75,26 +77,8 @@ export async function calcMaxTripLength(user: MUser, activity?: activity_type_en
 			break;
 		}
 		case 'Fishing': {
-			if (user.usingPet('Patricia')) {
-				max *= 1.75;
-			}
-			if (user.usingPet('Partycrab')) {
-				max *= 1.6;
-			}
 			if (user.usingPet('Shelldon')) {
 				max *= 1.25;
-			}
-			break;
-		}
-		case 'BeachCombing': {
-			if (user.usingPet('Patricia')) {
-				max *= 2;
-			}
-			if (user.usingPet('Partycrab')) {
-				max += Time.Minute * 30;
-			}
-			if (user.usingPet('Shelldon')) {
-				max += Time.Minute * 25;
 			}
 			break;
 		}

@@ -1,3 +1,5 @@
+import '../src/lib/safeglobals.js';
+
 import { readFileSync, writeFileSync } from 'node:fs';
 import { Stopwatch, stringMatches } from '@oldschoolgg/toolkit';
 import { DateTime } from 'luxon';
@@ -64,3 +66,5 @@ export function renderCommandsFile() {
 	);
 	stopwatch.check('Finished commands file.');
 }
+
+renderCommandsFile();

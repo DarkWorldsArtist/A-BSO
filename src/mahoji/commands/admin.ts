@@ -18,7 +18,6 @@ import {
 	validateStoredLeaguesTasks,
 	verifyLeaguesTasksForUser
 } from '@/lib/bso/leagues/leagues.js';
-import { getLydiaQuote } from '@/lib/bso/summerDays.js';
 
 import { dateFm, EmbedBuilder } from '@oldschoolgg/discord';
 import type { GearSetup } from '@oldschoolgg/gear';
@@ -534,21 +533,6 @@ interface ViewableThing {
 	run: (clientSettings: ClientStorage, _choice?: String, user?: MUser) => Promise<Bank | SendableMessage>;
 }
 const viewableThings: ViewableThing[] = [
-	{
-		name: 'Lydia Quote',
-		run: async () => {
-			return {
-				content: `You observe Patricia's transformation...`,
-				embeds: [
-					new EmbedBuilder()
-						.setDescription(getLydiaQuote())
-						.setImage(
-							'https://media.discordapp.net/attachments/851273567416483861/1516534890911240242/image.png'
-						)
-				]
-			};
-		}
-	},
 	{
 		name: 'Buried Treasure Bank',
 		run: async clientSettings => {

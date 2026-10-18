@@ -90,7 +90,11 @@ export async function spawnBoxCommand(user: MUser, interaction: MInteraction): C
 		return 'You need to be a T3 patron or higher to use this command.';
 	}
 	const allowedChannel = Channel.GeneralChannel;
-	if (globalConfig.isProduction && interaction.channelId !== allowedChannel && interaction.channelId !== '1560885061572763749') {
+	if (
+		globalConfig.isProduction &&
+		interaction.channelId !== allowedChannel &&
+		interaction.channelId !== '1560885061572763749'
+	) {
 		return "You can't use spawnbox in this channel. You can only use it in <#1560885061572763749>.";
 	}
 	const lastUse = Number(user.user.last_spawn_box_date ?? 0);

@@ -1,5 +1,4 @@
 import { ownedItemOption } from '@/discord/index.js';
-import { canvasToBuffer, loadImage } from '@/lib/canvas/canvasUtil.js';
 import { Planks } from '@/lib/minions/data/planks.js';
 import Potions from '@/lib/minions/data/potions.js';
 import { quests } from '@/lib/minions/data/quests.js';
@@ -100,30 +99,6 @@ export const activitiesCommand = defineCommand({
 			type: 'Subcommand',
 			name: 'my_notes',
 			description: 'Send your minion to rummage skeletons for Ancient pages.'
-		},
-		{
-			type: 'Subcommand',
-			name: 'beach_combing',
-			description: 'Send your minion to spend some time on the shoreline.',
-			options: [
-				{
-					type: 'String',
-					name: 'focus',
-					description: 'What your minion should focus on while at the beach.',
-					required: true,
-					choices: ['Surfing', 'BeachCombing', 'BuildSandcastles', 'PickupTrash'].map(i => ({
-						name: i,
-						value: i
-					}))
-				},
-				{
-					type: 'Integer',
-					name: 'minutes',
-					description: 'The number of minutes to stay out.',
-					required: false,
-					min_value: 10
-				}
-			]
 		},
 		{
 			type: 'Subcommand',
@@ -703,19 +678,6 @@ export const activitiesCommand = defineCommand({
 		}
 		if (options.my_notes) {
 			return myNotesCommand(user, channelId);
-		}
-		if (options.beach_combing) {
-			const content = 'This command is no longer available...';
-
-			return {
-				content,
-				files: [
-					{
-						name: 'byebyebeach.png',
-						buffer: await canvasToBuffer(await loadImage('src/lib/resources/images/byebyebeach.png'))
-					}
-				]
-			};
 		}
 		if (options.warriors_guild) {
 			return warriorsGuildCommand(

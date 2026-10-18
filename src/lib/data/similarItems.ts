@@ -419,10 +419,7 @@ const source: [string, (string | number)[]][] = [
 	['Skull sceptre', ['Skull sceptre (i)']],
 
 	// Pets
-	['Patricia', ['Lydia']],
-	['Partycrab', ['Mona']],
 	['Seer', ['Black swan']],
-	['Magnabbit', ['Radiant Magnabbit']],
 
 	// Tame gear
 	['Abyssal jibwings', ['Abyssal jibwings (e)']],

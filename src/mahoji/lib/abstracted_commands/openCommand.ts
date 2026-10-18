@@ -9,11 +9,10 @@ import { Bank, Items, itemID, resolveItems } from 'oldschooljs';
 import type { MessageBuilderClass } from '@/discord/MessageBuilder.js';
 import { ClueTiers } from '@/lib/clues/clueTiers.js';
 import { buildClueButtons } from '@/lib/clues/clueUtils.js';
-import { BitField, PerkTier } from '@/lib/constants.js';
+import { BitField } from '@/lib/constants.js';
 import type { UnifiedOpenable } from '@/lib/openables.js';
 import { allOpenables, getOpenableLoot } from '@/lib/openables.js';
 import { assert } from '@/lib/util/logError.js';
-import { patronMsg } from '@/lib/util/smallUtils.js';
 import { addToOpenablesScores } from '@/mahoji/mahojiSettings.js';
 
 const regex = /^(.*?)( \([0-9]+x Owned\))?$/;
@@ -276,7 +275,6 @@ export async function abstractedOpenCommand(
 
 	if (names.includes('all')) {
 		if (openables.length === 0) return 'You have no openable items.';
-		if ((await user.fetchPerkTier()) < PerkTier.Two) return patronMsg(PerkTier.Two);
 		if (interaction) await interaction.confirmation('Are you sure you want to open ALL your items?');
 	}
 

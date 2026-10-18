@@ -58,7 +58,6 @@ import type {
 	AgilityActivityTaskOptions,
 	AlchingActivityTaskOptions,
 	ArchaicMiningActivityTaskOptions,
-	BeachCombingActivityTaskOptions,
 	BossActivityTaskOptions,
 	BuryingActivityTaskOptions,
 	ButlerActivityTaskOptions,
@@ -499,21 +498,6 @@ export function minionStatus(user: MUser, currentTask: ActivityTaskData | null, 
 
 		case 'MyNotes': {
 			return `${name} is currently rummaging skeletons for Ancient pages. ${formattedDuration}`;
-		}
-		case 'BeachCombing': {
-			const data = currentTask as BeachCombingActivityTaskOptions;
-			switch (data.method) {
-				case 'Surfing':
-					return `${name} is currently surfing, wiping out artistically, and keeping one eye on the tide line. ${formattedDuration}`;
-				case 'BeachCombing':
-					return `${name} is currently beach combing, inspecting shells, driftwood and every suspicious patch of sand. ${formattedDuration}`;
-				case 'BuildSandcastles':
-					return `${name} is currently building sandcastles and hiding treasure in the moat like a true coastal visionary. ${formattedDuration}`;
-				case 'PickupTrash':
-					return `${name} is currently picking up trash along the shore and salvaging whatever the sea forgot. ${formattedDuration}`;
-				default:
-					return `${name} is somewhere in the twilight zone, please tell Cyr. ${formattedDuration}`;
-			}
 		}
 
 		case 'Hunter': {

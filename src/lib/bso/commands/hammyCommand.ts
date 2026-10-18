@@ -1,6 +1,6 @@
 import { Emoji } from '@oldschoolgg/toolkit';
 import { randArrItem, roll } from 'node-rng';
-import { Bank, Items, resolveItems } from 'oldschooljs';
+import { Bank, Items } from 'oldschooljs';
 
 // roll(chanceToDouble) to decide if the item doubles
 const chanceToDouble = 100;
@@ -39,7 +39,7 @@ const hammyDoubleMessages = [
 	"Hammy takes your {item} while you aren't looking and runs to the casino. He comes back rich and hands you an extra {item} for your trouble."
 ];
 
-const hammyRefusesToEat = resolveItems(['Magnegg', 'Magnabbit', 'Radiant Magnabbit']);
+const hammyRefusesToEat: number[] = [];
 
 export async function feedHammyCommand(interaction: MInteraction, user: MUser, itemName: string) {
 	const firstItem = Items.getItem(itemName);

@@ -1,3 +1,5 @@
+import '../src/lib/safeglobals.js';
+
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { Bank } from 'oldschooljs';

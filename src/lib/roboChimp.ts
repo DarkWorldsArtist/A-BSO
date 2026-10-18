@@ -15,7 +15,11 @@ const defaultTriviaQuestions: TriviaQuestion[] = [
 	{ id: 10001, question: 'What is the maximum combat level achievable in Old School RuneScape?', answers: ['126'] },
 	{ id: 10002, question: 'What level in a skill is required to equip a Skillcape?', answers: ['99'] },
 	{ id: 10003, question: 'How many Quest Points are required to wear the Quest Point Cape?', answers: ['300'] },
-	{ id: 10004, question: 'What is the maximum amount of coins a single stack can hold?', answers: ['2,147,483,647', '2147483647'] },
+	{
+		id: 10004,
+		question: 'What is the maximum amount of coins a single stack can hold?',
+		answers: ['2,147,483,647', '2147483647']
+	},
 	{ id: 10005, question: 'Which boss drops the Twisted Bow?', answers: ['Great Olm', 'Olm'] },
 	{ id: 10006, question: 'What Slayer level is required to kill Abyssal Demons?', answers: ['85'] },
 	{ id: 10007, question: 'What Slayer level is required to kill Cerberus?', answers: ['91'] },
