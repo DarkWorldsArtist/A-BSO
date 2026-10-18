@@ -175,8 +175,11 @@ class CollectionLogTask {
 		const leftListCanvas = this.drawLeftList(collectionLog, sprite);
 
 		let leftDivisor = 214;
-		let rightArea = 276;
-		let canvasWidth = 500;
+		let canvasWidth = Math.max(
+			500,
+			Object.keys(allCollectionLogs).length * (sprite.tabBorderInactive.width + 6) + 14
+		);
+		let rightArea = canvasWidth - leftDivisor - 10;
 		const itemSize = 36;
 
 		let totalPrice = 0;

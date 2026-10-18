@@ -62,9 +62,29 @@ function convertCommandToAPICommand(
 export async function bulkUpdateCommands() {
 	if (!globalConfig.isProduction) {
 		const body = globalClient.allCommands.map(convertCommandToAPICommand);
-		return globalClient.rest.put(globalClient.apiCommandsRoute(), {
-			body
-		});
+		const targetGuilds = new Set<string>();
+		if (globalConfig.supportServerID) targetGuilds.add(globalConfig.supportServerID);
+		if (process.env.TESTING_SERVER) targetGuilds.add(process.env.TESTING_SERVER);
+		if (process.env.TESTING_SERVER_ID) targetGuilds.add(process.env.TESTING_SERVER_ID);
+		if (process.env.SUPPORT_SERVER_ID) targetGuilds.add(process.env.SUPPORT_SERVER_ID);
+		if (process.env.TESTING_SERVER_IDS) {
+			for (const id of process.env.TESTING_SERVER_IDS.split(',')) {
+				const trimmed = id.trim();
+				if (trimmed) targetGuilds.add(trimmed);
+			}
+		}
+
+		return Promise.all(
+			Array.from(targetGuilds).map(async guildId => {
+				try {
+					await globalClient.rest.put(Routes.applicationGuildCommands(globalClient.applicationId, guildId), {
+						body
+					});
+				} catch (err) {
+					Logging.logError(err as Error, { msg: `Failed to sync slash commands with guild ${guildId}` });
+				}
+			})
+		);
 	}
 
 	// Sync commands globally

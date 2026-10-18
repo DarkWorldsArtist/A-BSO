@@ -113,8 +113,7 @@ export const discontinuedCustomPetsCL = resolveItems([
 	'Wubbles',
 	'Magnabbit',
 	'Partycrab',
-	'Patricia',
-	'Sam'
+	'Patricia'
 ]);
 
 // Real all dc pets:

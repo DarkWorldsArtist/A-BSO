@@ -1,0 +1,16 @@
+{
+  "currentHolderId": null,
+  "heldSince": null,
+  "lastTripAt": null,
+  "immunityUntil": null,
+  "greasedUntil": null,
+  "hasScaredCrow": false,
+  "escaped": true,
+  "previousHolderId": null,
+  "lastStealAttempt": {},
+  "hasAlluring": {},
+  "totalHoldTimes": {},
+  "tripCooldowns": {},
+  "ticketsAwarded": {},
+  "boxesAwarded": {}
+}

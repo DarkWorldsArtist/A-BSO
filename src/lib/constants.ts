@@ -23,7 +23,15 @@ const GENERAL_CHANNEL_ID =
 		: (process.env.BSO_GENERAL_CHANNEL ??
 			(isProduction ? '1560885061572763749' : (process.env.GENERAL_CHANNEL ?? '1154056119019393035')));
 const OLDSCHOOLGG_TESTING_SERVER_ID = '940758552425955348';
-const TEST_SERVER_ID = process.env.TESTING_SERVER ?? OLDSCHOOLGG_TESTING_SERVER_ID;
+const parsedTestingServers =
+	process.env.TESTING_SERVER_IDS?.split(',')
+		.map(s => s.trim())
+		.filter(Boolean) ?? [];
+const TEST_SERVER_ID =
+	process.env.TESTING_SERVER ??
+	process.env.TESTING_SERVER_ID ??
+	parsedTestingServers[0] ??
+	(BOT_TYPE === 'BSO' ? '1520360916917551266' : OLDSCHOOLGG_TESTING_SERVER_ID);
 const TEST_SERVER_LOG_CHANNEL = process.env.TESTING_LOG_CHANNEL ?? '1042760447830536212';
 export const DELETED_USER_ID = '111111111111111111';
 export const BOT_AVATAR_HASH =
@@ -661,12 +669,15 @@ export const globalConfig = globalConfigSchema.parse({
 
 	moderatorLogsChannels:
 		process.env.MODERATOR_LOGS_CHANNEL ?? (isProduction ? '1560853458481975447' : GENERAL_CHANNEL_ID),
-	supportServerID: process.env.SUPPORT_SERVER_ID ?? (isProduction ? '1520360916917551266' : TEST_SERVER_ID),
+	supportServerID:
+		process.env.SUPPORT_SERVER_ID ??
+		(BOT_TYPE === 'BSO' ? '1520360916917551266' : isProduction ? '1520360916917551266' : TEST_SERVER_ID),
 	guildIdsToCache: [
 		guildId.OldschoolGG,
 		guildId.TestServer,
 		TEST_SERVER_ID,
 		process.env.SUPPORT_SERVER_ID ?? '1520360916917551266',
+		...parsedTestingServers,
 		...emojiServers
 	]
 });

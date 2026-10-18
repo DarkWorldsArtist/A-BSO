@@ -791,6 +791,9 @@ async function feedCommand(interaction: MInteraction, user: MUser, str: string) 
 	if (!userBank.fits(bankToAdd)) {
 		return "You don't have enough items.";
 	}
+	if (bankToAdd.has(75_107)) {
+		return 'Your tame refuses to eat the Cursed pumpkin!';
+	}
 
 	// Egg feeding
 	const tameEggs = tameSpecies.map(t => t.egg.id);

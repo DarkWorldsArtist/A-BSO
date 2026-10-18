@@ -1508,25 +1508,6 @@ setCustomItem(48_228, 'Monkey dye', 'Egg', {}, 10_000_000);
 setCustomItem(48_229, 'Marimbo statue', 'Egg', {}, 10_000_000);
 setCustomItem(48_230, 'Big banana', 'Bronze kiteshield', {}, 100_000);
 
-/**
- * Independence Day 2 Box
- */
-setCustomItem(48_231, 'Independence Day 2 Box', 'Mystery box', {}, 1_000_000);
-setCustomItem(
-	48_232,
-	'Sam',
-	'Herbi',
-	{
-		customItemData: {
-			isPet: true
-		}
-	},
-	1_000_000
-);
-setCustomItem(48_233, 'Alien green card', 'Coal', {}, 1_000_000);
-setCustomItem(48_234, 'Stars and Stripeship', 'Coal', {}, 1_000_000);
-setCustomItem(48_235, 'Liber-ray-tor', 'Coal', {}, 1_000_000);
-
 setCustomItem(48_324, 'Blacksmith crate', 'Mystery box', { tradeable: true, tradeable_on_ge: true }, 100_000);
 
 setCustomItem(48_240, 'Ignecarus mask', 'Rune full helm', {}, 1_000_000);
@@ -2588,8 +2569,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2600,8 +2580,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2612,8 +2591,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2624,8 +2602,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2658,8 +2635,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2670,8 +2646,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2715,8 +2690,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2738,8 +2712,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2772,8 +2745,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2795,8 +2767,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -2807,8 +2778,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	50_000
@@ -3501,8 +3471,7 @@ setCustomItem(
 	'Graceful hood',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	100_000
@@ -3514,8 +3483,7 @@ setCustomItem(
 	'Graceful top',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	100_000
@@ -3527,8 +3495,7 @@ setCustomItem(
 	'Graceful legs',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	100_000
@@ -3540,8 +3507,7 @@ setCustomItem(
 	'Graceful cape',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	100_000
@@ -3553,8 +3519,7 @@ setCustomItem(
 	'Graceful boots',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	100_000
@@ -3566,8 +3531,7 @@ setCustomItem(
 	'Graceful gloves',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	100_000
@@ -5943,8 +5907,7 @@ setCustomItem(
 	'Bronze kiteshield',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	500_000
@@ -6952,8 +6915,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	100_000
@@ -6966,8 +6928,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	100_000
@@ -6980,8 +6941,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	100_000
@@ -6994,8 +6954,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	100_000
@@ -7021,8 +6980,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	100_000
@@ -7035,8 +6993,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	100_000
@@ -7357,8 +7314,7 @@ setCustomItem(
 	'Herbi',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	1_000_000
@@ -7386,8 +7342,7 @@ setCustomItem(
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
 			cantBeSacrificed: true,
-			isSuperUntradeable: true,
-			isDiscontinued: true
+			isSuperUntradeable: true
 		}
 	},
 	100_000
@@ -7443,8 +7398,7 @@ setCustomItem(
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
 			cantBeSacrificed: true,
-			isSuperUntradeable: true,
-			isDiscontinued: true
+			isSuperUntradeable: true
 		}
 	},
 	10_000
@@ -7457,8 +7411,7 @@ setCustomItem(
 	{
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
-			cantBeSacrificed: true,
-			isDiscontinued: true
+			cantBeSacrificed: true
 		}
 	},
 	10_000
@@ -10131,8 +10084,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	1
@@ -10144,8 +10096,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	1
@@ -10169,8 +10120,7 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	1
@@ -10246,8 +10196,7 @@ setCustomItem(
 	'Bronze dagger',
 	{
 		customItemData: {
-			cantDropFromMysteryBoxes: true,
-			isDiscontinued: true
+			cantDropFromMysteryBoxes: true
 		}
 	},
 	1
@@ -14391,8 +14340,7 @@ setCustomItem(73_600, 'Halloween candy', 'Coal', {
 
 setCustomItem(73_601, 'Night-Mare', 'Herbi', {
 	customItemData: {
-		cantDropFromMysteryBoxes: true,
-		isDiscontinued: true
+		cantDropFromMysteryBoxes: true
 	}
 });
 
@@ -14750,7 +14698,6 @@ setCustomItem(
 	'Bronze full helm',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14763,7 +14710,6 @@ setCustomItem(
 	'Blue partyhat',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14776,7 +14722,6 @@ setCustomItem(
 	'Bronze platebody',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14789,7 +14734,6 @@ setCustomItem(
 	'Bronze platelegs',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14802,7 +14746,6 @@ setCustomItem(
 	'Bronze platelegs',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14815,7 +14758,6 @@ setCustomItem(
 	'Bronze boots',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14828,7 +14770,6 @@ setCustomItem(
 	'Amulet of strength',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14841,7 +14782,6 @@ setCustomItem(
 	'Bronze kiteshield',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14854,7 +14794,6 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -14867,7 +14806,6 @@ setCustomItem(
 	'Coal',
 	{
 		customItemData: {
-			isDiscontinued: true,
 			cantDropFromMysteryBoxes: true
 		}
 	},
@@ -15690,11 +15628,100 @@ setCustomItem(
 	10_000
 );
 
+setCustomItem(
+	75_101,
+	'Pumpkin-ish box',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	100_000
+);
+
+setCustomItem(
+	75_102,
+	'Rotten Raffle ticket',
+	'Paramaya ticket',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	10_000
+);
+
+setCustomItem(
+	75_103,
+	'Scared-crow',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	50_000
+);
+
+setCustomItem(
+	75_104,
+	'Rotten pumpkin',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	20_000
+);
+
+setCustomItem(
+	75_105,
+	'Greased pumpkin',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	50_000
+);
+
+setCustomItem(
+	75_106,
+	'Alluring pumpkin',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	50_000
+);
+
+setCustomItem(
+	75_107,
+	'Cursed pumpkin',
+	'Coal',
+	{
+		tradeable: false,
+		tradeable_on_ge: false,
+		cost: 5_000_000_000,
+		price: 5_000_000_000,
+		highalch: 0,
+		lowalch: 0,
+		customItemData: {
+			isSuperUntradeable: true,
+			cantBeSacrificed: true,
+			cantBeDropped: true,
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	5_000_000_000
+);
+
 export const discontinuedItems = resolveItems([
-	'Turkey',
-	'Raw turkey',
-	'Burnt turkey',
-	'Turkey drumstick',
 	'Golden partyhat',
 	'Black swan',
 	...customItems.filter(i => Items.get(i)?.customItemData?.isDiscontinued)

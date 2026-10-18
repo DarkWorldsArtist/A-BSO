@@ -1,6 +1,12 @@
-import { BSOItem } from '@/lib/bso/BSOItem.js';
 import { OSB_VIRTUS_IDS } from '@/lib/bso/bsoConstants.js';
-import { allChristmasEvent2024Items, allChristmasEvent2025Items } from '@/lib/bso/collection-log/holiday.js';
+import {
+	birthdayCL,
+	christmasCL,
+	easterCL,
+	halloweenCL,
+	summerCL,
+	thanksgivingCL
+} from '@/lib/bso/collection-log/holiday.js';
 import {
 	abyssalDragonCL,
 	akumuCL,
@@ -66,11 +72,9 @@ import {
 } from '@/lib/bso/monsters/VerdantIsland.js';
 import { cmbClothes } from '@/lib/bso/openables/cmb.js';
 import { PaintBoxTable } from '@/lib/bso/paintColors.js';
-import { pumpkinHeadUniqueTable } from '@/lib/bso/pumpkinHead.js';
 import { divinationEnergies, portents } from '@/lib/bso/skills/divination.js';
 import { inventionCL } from '@/lib/bso/skills/invention/inventions.js';
 import { slayerMasksHelmsCL } from '@/lib/bso/skills/slayer/slayerMaskHelms.js';
-import { beachOutfitTable } from '@/lib/bso/summerDays.js';
 import { getAllIgneTameKCs, tameKillableMonsters } from '@/lib/bso/tames/tames.js';
 
 import { calcWhatPercent, notEmpty, stringMatches, sumArr, uniqueArr } from '@oldschoolgg/toolkit';
@@ -84,7 +88,6 @@ import {
 	type ItemBank,
 	ItemGroups,
 	Items,
-	itemID,
 	type Monster,
 	Monsters,
 	resolveItems
@@ -1646,16 +1649,6 @@ export const allCollectionLogs: ICollection = {
 				items: cmbClothes,
 				alias: ['cmb', 'clothing mystery box']
 			},
-			'Holiday Mystery box': {
-				counts: false,
-				items: holidayCL,
-				alias: ['hmb', 'holiday mystery box']
-			},
-			'Christmas Cracker': {
-				counts: false,
-				items: crackerCL,
-				alias: ['hmb', 'holiday mystery box']
-			},
 			'Growable Pets': {
 				items: growablePetsCL
 			},
@@ -1713,74 +1706,63 @@ export const allCollectionLogs: ICollection = {
 			}
 		}
 	},
+	Seasonal: {
+		alias: ['seasonal', 'season', 'holiday', 'holidays'],
+		activities: {
+			Halloween: {
+				alias: [
+					'halloween',
+					'hween',
+					'hw',
+					'hween2021',
+					'hween2022',
+					'hween2023',
+					'hween2024',
+					'hween2025',
+					'halloween cracker'
+				],
+				items: halloweenCL,
+				counts: false
+			},
+			Christmas: {
+				alias: ['christmas', 'xmas', 'xmas2021', 'xmas2022', 'xmas2023', 'xmas2024', 'xmas2025'],
+				items: christmasCL,
+				counts: false
+			},
+			Easter: {
+				alias: ['easter', 'easter2022', 'easter2023', 'easter2025', 'easter2026'],
+				items: easterCL,
+				counts: false
+			},
+			Thanksgiving: {
+				alias: ['thanksgiving', 'tday'],
+				items: thanksgivingCL,
+				counts: false
+			},
+			Summer: {
+				alias: ['summer', 'summer2026', 'beach'],
+				items: summerCL,
+				counts: false
+			},
+			Birthday: {
+				alias: ['birthday', 'bday', 'bso birthday'],
+				items: birthdayCL,
+				counts: false
+			},
+			'Holiday Mystery box': {
+				alias: ['hmb', 'holiday mystery box'],
+				items: holidayCL,
+				counts: false
+			},
+			'Christmas Cracker': {
+				alias: ['cracker', 'christmas cracker'],
+				items: crackerCL,
+				counts: false
+			}
+		}
+	},
 	Discontinued: {
 		activities: {
-			'Easter 2022': {
-				items: resolveItems(['Chickaxe', 'Leia', 'Decorative easter eggs']),
-				counts: false
-			},
-			'Easter 2023': {
-				items: resolveItems([
-					'Cute magic egg',
-					'Fancy magic egg',
-					'Big mysterious egg',
-					'Fancy ancient egg',
-					'Sweet small egg',
-					'Mysterious magic egg',
-					'Big ancient egg',
-					'Fancy sweet egg',
-					'Eggy',
-					'Easter egg backpack',
-					'Floppy bunny ears',
-					'Egg coating',
-					'Chocolate pot'
-				]),
-				counts: false
-			},
-			'Easter 2025': {
-				items: resolveItems([
-					'Easter egg (1)',
-					'Easter egg (2)',
-					'Easter egg (3)',
-					'Easter egg (4)',
-					'Easter egg (5)',
-					'Easter egg (6)',
-					'Easter egg (7)',
-					'Easter egg (8)',
-					'Easter egg (9)',
-					'Easter egg (10)',
-					'Easter egg (11)',
-					'Easter egg (12)',
-					'Easter egg (13)',
-					'Easter egg (14)',
-					'Easter cape (1)',
-					'Easter cape (2)',
-					'Monkey egg (Edible)',
-					'Easter Bunny hat',
-					'Easter Bunny top',
-					'Easter Bunny legs',
-					'Easter Bunny gloves',
-					'Easter Bunny boots',
-					'Easter Bunny tail',
-					'Elven bunny ears',
-					'Dragon bunny ears',
-					'Tzhaar bunny ears',
-					'Rune bunny ears',
-					'Vyrewatch bunny ears',
-					'Arceuus bunny ears',
-					'Waddles',
-					'Tasty'
-				]),
-				counts: false
-			},
-			'Easter 2026': {
-				items: resolveItems(['Wabbit eggs', 'Magnegg', 'Magnabbit']),
-				counts: false
-			},
-			'Thanksgiving 2021': {
-				items: resolveItems(['Raw turkey', 'Turkey', 'Turkey drumstick', 'Burnt turkey', 'Cornucopia']),
-				counts: false
-			},
 			'Custom Pets (Discontinued)': {
 				alias: ['dcpets', 'disc custom pet', 'dcpet', 'dcp', 'discontinued custom pet'],
 				items: discontinuedCustomPetsCL,
@@ -1789,279 +1771,6 @@ export const allCollectionLogs: ICollection = {
 			'Custom Pets (DC Alt Art)': {
 				alias: ['dcpaa', 'dcpalts', 'dyed dcp', 'dyed dcps', 'discontinued dyed pets', 'shiny dcp', 'sdcp'],
 				items: discontinuedCustomPetsAltArt,
-				counts: false
-			},
-			'Halloween 2021': {
-				alias: ['hween2021', 'halloween 2021'],
-				items: resolveItems([
-					'Human appendage',
-					'Sliced femur',
-					'Human blood',
-					'Human tooth',
-					'Candy teeth',
-					'Toffeet',
-					'Chocolified skull',
-					'Rotten sweets',
-					'Hairyfloss',
-					'Eyescream',
-					'Goblinfinger soup',
-					"Benny's brain brew",
-					'Roasted newt',
-					"Choc'rock",
-					'Gregoyle',
-					...pumpkinHeadUniqueTable.allItems
-				]),
-				counts: false
-			},
-			'Halloween 2022': {
-				alias: ['hween2022', 'halloween 2022'],
-				items: resolveItems([
-					'Dirty hoe',
-					'Boo-balloon',
-					'Twinkly topper',
-					'Broomstick',
-					'Spooky graceful hood',
-					'Spooky graceful top',
-					'Spooky graceful legs',
-					'Spooky graceful cape',
-					'Spooky graceful boots',
-					'Spooky graceful gloves',
-					'Kuro',
-					'Spooky box'
-				]),
-				counts: false,
-				allItems: resolveItems([
-					'Pumpkin seed',
-					'Dirty hoe',
-					'Boo-balloon',
-					'Twinkly topper',
-					'Broomstick',
-					'Spooky graceful hood',
-					'Spooky graceful top',
-					'Spooky graceful legs',
-					'Spooky graceful cape',
-					'Spooky graceful boots',
-					'Spooky graceful gloves',
-					'Spooky partyhat',
-					'Orange halloween mask',
-					'Necronomicon',
-					"M'eye hat",
-					'Back pain',
-					'Witch hat',
-					'Spooky mask',
-					'Toffeet',
-					'Chocolified skull',
-					'Eyescream',
-					"Choc'rock",
-					'Rotten sweets',
-					'Gloom and doom potion',
-					'Handled candle',
-					'Kuro',
-					'Spooky box',
-					'Grim sweeper'
-				])
-			},
-			'Halloween 2023': {
-				alias: ['hween2023', 'halloween 2023'],
-				items: resolveItems([
-					'Splooky fwizzle',
-					"Fool's ace",
-					"Pandora's box",
-					'Maledict codex',
-					'Maledict gloves',
-					'Maledict ring',
-					'Maledict amulet',
-					'Maledict boots',
-					'Maledict cape',
-					'Maledict legs',
-					'Maledict top',
-					'Maledict hat',
-					'Purple halloween mask',
-					'Cosmic dice',
-					'Spooky aura',
-					'Spooky sheet',
-					'Evil partyhat',
-					'Soul shield',
-					'Bag of tricks',
-					'Bat bat',
-					'Mini mortimer',
-					'Casper',
-					'Covenant of grimace'
-				]),
-				counts: false,
-				allItems: resolveItems([
-					'Splooky fwizzle',
-					"Fool's ace",
-					"Pandora's box",
-					'Maledict codex',
-					'Maledict gloves',
-					'Maledict ring',
-					'Maledict amulet',
-					'Maledict boots',
-					'Maledict cape',
-					'Maledict legs',
-					'Maledict top',
-					'Maledict hat',
-					'Purple halloween mask',
-					'Cosmic dice',
-					'Spooky aura',
-					'Spooky sheet',
-					'Evil partyhat',
-					'Soul shield',
-					'Bag of tricks',
-					'Bat bat',
-					'Mini mortimer',
-					'Casper',
-					'Covenant of grimace'
-				])
-			},
-			'Halloween Mini-Event 2024': {
-				items: resolveItems(['Spookling token', 'Miniature pumpkin head', 'Polterpup']),
-				counts: false,
-				allItems: resolveItems(['Spookling token', 'Miniature pumpkin head', 'Polterpup'])
-			},
-			'Halloween 2024': {
-				alias: ['hween2024', 'halloween 2024'],
-				items: resolveItems(['Heirloom pumpkin', 'Mumpkin', 'Jack-o-lantern', 'Halloween cracker']),
-				counts: false,
-				allItems: resolveItems(['Heirloom pumpkin', 'Mumpkin', 'Jack-o-lantern', 'Halloween cracker'])
-			},
-			'Halloween 2025': {
-				alias: ['hween2025', 'halloween 2025'],
-				items: resolveItems([
-					BSOItem.HALLOWEEN_CANDY,
-					BSOItem.WITCH_CARD,
-					BSOItem.GHOST_CARD,
-					BSOItem.VAMPIRE_CARD,
-					BSOItem.DEATH_CARD,
-					BSOItem.PUMPKINMAN_CARD,
-					BSOItem.NIGHTMARE
-				]),
-				counts: false,
-				allItems: resolveItems([
-					BSOItem.HALLOWEEN_CANDY,
-					BSOItem.WITCH_CARD,
-					BSOItem.GHOST_CARD,
-					BSOItem.VAMPIRE_CARD,
-					BSOItem.DEATH_CARD,
-					BSOItem.PUMPKINMAN_CARD,
-					BSOItem.NIGHTMARE
-				])
-			},
-			'Halloween Cracker': {
-				items: resolveItems([
-					'Zombie halloween mask',
-					'Bloody halloween mask',
-					'Monster in a backpack',
-					'Pumpkin parasol',
-					'Vampyric halloween mask',
-					'Zombie cow plushie',
-					'Deathtouched tart'
-				]),
-				counts: false,
-				allItems: resolveItems([
-					'Zombie halloween mask',
-					'Bloody halloween mask',
-					'Monster in a backpack',
-					'Pumpkin parasol',
-					'Vampyric halloween mask',
-					'Zombie cow plushie',
-					'Deathtouched tart'
-				])
-			},
-			'Christmas 2021': {
-				alias: ['xmas 2021', 'christmas 2021'],
-				items: resolveItems([
-					'Smokey bbq sauce',
-					'Pumpkinhead pie',
-					'Roasted ham',
-					'Corn on the cob',
-					"Dougs' chocolate mud",
-					"Shepherd's pie",
-					'Flappy meal',
-					'Smokey painting',
-					'Yule log',
-					'Gr-egg-oyle special',
-					'Roast potatoes',
-					'Ratatouille',
-					'Fish n chips',
-					'Pretzel',
-					'Bacon',
-					'Prawns',
-					'Pavlova',
-					'Christmas tree hat',
-					'Christmas pudding',
-					'Christmas pudding amulet',
-					'Festive mistletoe',
-					'Christmas tree kite',
-					'Festive wrapping paper',
-					'Festive jumper (2021)',
-					'Frozen santa hat',
-					'Seer',
-					'Festive present'
-				]),
-				counts: false
-			},
-			'Christmas 2024': {
-				alias: ['xmas 2024', 'christmas 2024'],
-				items: allChristmasEvent2024Items.filter(i => i !== itemID('Snowflake amulet')),
-				counts: false
-			},
-			'BSO Birthday 2022': {
-				alias: ['bso birthday 2022'],
-				items: resolveItems(['Honey', 'Honeycomb', 'Beehive', 'Buzz']),
-				counts: false
-			},
-			'BSO Christmas 2025': {
-				alias: ['xmas 2025', 'christmas 2025'],
-				items: allChristmasEvent2025Items,
-				counts: false
-			},
-			'Christmas 2022': {
-				alias: ['xmas 2022', 'christmas 2022'],
-				items: resolveItems([
-					'Christmas snowglobe',
-					'Festive jumper (2022)',
-					'Christmas cape',
-					'Christmas socks',
-					'Tinsel scarf',
-					'Frosted wreath',
-					'Edible yoyo',
-					'Reinbeer',
-					'Pork sausage',
-					'Pork crackling',
-					'Festive treats',
-					'Snowman plushie',
-					'Snowman top hat',
-					'Festive scarf',
-					'Frosty'
-				]),
-				counts: false
-			},
-			'BSO Birthday 2023': {
-				alias: ['birthday 2023'],
-				items: resolveItems(['Buggy', 'Ban hammer', 'The Interrogator', 'Acrylic set', 'Golden cape shard']),
-				counts: false
-			},
-			'Christmas 2023': {
-				alias: ['xmas 2023', 'christmas 2023'],
-				items: resolveItems([
-					'Santa costume top (male)',
-					'Santa costume top (female)',
-					'Santa costume skirt',
-					'Santa costume pants',
-					'Santa costume gloves',
-					'Santa costume boots',
-					'Tinsel twirler',
-					'Grinch head',
-					'Grinch top',
-					'Grinch legs',
-					'Grinch feet',
-					'Grinch hands',
-					'Grinch santa hat',
-					'Christmas cake',
-					'Rudolph'
-				]),
 				counts: false
 			},
 			'Dyed Items (Discontinued)': {
@@ -2083,27 +1792,6 @@ export const allCollectionLogs: ICollection = {
 					'Radiant magnabbit',
 					'Mona',
 					'Lydia'
-				]),
-				counts: false
-			},
-			'Summer 2026': {
-				alias: ['summer'],
-				items: resolveItems([
-					...beachOutfitTable.allItems,
-					'Summer Partyhat',
-					'Imitation crab hat',
-					'Partycrab',
-					'Patricia',
-					'Mona',
-					'Lydia',
-					'Old crab cage',
-					'Mysterious bottle',
-					'Bottle of sea water',
-					'Purple sand dollar',
-					'Black shell',
-					'Purple dust',
-					'Sun scream (unf)',
-					'Sun scream'
 				]),
 				counts: false
 			}

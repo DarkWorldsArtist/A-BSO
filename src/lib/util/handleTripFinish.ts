@@ -40,6 +40,7 @@ import {
 	makeTearsOfGuthixButton
 } from '@/lib/util/interactions.js';
 import { hasSkillReqs, perHourChance } from '@/lib/util/smallUtils.js';
+import { handleHalloweenTripFinish } from '@/mahoji/commands/halloween.js';
 import { readState } from '@/mahoji/commands/islandupgrade.js';
 import { alching } from '@/mahoji/commands/laps.js';
 import { handleTriggerArchon } from '@/mahoji/lib/abstracted_commands/archonCommand.js';
@@ -685,6 +686,10 @@ const tripFinishEffects: TripFinishEffect[] = [
 				};
 			}
 		}
+	},
+	{
+		name: 'Halloween 2026 Cursed Pumpkin',
+		fn: handleHalloweenTripFinish
 	}
 ];
 
@@ -797,12 +802,12 @@ export async function handleTripFinish(
 		await user.transactItems({ itemsToAdd: itemsToAddWithCL, collectionLog: true, itemsToRemove });
 	}
 
-	if (contentAppendices.length > 0) {
-		message.addContent(contentAppendices.join(''));
-	}
-
 	if (messages.length > 0) {
 		message.addContent(`\n**Messages:** ${messages.join(', ')}`);
+	}
+
+	if (contentAppendices.length > 0) {
+		message.addContent(contentAppendices.join(''));
 	}
 
 	if (components.length > 0) {
