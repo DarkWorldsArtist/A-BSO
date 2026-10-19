@@ -101,7 +101,8 @@ export const spookyTable = new LootTable()
 	.tertiary(10, 'Mysterious token')
 	.add(spookyEpic, 1, 1)
 	.add(spookyRare, 1, 3)
-	.add(spookyCommon, 1, 8);
+	.add(spookyCommon, 1, 8)
+	.add('Pumpkin-ish box', 1, 2);
 
 export const RoyalMysteryBoxTable = new LootTable()
 	.add('Diamond crown', 1, 2)

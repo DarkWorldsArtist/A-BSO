@@ -1,5 +1,3 @@
-import { ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } from '@oldschoolgg/discord';
-
 import { SUPPORT_PROJECT_MSG } from '@/lib/constants.js';
 import { mahojiInformationalButtons } from '@/lib/sharedComponents.js';
 
@@ -9,40 +7,15 @@ export const helpCommand = defineCommand({
 	options: [],
 	run: async () => {
 		return {
-			content: `🧑‍⚖️ **Rules:** You *must* follow our 5 simple rules, breaking any rule can result in a ban: <https://wiki.oldschool.gg/getting-started/rules/>
+			content: `🧑‍⚖️ **Rules:** You must follow the server's simple rules, breaking any rule can result in a permanent ban - and "I didn't know the rules" is not a valid excuse, read them here: <#1529773213922627584>
 
 <:patreonLogo:1560872629345325067> **Patreon:** ${SUPPORT_PROJECT_MSG} ❤️
-
-<:BSO:1560873090744062033> **BSO:** I run a 2nd bot called BSO (Bot School Old), which you can also play, it has lots of fun and unique changes, like 5x XP and infinitely stacking clues. Invite it and read the wiki below. Ask for more information in the support server if you need!
 
 📢 **News:** Follow <#346210791747223554> for updates and news about the bot.
 ☺️ **Support:** <#668073484731154462> and <#970752140324790384>
 
 Please click the buttons below for important links.`,
-			embeds: [
-				new EmbedBuilder()
-					.setTitle('BSO')
-					.setDescription(
-						'Bot School Old (BSO) is a copy of Old School Bot (OSB) that you can play alongside it, it has very fun changes like: 5x XP, 2x faster pvm, HUNDREDS of custom items, pets, monsters and bosses. It works exactly the same as OSB. Just invite it to your server using <https://www.oldschool.gg/invite/bso> and `/minion buy` on it to get started!'
-					)
-			],
-			components: [
-				...mahojiInformationalButtons,
-				new ButtonBuilder({
-					type: ComponentType.Button,
-					label: 'Invite BSO',
-					emoji: { id: '1560873090744062033' },
-					style: ButtonStyle.Link,
-					url: 'https://www.oldschool.gg/invite/bso'
-				}),
-				new ButtonBuilder({
-					type: ComponentType.Button,
-					label: 'BSO Wiki',
-					emoji: { id: '1560873090744062033' },
-					style: ButtonStyle.Link,
-					url: 'https://wiki.oldschool.gg/bso/changelog/'
-				})
-			]
+			components: mahojiInformationalButtons
 		};
 	}
 });

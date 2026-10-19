@@ -5,6 +5,6 @@ export const patreonCommand = defineCommand({
 	description: 'Shows the patreon link for the bot, where you can donate.',
 	options: [],
 	run: async () => {
-		return `${SUPPORT_PROJECT_MSG} <:seer:1560872712866635786> 🥺`;
+		return SUPPORT_PROJECT_MSG;
 	}
 });

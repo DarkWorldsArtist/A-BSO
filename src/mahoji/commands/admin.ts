@@ -857,8 +857,6 @@ ORDER BY slots_used DESC;
 export const adminCommand = defineCommand({
 	name: 'admin',
 	description: 'Allows you to trade items with other players.',
-	guildId: globalConfig.supportServerID,
-	defaultMemberPermissions: '0',
 	options: [
 		{
 			type: 'Subcommand',
@@ -1236,14 +1234,14 @@ export const adminCommand = defineCommand({
 			]
 		}
 	],
-	run: async ({ options, userId, interaction, guildId, rng }) => {
+	run: async ({ options, userId, interaction, rng }) => {
 		await interaction.defer();
 
 		const adminUser = await mUserFetch(userId);
 		const isAdmin = adminUser.isAdmin;
 		const isMod = isAdmin || adminUser.isMod;
 		const isGameHacker = isAdmin || (adminUser.isMod && adminUser.isGameHacker);
-		if (!guildId || !isMod || (globalConfig.isProduction && guildId.toString() !== globalConfig.supportServerID)) {
+		if (!isMod) {
 			return rng.pick(gifs);
 		}
 

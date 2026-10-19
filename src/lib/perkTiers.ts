@@ -1,7 +1,7 @@
 import { Time, uniqueArr } from '@oldschoolgg/toolkit';
 import { LRUCache } from 'lru-cache';
 
-import { BitField, BOT_TYPE, PerkTier } from '@/lib/constants.js';
+import { BitField, BOT_TYPE, globalConfig, PatronRoleTiers, PerkTier } from '@/lib/constants.js';
 import type { RobochimpUser } from '@/lib/roboChimp.js';
 
 export const RobochimpBitfieldEnum = {
@@ -193,6 +193,21 @@ export async function getUsersPerkTier({
 			Number(roboChimpCached.premium_balance_expiry_date) > Date.now()
 		) {
 			eligibleTiers.push(roboChimpCached.premium_balance_tier);
+		}
+	}
+
+	const supportMember = await Cache.getMember({ guildId: globalConfig.supportServerID, userId: user.id }).catch(
+		() => null
+	);
+	if (supportMember?.roles) {
+		for (const roleTier of PatronRoleTiers) {
+			if (supportMember.roles.includes(roleTier.roleId)) {
+				eligibleTiers.push(roleTier.perkTier);
+				if (roboChimpCached && !roboChimpCached.bits.includes(roleTier.bit)) {
+					roboChimpCached.bits.push(roleTier.bit);
+				}
+				break;
+			}
 		}
 	}
 
