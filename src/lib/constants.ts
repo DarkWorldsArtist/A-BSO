@@ -61,14 +61,16 @@ const OSBChannelConfig: ChannelConfig = {
 
 const BSOChannelConfig: ChannelConfig = {
 	ServerGeneral:
-		process.env.SERVER_GENERAL_CHANNEL ?? (isProduction ? '1560852844402315264' : TEST_SERVER_LOG_CHANNEL),
-	Notifications: '811589869314899980',
-	GrandExchange: '738780181946171493',
-	EconomyLogs: '802029843712573510',
-	HelpAndSupport: '970752140324790384',
-	BotLogs: isProduction ? '1051725977320964197' : TEST_SERVER_LOG_CHANNEL,
+		process.env.BSO_GENERAL_CHANNEL ??
+		process.env.SERVER_GENERAL_CHANNEL ??
+		(isProduction ? '1560852844402315264' : TEST_SERVER_LOG_CHANNEL),
+	Notifications: '1560852886693347419',
+	GrandExchange: '1560852968314634341',
+	EconomyLogs: '1560853517285986314',
+	HelpAndSupport: '1560853473199792228',
+	BotLogs: '1560853473199792228',
 	GeneralChannel: GENERAL_CHANNEL_ID,
-	CyrCommandsChannel: '1522315320260562992'
+	CyrCommandsChannel: '1560853473199792228'
 };
 
 const TestChannelConfig: ChannelConfig = {
@@ -633,10 +635,10 @@ const globalConfigSchema = z.object({
 	isCI: z.coerce.boolean().default(false),
 	isProduction: z.boolean(),
 	timeZone: z.literal('UTC'),
-	adminUserIDs: z.array(z.string()).default(['559881359582298123', '425134194436341760', '157797566833098752']),
+	adminUserIDs: z.array(z.string()).default(['559881359582298123']),
 	maxingMessage: z.string().default('Congratulations on maxing!'),
 	moderatorLogsChannels: z.string().default(''),
-	supportServerID: z.string(),
+	supportServerID: z.string().default('1520360916917551266'),
 	minimumLoggedPerfDuration: z.number().default(400),
 	guildIdsToCache: z.array(z.string())
 });
@@ -646,11 +648,6 @@ if (!process.env.BOT_TOKEN && !process.env.CI) {
 		`You need to specify the BOT_TOKEN environment variable, copy your bot token from your config.ts and put it in the ".env" file like so:\n\nBOT_TOKEN=your_token_here`
 	);
 }
-
-const guildId = {
-	OldschoolGG: '342983479501389826',
-	TestServer: TEST_SERVER_ID
-};
 
 const emojiServers = new Set([
 	'869497440947015730',
@@ -668,19 +665,9 @@ export const globalConfig = globalConfigSchema.parse({
 	isProduction,
 	timeZone: process.env.TZ,
 
-	moderatorLogsChannels:
-		process.env.MODERATOR_LOGS_CHANNEL ?? (isProduction ? '1560853458481975447' : GENERAL_CHANNEL_ID),
-	supportServerID:
-		process.env.SUPPORT_SERVER_ID ??
-		(BOT_TYPE === 'BSO' ? '1520360916917551266' : isProduction ? '1520360916917551266' : TEST_SERVER_ID),
-	guildIdsToCache: [
-		guildId.OldschoolGG,
-		guildId.TestServer,
-		TEST_SERVER_ID,
-		process.env.SUPPORT_SERVER_ID ?? '1520360916917551266',
-		...parsedTestingServers,
-		...emojiServers
-	]
+	moderatorLogsChannels: '1560853473199792228',
+	supportServerID: '1520360916917551266',
+	guildIdsToCache: ['1520360916917551266', TEST_SERVER_ID, ...parsedTestingServers, ...emojiServers]
 });
 
 if ((process.env.NODE_ENV === 'production') !== globalConfig.isProduction) {
@@ -709,10 +696,7 @@ export const META_CONSTANTS = {
 	GIT_DIFF_URL: `https://github.com/${gitRemote}/compare/${gitHash}...${GIT_BRANCH}`,
 	RENDERED_STR: ''
 };
-META_CONSTANTS.RENDERED_STR = `**Date/Time:** ${dateFm(META_CONSTANTS.STARTUP_DATE)}
-**Git Hash:** ${META_CONSTANTS.GIT_HASH.slice(0, 7)}
-**Commit:** <${META_CONSTANTS.GITHUB_URL}>
-**Code Difference:** <${META_CONSTANTS.GIT_DIFF_URL}>`;
+META_CONSTANTS.RENDERED_STR = `**Date/Time:** ${dateFm(META_CONSTANTS.STARTUP_DATE)}`;
 
 export const masteryKey = BOT_TYPE === 'OSB' ? 'osb_mastery' : 'bso_mastery';
 

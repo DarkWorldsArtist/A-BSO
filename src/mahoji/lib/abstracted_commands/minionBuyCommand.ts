@@ -45,11 +45,9 @@ export async function minionBuyCommand(user: MUser, ironman: boolean): CommandRe
 
 <:ironman:1560872575205117962> You can make your new minion an Ironman by using the command: \`/minion ironman\`.
 
-🧑‍⚖️ **Rules:** You *must* follow our 5 simple rules, breaking any rule can result in a permanent ban - and "I didn't know the rules" is not a valid excuse, read them here: <https://wiki.oldschool.gg/getting-started/rules/>
+🧑‍⚖️ **Rules:** You must follow the server's simple rules, breaking any rule can result in a permanent ban - and "I didn't know the rules" is not a valid excuse, read them here: <#1529773213922627584>
 
 <:patreonLogo:1560872629345325067> **Patreon:** ${SUPPORT_PROJECT_MSG} ❤️
-
-<:BSO:1560873090744062033> **BSO:** I run a 2nd bot called BSO (Bot School Old), which you can also play, it has lots of fun and unique changes, like 5x XP and infinitely stacking clues. Type \`/help\` for more information.
 
 Please click the buttons below for important links.
 

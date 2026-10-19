@@ -452,3 +452,4 @@ Items.modifyItem(9044, {
 });
 
 setItemAlias(48_211, ['indy box', 'indy'], false);
+setItemAlias(75_102, ['Raffle ticket', 'raffle ticket'], false);

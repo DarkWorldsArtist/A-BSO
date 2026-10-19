@@ -148,3 +148,11 @@ test('items should be in UMB only', () => {
 		expect(umbTable.includes(id)).toEqual(true);
 	}
 });
+
+test('Pumpkin-ish box is registered as openable', async () => {
+	const { allOpenables, allOpenablesIDs } = await import('@/lib/openables.js');
+	const openable = allOpenables.find(o => o.name === 'Pumpkin-ish box');
+	expect(openable).toBeDefined();
+	expect(allOpenablesIDs.has(itemID('Pumpkin-ish box'))).toEqual(true);
+	expect(openable?.output).toBeDefined();
+});
