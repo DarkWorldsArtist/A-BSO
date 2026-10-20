@@ -52,6 +52,14 @@ export class MessageBuilderClass {
 		return this;
 	}
 
+	setBankImage(opts: MakeBankImageOptions): this {
+		if (this._message.files) {
+			this._message.files = this._message.files.filter((f): f is SendableFile => Boolean(f?.name && !f.name.toLowerCase().endsWith('.png')));
+		}
+		this.bankImagePromise = makeBankImage(opts);
+		return this;
+	}
+
 	addChestLootImage(opts: DrawChestLootImageOptions): this {
 		this.chestLootImagePromise = drawChestLootImage(opts);
 		return this;

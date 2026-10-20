@@ -10128,7 +10128,8 @@
 			"isSuperUntradeable": true,
 			"cantBeSacrificed": true,
 			"cantBeDropped": true,
-			"cantDropFromMysteryBoxes": true
+			"cantDropFromMysteryBoxes": true,
+			"cantBeSold": true
 		}
 	},
 	{

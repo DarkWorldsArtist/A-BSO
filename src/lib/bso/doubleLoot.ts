@@ -4,9 +4,14 @@ import { formatDuration, Time } from '@oldschoolgg/toolkit';
 import { Channel, Roles } from '@/lib/constants.js';
 
 export let DOUBLE_LOOT_FINISH_TIME_CACHE = 0;
+export let DOUBLE_XP_FINISH_TIME_CACHE = 0;
 
 export function isDoubleLootActive(duration = 0) {
 	return Date.now() - duration < DOUBLE_LOOT_FINISH_TIME_CACHE;
+}
+
+export function isDoubleXPActive(duration = 0) {
+	return Date.now() - duration < DOUBLE_XP_FINISH_TIME_CACHE;
 }
 
 export function hasUsedDoubleLootThisMonth(lastUsage: Date | null, now = Date.now()) {
@@ -35,9 +40,33 @@ export async function addToDoubleLootTimer(amount: number, reason: string) {
 	DOUBLE_LOOT_FINISH_TIME_CACHE = newDoubleLootTimer;
 
 	await globalClient.sendMessage(Channel.GeneralChannel, {
-		content: `${roleMention(Roles.BSODoubleLoot)} 🎉 ${formatDuration(
+		content: `${roleMention(Roles.BSODoubleLoot)} ${formatDuration(
 			amount
-		)} added to the Double Loot timer because: ${reason}. 🎉`,
+		)} added to the Double Loot timer because: ${reason}.`,
+		allowedMentions: { roles: [Roles.BSODoubleLoot] }
+	});
+
+	await syncPrescence();
+}
+
+export async function addToDoubleXpTimer(amount: number, reason: string) {
+	const clientSettings = await ClientSettings.fetch({
+		double_xp_finish_time: true
+	});
+	let current = Number(clientSettings.double_xp_finish_time);
+	if (current < Date.now()) {
+		current = Date.now();
+	}
+	const newDoubleXpTimer = current + amount;
+	await ClientSettings.update({
+		double_xp_finish_time: newDoubleXpTimer
+	});
+	DOUBLE_XP_FINISH_TIME_CACHE = newDoubleXpTimer;
+
+	await globalClient.sendMessage(Channel.GeneralChannel, {
+		content: `${roleMention(Roles.BSODoubleLoot)} ${formatDuration(
+			amount
+		)} added to the Double XP timer because: ${reason}.`,
 		allowedMentions: { roles: [Roles.BSODoubleLoot] }
 	});
 
@@ -52,7 +81,6 @@ export async function addPatronLootTime(_tier: number, user: MUser | null) {
 		4: 25,
 		5: 60
 	};
-	// TODO: Again, this should be the Tier associated with the best entitlement.
 	const tier = _tier - 1;
 	if (!map[tier]) return;
 	const minutes = map[tier];
@@ -67,13 +95,34 @@ export async function syncDoubleLoot() {
 	DOUBLE_LOOT_FINISH_TIME_CACHE = Number(clientSettings.double_loot_finish_time);
 }
 
-export async function syncPrescence() {
-	await syncDoubleLoot();
-
-	const str = isDoubleLootActive()
-		? `${formatDuration(DOUBLE_LOOT_FINISH_TIME_CACHE - Date.now(), true)} Double Loot!`
-		: '/help';
-	await globalClient.setPresence({
-		text: str
+export async function syncDoubleXP() {
+	const clientSettings = await ClientSettings.fetch({
+		double_xp_finish_time: true
 	});
+	DOUBLE_XP_FINISH_TIME_CACHE = Number(clientSettings.double_xp_finish_time);
+}
+
+let currentPresenceText = '';
+
+export async function syncPrescence() {
+	await Promise.all([syncDoubleLoot(), syncDoubleXP()]);
+
+	const dlActive = isDoubleLootActive();
+	const dxpActive = isDoubleXPActive();
+
+	let str = '/help';
+	if (dlActive && dxpActive) {
+		str = `${formatDuration(DOUBLE_LOOT_FINISH_TIME_CACHE - Date.now(), true)} Double Loot | ${formatDuration(DOUBLE_XP_FINISH_TIME_CACHE - Date.now(), true)} Double XP!`;
+	} else if (dlActive) {
+		str = `${formatDuration(DOUBLE_LOOT_FINISH_TIME_CACHE - Date.now(), true)} Double Loot!`;
+	} else if (dxpActive) {
+		str = `${formatDuration(DOUBLE_XP_FINISH_TIME_CACHE - Date.now(), true)} Double XP!`;
+	}
+
+	if (str !== currentPresenceText) {
+		currentPresenceText = str;
+		await globalClient.setPresence({
+			text: str
+		});
+	}
 }

@@ -15,6 +15,12 @@ export async function minionBuyCommand(user: MUser, ironman: boolean): CommandRe
 		minion_ironman: Boolean(ironman)
 	});
 
+	await ClientSettings.update({
+		new_players_count: {
+			increment: 1
+		}
+	});
+
 	const createdAt = DiscordSnowflake.timestampFrom(user.id);
 	const starter = isAtleastThisOld(createdAt, Time.Year * 2)
 		? new Bank({

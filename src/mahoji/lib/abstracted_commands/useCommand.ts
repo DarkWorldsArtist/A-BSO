@@ -1,6 +1,6 @@
 import { scriptImageGenerator } from '@/lib/bso/canvas/scriptImages.js';
 import { getTier, isCategoryMaintained } from '@/lib/bso/commands/islandUpgrades.js';
-import { addToDoubleLootTimer } from '@/lib/bso/doubleLoot.js';
+import { addToDoubleLootTimer, addToDoubleXpTimer } from '@/lib/bso/doubleLoot.js';
 import { allDyes, dyedItems } from '@/lib/bso/dyedItems.js';
 import { mysteriousStepData } from '@/lib/bso/mysteryTrail.js';
 import { divinationEnergies } from '@/lib/bso/skills/divination.js';
@@ -622,6 +622,15 @@ usables.push({
 		await user.removeItemsFromBank(new Bank().add('Double loot token'));
 		await addToDoubleLootTimer(Time.Minute * randInt(6, 36), `${user} used a Double Loot token!`);
 		return 'You used your Double Loot Token!';
+	}
+});
+
+usables.push({
+	items: [Items.getOrThrow('Double xp token')],
+	run: async (user: MUser) => {
+		await user.removeItemsFromBank(new Bank().add('Double xp token'));
+		await addToDoubleXpTimer(Time.Minute * randInt(6, 36), `${user} used a Double XP token!`);
+		return 'You used your Double XP Token!';
 	}
 });
 

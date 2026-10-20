@@ -2963,6 +2963,18 @@ setCustomItem(
 );
 
 setCustomItem(
+	52_615,
+	'Double xp token',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	100_000_000
+);
+
+setCustomItem(
 	52_616,
 	'Double loot token',
 	'Coal',
@@ -15106,7 +15118,8 @@ setCustomItem(
 			isSuperUntradeable: true,
 			cantBeSacrificed: true,
 			cantBeDropped: true,
-			cantDropFromMysteryBoxes: true
+			cantDropFromMysteryBoxes: true,
+			cantBeSold: true
 		}
 	},
 	5_000_000_000

@@ -48,7 +48,7 @@ function formatBankItemSummary(bank: Bank): string {
 
 function itemsExcludedFromSell(user: MUser): number[] {
 	const weightedItems = new Bank(user.user.bank_sort_weightings as ItemBank);
-	return [...user.user.favoriteItems, ...weightedItems.itemIDs];
+	return [...user.user.favoriteItems, ...weightedItems.itemIDs, itemID('Cursed pumpkin')];
 }
 
 function sellConfirmationMessage(user: MUser, bankToSell: Bank, totalValue: string): string {
@@ -67,6 +67,9 @@ Selling: ${ellipsize(bankToSellStr, MAX_BANK_CONFIRMATION_LENGTH)}`;
 }
 
 export function sellPriceOfItem(item: Item, taxRate = 25): { price: number; basePrice: number } {
+	if (item.customItemData?.cantBeSold || item.id === 75_107 || item.name === 'Cursed pumpkin') {
+		return { price: 0, basePrice: 0 };
+	}
 	const cachePrice = CUSTOM_PRICE_CACHE.get(item.id);
 	if (!cachePrice && (item.price === undefined || !item.tradeable)) {
 		return { price: 0, basePrice: 0 };
@@ -82,6 +85,9 @@ export function sellPriceOfItem(item: Item, taxRate = 25): { price: number; base
 }
 
 export function sellStorePriceOfItem(item: Item, qty: number): { price: number; basePrice: number } {
+	if (item.customItemData?.cantBeSold || item.id === 75_107 || item.name === 'Cursed pumpkin') {
+		return { price: 0, basePrice: 0 };
+	}
 	if (!item.cost || !item.lowalch) return { price: 0, basePrice: 0 };
 	const basePrice = item.cost;
 	// Sell price decline with stock by 3% until 10% of item value and is always low alch price when stock is 0.
@@ -136,6 +142,16 @@ export const sellCommand = defineCommand({
 			noDuplicateItems: true
 		});
 		if (bankToSell.length === 0) return 'No items provided.';
+
+		if (bankToSell.has('Cursed pumpkin') || bankToSell.has(75_107)) {
+			return 'You cannot sell the Cursed pumpkin.';
+		}
+
+		for (const [item] of bankToSell.items()) {
+			if (item.customItemData?.cantBeSold || item.id === 75_107 || item.name === 'Cursed pumpkin') {
+				return `You cannot sell ${item.name}.`;
+			}
+		}
 
 		if (options.preview === true) {
 			return {

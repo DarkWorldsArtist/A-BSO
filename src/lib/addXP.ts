@@ -1,4 +1,5 @@
 import { GLOBAL_BSO_XP_MULTIPLIER } from '@/lib/bso/bsoConstants.js';
+import { isDoubleXPActive } from '@/lib/bso/doubleLoot.js';
 import {
 	divinersOutfit,
 	empyreanOutfit,
@@ -192,6 +193,12 @@ export async function addXP(user: MUser, params: AddXpParams): Promise<string> {
 		gorajanBoost = true;
 	}
 
+	let doubleXPBoost = false;
+	if (multiplier && !params.artificial && isDoubleXPActive(params.duration ?? 0)) {
+		params.amount *= 2;
+		doubleXPBoost = true;
+	}
+
 	let islandXPBoostPercent = 0;
 	if (multiplier && !params.artificial) {
 		const rawUpgrades = user.user.island_upgrades as
@@ -307,6 +314,9 @@ export async function addXP(user: MUser, params: AddXpParams): Promise<string> {
 	let preMax = -1;
 	if (totalXPAdded > 0) {
 		preMax = totalXPAdded;
+		if (multiplier && !params.artificial && user.tripXPGained) {
+			user.tripXPGained.push({ skill: params.skillName, amount: totalXPAdded });
+		}
 		await prisma.xPGain.create({
 			data: {
 				user_id: BigInt(user.id),
@@ -475,6 +485,9 @@ export async function addXP(user: MUser, params: AddXpParams): Promise<string> {
 		}
 		if (gorajanBoost && !params.minimal) {
 			str += ' (2x boost from Gorajan armor)';
+		}
+		if (doubleXPBoost && !params.minimal) {
+			str += ' (2x boost from Double XP)';
 		}
 		if (totalFirstAgeBonus > 0 && !params.minimal) {
 			str += ` You received ${totalFirstAgeBonus}% bonus XP for First age outfit items.`;

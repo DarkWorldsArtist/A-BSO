@@ -422,6 +422,7 @@ for (const item of allTrophyItems) {
 export interface CustomItemData {
 	dontTradeOnGE?: true;
 	cantBeSacrificed?: true;
+	cantBeSold?: true;
 	isSuperUntradeable?: boolean;
 	cantDropFromMysteryBoxes?: boolean;
 	cantBeDropped?: true;
@@ -453,3 +454,4 @@ Items.modifyItem(9044, {
 
 setItemAlias(48_211, ['indy box', 'indy'], false);
 setItemAlias(75_102, ['Raffle ticket', 'raffle ticket'], false);
+setItemAlias(52_615, ['Double xp token', 'Double XP token', '2x xp token', '2x xp tokens', 'Double xp tokens'], false);

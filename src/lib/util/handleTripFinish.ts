@@ -65,6 +65,7 @@ interface TripFinishEffectOptions {
 	lastTearsOfGuthixTimestamp: bigint | null;
 	perkTier: PerkTier;
 	rng: RNGProvider;
+	message: MessageBuilderClass;
 
 	// BSO
 	portents?: Awaited<ReturnType<typeof getAllPortentCharges>>;
@@ -122,29 +123,67 @@ const tripFinishEffects: TripFinishEffect[] = [
 		}
 	},
 	{
-		name: 'Loot Doubling',
-		fn: async ({ data, messages, user, loot }) => {
+		name: 'Trip Doubling',
+		fn: async ({ data, messages, user, loot, message }) => {
 			const cantBeDoubled = ['GroupMonsterKilling', 'KingGoldemar', 'Ignecarus', 'Inferno', 'Alching', 'Agility'];
-			if (!loot || data.cantBeDoubled || cantBeDoubled.includes(data.type) || data.duration < Time.Minute * 20) {
+			if (data.cantBeDoubled || data.duration < Time.Minute * 20) {
 				return;
 			}
 
-			const chanceOfDoubling = user.hasEquipped('Mr. E') ? 12 : 15;
+			const chanceOfDoubling = user.hasEquipped('Mr. E') ? 16 : 20;
 			const initialRollSuccess = roll(chanceOfDoubling);
-			if (initialRollSuccess) {
-				const otherLoot = new Bank().add(MysteryBoxes.roll());
-				const bonusLoot = new Bank().add(loot).add(otherLoot);
+			if (!initialRollSuccess) {
+				return;
+			}
 
-				messages.push(`<:mysterybox:1560872620759584798> **You received 2x loot and ${otherLoot}.**`);
+			const canDoubleLoot = Boolean(loot && loot.length > 0 && !cantBeDoubled.includes(data.type));
+			const canDoubleXP = Boolean(user.tripXPGained && user.tripXPGained.length > 0);
+
+			if (!canDoubleLoot && !canDoubleXP) {
+				return;
+			}
+
+			let giveDoubleLoot = roll(2);
+			if (!canDoubleLoot) giveDoubleLoot = false;
+			if (!canDoubleXP) giveDoubleLoot = true;
+
+			const otherLoot = new Bank().add(MysteryBoxes.roll());
+
+			if (giveDoubleLoot) {
+				const bonusLoot = new Bank().add(loot!).add(otherLoot);
+
+				messages.push(`**You received 2x loot and ${otherLoot}.**`);
 
 				await Promise.all([
-					await user.statsBankUpdate('doubled_loot_bank', bonusLoot),
-					await ClientSettings.updateBankSetting('trip_doubling_loot', bonusLoot)
+					user.statsBankUpdate('doubled_loot_bank', bonusLoot),
+					ClientSettings.updateBankSetting('trip_doubling_loot', bonusLoot)
 				]);
+
+				const totalDoubledLoot = new Bank().add(loot!).multiply(2).add(otherLoot);
+				message.setBankImage({
+					bank: totalDoubledLoot,
+					title: 'Doubled Loot:',
+					user
+				});
+
 				return {
 					itemsToAddWithCL: bonusLoot
 				};
 			}
+
+			for (const xp of user.tripXPGained) {
+				await user.addXP({
+					skillName: xp.skill,
+					amount: xp.amount,
+					multiplier: false,
+					minimal: true
+				});
+			}
+
+			messages.push(`**You received 2x XP and ${otherLoot}.**`);
+			return {
+				itemsToAddWithCL: otherLoot
+			};
 		}
 	},
 	{
@@ -768,7 +807,8 @@ export async function handleTripFinish(
 			lastDailyTimestamp: last_daily_timestamp,
 			lastTearsOfGuthixTimestamp: last_tears_of_guthix_timestamp,
 			perkTier,
-			rng: cryptoRng
+			rng: cryptoRng,
+			message
 		});
 		if (res?.itemsToAddWithCL) itemsToAddWithCL.add(res.itemsToAddWithCL);
 		if (res?.itemsToRemove) itemsToRemove.add(res.itemsToRemove);

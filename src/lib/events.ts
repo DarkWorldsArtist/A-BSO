@@ -2,8 +2,10 @@ import { boxSpawnHandler } from '@/lib/bso/boxSpawns.js';
 import { giveBoxResetTime, itemContractResetTime, spawnLampResetTime } from '@/lib/bso/bsoConstants.js';
 import {
 	DOUBLE_LOOT_FINISH_TIME_CACHE,
+	DOUBLE_XP_FINISH_TIME_CACHE,
 	getNextDoubleLootUsageReset,
-	isDoubleLootActive
+	isDoubleLootActive,
+	isDoubleXPActive
 } from '@/lib/bso/doubleLoot.js';
 import { getGuthixianCacheInterval, userHasDoneCurrentGuthixianCache } from '@/lib/bso/minigames/guthixianCache.js';
 import { allIronmanMbTables, allMbTables } from '@/lib/bso/openables/mysteryBoxes.js';
@@ -278,6 +280,11 @@ const mentionCommands: MentionCommand[] = [
 			if (isDoubleLootActive()) {
 				const date = new Date(DOUBLE_LOOT_FINISH_TIME_CACHE);
 				content += `\n\n2️⃣🇽 **Double Loot is Active until ${time(date)} (${time(date, 'R')})**`;
+			}
+
+			if (isDoubleXPActive()) {
+				const date = new Date(DOUBLE_XP_FINISH_TIME_CACHE);
+				content += `\n\n**Double XP is Active until ${time(date)} (${time(date, 'R')})**`;
 			}
 
 			return {

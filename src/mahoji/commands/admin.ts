@@ -5,6 +5,7 @@ import {
 	isLotteryActive,
 	LOTTERY_TICKET_ITEM
 } from '@/lib/bso/commands/lottery.js';
+import { addToDoubleLootTimer, addToDoubleXpTimer } from '@/lib/bso/doubleLoot.js';
 import {
 	allLeagueTasks,
 	analyzeLeaguesCompletedTaskIDs,
@@ -28,6 +29,7 @@ import {
 	formatDuration,
 	noOp,
 	notEmpty,
+	parseDuration,
 	sleep,
 	stringMatches,
 	sumArr,
@@ -533,6 +535,12 @@ interface ViewableThing {
 	run: (clientSettings: ClientStorage, _choice?: String, user?: MUser) => Promise<Bank | SendableMessage>;
 }
 const viewableThings: ViewableThing[] = [
+	{
+		name: 'New Players Count',
+		run: async clientSettings => {
+			return `Total new players tracked: ${Number(clientSettings.new_players_count ?? 0).toLocaleString()}`;
+		}
+	},
 	{
 		name: 'Buried Treasure Bank',
 		run: async clientSettings => {
@@ -1128,6 +1136,12 @@ export const adminCommand = defineCommand({
 					required: false
 				},
 				{
+					type: 'Boolean',
+					name: 'all',
+					description: 'Give to all users',
+					required: false
+				},
+				{
 					type: 'String',
 					name: 'destination',
 					description: 'Where to send the items',
@@ -1140,6 +1154,37 @@ export const adminCommand = defineCommand({
 					description: 'The reason'
 				}
 			]
+		},
+		{
+			type: 'Subcommand',
+			name: 'add_double_time',
+			description: 'Add global double loot or double XP time',
+			options: [
+				{
+					type: 'String',
+					name: 'type',
+					description: 'The type of double time to add',
+					required: true,
+					choices: choicesOf(['Double Loot', 'Double XP', 'Both'])
+				},
+				{
+					type: 'String',
+					name: 'duration',
+					description: 'The duration to add',
+					required: true
+				},
+				{
+					type: 'String',
+					name: 'reason',
+					description: 'Reason for adding double time',
+					required: false
+				}
+			]
+		},
+		{
+			type: 'Subcommand',
+			name: 'reset_new_players',
+			description: 'Reset the new players counter after giving out rewards'
 		},
 		{
 			type: 'Subcommand',
@@ -1402,6 +1447,27 @@ ${META_CONSTANTS.RENDERED_STR}`
 			const itemErrors = items.validate();
 			if (itemErrors.length > 0) return `Invalid items: ${itemErrors.join(', ')}`;
 
+			if (options.give_items.all) {
+				await interaction.confirmation(
+					`Are you sure you want to give ${items} to ALL users?`
+				);
+				const allUsers = await prisma.user.findMany({
+					select: { id: true }
+				});
+				for (const u of allUsers) {
+					const target = await mUserFetch(u.id);
+					await target.addItemsToBank({ items, collectionLog: false });
+				}
+				const auditMessage = {
+					content: `${adminUser.logName} sent \`${items}\` to ALL users (${allUsers.length} users) for ${
+						options.give_items.reason ?? 'No reason'
+					}`
+				};
+				await globalClient.sendMessage(Channel.BotLogs, auditMessage).catch(noOp);
+				await dmCyrAudit(auditMessage.content);
+				return `Gave ${items} to all ${allUsers.length} users.`;
+			}
+
 			const destination = options.give_items.destination;
 			const targetUser = options.give_items.user ? await mUserFetch(options.give_items.user.user.id) : null;
 
@@ -1442,6 +1508,45 @@ ${META_CONSTANTS.RENDERED_STR}`
 				await addToLotteryPrizePool(items);
 			}
 			return `Added ${items} to ${targetDescription}.`;
+		}
+
+		if (options.add_double_time) {
+			if (!isAdmin) {
+				return rng.pick(gifs);
+			}
+			const durationMs = parseDuration(options.add_double_time.duration);
+			if (durationMs <= 0) {
+				return 'Invalid duration provided.';
+			}
+			const type = options.add_double_time.type;
+			const reason = options.add_double_time.reason ?? `${adminUser.logName} added ${formatDuration(durationMs)}`;
+
+			const messages: string[] = [];
+			if (type === 'Double Loot' || type === 'Both') {
+				await addToDoubleLootTimer(durationMs, reason);
+				messages.push(`Added ${formatDuration(durationMs)} of Double Loot.`);
+			}
+			if (type === 'Double XP' || type === 'Both') {
+				await addToDoubleXpTimer(durationMs, reason);
+				messages.push(`Added ${formatDuration(durationMs)} of Double XP.`);
+			}
+
+			const auditContent = `${adminUser.logName} added ${formatDuration(durationMs)} of ${type} time for ${reason}`;
+			await globalClient.sendMessage(Channel.BotLogs, { content: auditContent }).catch(noOp);
+			await dmCyrAudit(auditContent);
+
+			return messages.join('\n');
+		}
+
+		if (options.reset_new_players) {
+			if (!isAdmin) {
+				return rng.pick(gifs);
+			}
+			const before = await ClientSettings.fetch({ new_players_count: true });
+			await ClientSettings.update({
+				new_players_count: 0
+			});
+			return `Reset new players counter from ${Number(before.new_players_count).toLocaleString()} to 0.`;
 		}
 
 		/**

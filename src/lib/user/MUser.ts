@@ -82,9 +82,12 @@ import { hasMonsterRequirements } from '@/lib/util/hasMonsterRequirements.js';
 import { hasSkillReqsRaw } from '@/lib/util/smallUtils.js';
 import { type TransactItemsArgs, transactItemsFromBank } from '@/lib/util/transactItemsFromBank.js';
 import type { JsonKeys } from '@/lib/util.js';
+import type { SkillNameType } from '@/lib/skilling/types.js';
 import { getParsedStashUnits } from '@/mahoji/lib/abstracted_commands/stashUnitsCommand.js';
 
 export class MUserClass extends BaseUser {
+	public tripXPGained: { skill: SkillNameType; amount: number }[] = [];
+
 	constructor(user: User) {
 		super(user);
 	}

@@ -1,3 +1,4 @@
+import { syncPrescence } from '@/lib/bso/doubleLoot.js';
 import { syncSlayerMaskLeaderboardCache } from '@/lib/bso/skills/slayer/slayerMaskLeaderboard.js';
 import { MTame } from '@/lib/bso/structures/MTame.js';
 import { runTameTask } from '@/lib/bso/tames/tameTasks.js';
@@ -301,9 +302,9 @@ LIMIT 10;`);
 	{
 		name: 'Presence Update',
 		timer: null,
-		interval: Time.Hour * 8.44,
+		interval: Time.Second * 30,
 		cb: async () => {
-			globalClient.setPresence({ text: '/help' });
+			await syncPrescence();
 		}
 	},
 	{

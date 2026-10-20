@@ -1,4 +1,4 @@
-import { syncDoubleLoot } from '@/lib/bso/doubleLoot.js';
+import { syncDoubleLoot, syncDoubleXP, syncPrescence } from '@/lib/bso/doubleLoot.js';
 import { syncSlayerMaskLeaderboardCache } from '@/lib/bso/skills/slayer/slayerMaskLeaderboard.js';
 
 import { Time } from '@oldschoolgg/toolkit';
@@ -9,8 +9,9 @@ import { Channel, globalConfig, META_CONSTANTS } from '@/lib/constants.js';
 import { initTickers } from '@/lib/tickers.js';
 
 export const onStartup = async () => {
-	await syncDoubleLoot();
+	await Promise.all([syncDoubleLoot(), syncDoubleXP()]);
 	syncSlayerMaskLeaderboardCache();
+	await syncPrescence();
 
 	// Wait 10 seconds before starting tickers to reduce lag on startup
 	TimerManager.setTimeout(
