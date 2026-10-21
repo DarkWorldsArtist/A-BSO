@@ -159,6 +159,7 @@ export const discontinuedHalloweenRaresTable = new LootTable()
 
 export const PumpkinIshBoxTable = new LootTable()
 	.tertiary(7500, 'Cob')
+	.tertiary(5, 'Pumpkin-ish seeds')
 	.add('Rotten pumpkin', [1, 2], 5)
 	.add('Greased pumpkin', 1, 5)
 	.add('Alluring pumpkin', 1, 4)

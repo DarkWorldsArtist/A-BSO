@@ -1,6 +1,13 @@
-import { Bank, itemID } from 'oldschooljs';
+import { randInt } from 'node-rng';
+import { Bank, itemID, LootTable } from 'oldschooljs';
 
 import type { Plant } from '@/lib/skilling/types.js';
+
+export const pumpkinIshHarvestTable = new LootTable()
+	.add('Alluring pumpkin')
+	.add('Greased pumpkin')
+	.add('Rotten pumpkin')
+	.add('Pumpkin-ish box');
 
 const allotmentPlants: Plant[] = [
 	{
@@ -360,6 +367,56 @@ const allotmentPlants: Plant[] = [
 		],
 		timePerPatchTravel: 20,
 		timePerHarvest: 20
+	},
+	{
+		id: itemID('Pumpkin-ish seeds'),
+		level: 1,
+		plantXp: 8,
+		checkXp: 0,
+		harvestXp: 10,
+		inputItems: new Bank({ 'Pumpkin-ish seeds': 1 }).freeze(),
+		name: 'Pumpkin-ish seeds',
+		aliases: [
+			'pumpkin-ish seeds',
+			'pumpkin-ish seed',
+			'pumpkinish seeds',
+			'pumpkinish seed',
+			'pumpkin-ish',
+			'pumpkinish'
+		],
+		petChance: 281_040,
+		seedType: 'allotment',
+		growthTime: 20,
+		numOfStages: 4,
+		chance1: 99,
+		chance99: 149.3,
+		chanceOfDeath: 0,
+		needsChopForHarvest: false,
+		fixedOutput: true,
+		fixedOutputAmount: 1,
+		givesLogs: false,
+		givesCrops: true,
+		defaultNumOfPatches: 2,
+		canPayFarmer: false,
+		canCompostPatch: true,
+		canCompostandPay: false,
+		additionalPatchesByQP: [
+			[1, 2],
+			[15, 3],
+			[33, 5]
+		],
+		additionalPatchesByFarmLvl: [],
+		additionalPatchesByFarmGuildAndLvl: [[45, 2]],
+		timePerPatchTravel: 20,
+		timePerHarvest: 10,
+		onHarvest: async ({ loot, quantity }) => {
+			for (let i = 0; i < quantity; i++) {
+				const rollCount = randInt(3, 6);
+				for (let r = 0; r < rollCount; r++) {
+					loot.add(pumpkinIshHarvestTable.roll());
+				}
+			}
+		}
 	}
 ];
 

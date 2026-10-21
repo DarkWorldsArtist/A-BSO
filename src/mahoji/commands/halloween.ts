@@ -19,7 +19,8 @@ import type { ActivityTaskData } from '@/lib/types/minions.js';
 export const halloweenTripRewardTable = new LootTable()
 	.add('Spooky box')
 	.add('Halloween cracker')
-	.add('Pumpkin-ish box');
+	.add('Pumpkin-ish box')
+	.add('Pumpkin-ish seeds');
 
 export {
 	discontinuedHalloweenCommonsTable,
@@ -35,6 +36,7 @@ export interface HalloweenEventState {
 	immunityUntil: number | null;
 	greasedUntil: number | null;
 	hasScaredCrow: boolean;
+	scaredCrowAttempts?: number;
 	escaped: boolean;
 	previousHolderId: string | null;
 	lastStealAttempt: Record<string, number>;
@@ -54,6 +56,7 @@ const defaultState: HalloweenEventState = {
 	immunityUntil: null,
 	greasedUntil: null,
 	hasScaredCrow: false,
+	scaredCrowAttempts: 0,
 	escaped: true,
 	previousHolderId: null,
 	lastStealAttempt: {},
@@ -74,6 +77,7 @@ export function getHalloweenState(): HalloweenEventState {
 		return {
 			...defaultState,
 			...parsed,
+			scaredCrowAttempts: parsed.scaredCrowAttempts ?? 0,
 			lastStealAttempt: parsed.lastStealAttempt ?? {},
 			hasAlluring: parsed.hasAlluring ?? {},
 			totalHoldTimes: parsed.totalHoldTimes ?? {},
@@ -95,14 +99,6 @@ const GIMMICK_ITEMS = ['Rotten pumpkin', 'Greased pumpkin', 'Alluring pumpkin', 
 export function getRandomGimmickItem() {
 	const name = randArrItem(GIMMICK_ITEMS);
 	return Items.getOrThrow(name);
-}
-
-function aOrAn(name: string): string {
-	const firstLetter = name.trim().charAt(0).toLowerCase();
-	if (['a', 'e', 'i', 'o', 'u'].includes(firstLetter)) {
-		return `an ${name}`;
-	}
-	return `a ${name}`;
 }
 
 export function calculateAndAwardHoldRewards(state: HalloweenEventState, holderId: string, now: number) {
@@ -151,7 +147,11 @@ export async function handleHalloweenTripFinish({
 		if (newTickets > 0) deliveryBank.add('Rotten Raffle ticket', newTickets);
 		if (newBoxes > 0) deliveryBank.add('Pumpkin-ish box', newBoxes);
 
-		await oldHolder.removeItemsFromBank(new Bank().add('Cursed pumpkin', 1));
+		if (oldHolder.bank.amount('Cursed pumpkin') > 0) {
+			await oldHolder.removeItemsFromBank(
+				new Bank().add('Cursed pumpkin', oldHolder.bank.amount('Cursed pumpkin'))
+			);
+		}
 		if (deliveryBank.length > 0) {
 			await oldHolder.addItemsToBank({ items: deliveryBank, collectionLog: true });
 		}
@@ -163,6 +163,7 @@ export async function handleHalloweenTripFinish({
 		state.immunityUntil = null;
 		state.greasedUntil = null;
 		state.hasScaredCrow = false;
+		state.scaredCrowAttempts = 0;
 		saveHalloweenState(state);
 
 		await globalClient
@@ -178,7 +179,7 @@ export async function handleHalloweenTripFinish({
 	}
 
 	if (state.escaped) {
-		if (roll(20)) {
+		if (roll(10)) {
 			const latestState = getHalloweenState();
 			if (latestState.escaped) {
 				latestState.escaped = false;
@@ -187,6 +188,7 @@ export async function handleHalloweenTripFinish({
 				latestState.lastTripAt = now;
 				latestState.immunityUntil = now + Time.Minute * 30;
 				latestState.hasScaredCrow = false;
+				latestState.scaredCrowAttempts = 0;
 				latestState.greasedUntil = null;
 				saveHalloweenState(latestState);
 
@@ -205,28 +207,27 @@ export async function handleHalloweenTripFinish({
 	}
 
 	const lastDrop = state.tripCooldowns[user.id] ?? 0;
-	if (now - lastDrop >= Time.Minute * 20) {
-		if (roll(20)) {
+	if (now - lastDrop >= Time.Minute * 10) {
+		if (roll(10)) {
 			state.tripCooldowns[user.id] = now;
 			saveHalloweenState(state);
-			const ambientLoot = halloweenTripRewardTable.roll();
-			const ambientItemName = ambientLoot.items()[0][0].name;
+			const ambientLoot = halloweenTripRewardTable.roll(2);
 			extraItems.add(ambientLoot);
-			halloweenMessages.push(`You found a ${ambientItemName} during your trip!`);
+			halloweenMessages.push(`You found ${ambientLoot} during your trip!`);
 		}
 	}
 
 	if (data.duration >= Time.Minute * 5) {
-		if (roll(20)) {
+		if (roll(10)) {
 			const gimmick = getRandomGimmickItem();
-			extraItems.add(gimmick.id, 1);
-			halloweenMessages.push(`You found a ${gimmick.name} during your trip!`);
+			extraItems.add(gimmick.id, 2);
+			halloweenMessages.push(`You found 2x ${gimmick.name} during your trip!`);
 		}
 	}
 
-	if (percentChance(10)) {
-		extraItems.add('Rotten Raffle ticket', 1);
-		halloweenMessages.push('Your minion found a Rotten raffle ticket during the trip!');
+	if (percentChance(20)) {
+		extraItems.add('Rotten Raffle ticket', 2);
+		halloweenMessages.push('Your minion found 2x Rotten raffle ticket during the trip!');
 	}
 
 	if (extraItems.length > 0 || halloweenMessages.length > 0) {
@@ -319,7 +320,11 @@ export const halloweenCommand = defineCommand({
 			if (action === 'spawn') {
 				if (state.currentHolderId && state.currentHolderId !== targetUser.id) {
 					const oldHolder = await mUserFetch(state.currentHolderId);
-					await oldHolder.removeItemsFromBank(new Bank().add('Cursed pumpkin', 1));
+					if (oldHolder.bank.amount('Cursed pumpkin') > 0) {
+						await oldHolder.removeItemsFromBank(
+							new Bank().add('Cursed pumpkin', oldHolder.bank.amount('Cursed pumpkin'))
+						);
+					}
 				}
 				await targetUser.addItemsToBank({ items: new Bank().add('Cursed pumpkin', 1), collectionLog: true });
 				state.currentHolderId = targetUser.id;
@@ -328,6 +333,7 @@ export const halloweenCommand = defineCommand({
 				state.immunityUntil = now + Time.Minute * 30;
 				state.escaped = false;
 				state.hasScaredCrow = false;
+				state.scaredCrowAttempts = 0;
 				state.greasedUntil = null;
 				saveHalloweenState(state);
 
@@ -347,7 +353,11 @@ export const halloweenCommand = defineCommand({
 					const rewardBank = new Bank();
 					if (newTickets > 0) rewardBank.add('Rotten Raffle ticket', newTickets);
 					if (newBoxes > 0) rewardBank.add('Pumpkin-ish box', newBoxes);
-					await oldHolder.removeItemsFromBank(new Bank().add('Cursed pumpkin', 1));
+					if (oldHolder.bank.amount('Cursed pumpkin') > 0) {
+						await oldHolder.removeItemsFromBank(
+							new Bank().add('Cursed pumpkin', oldHolder.bank.amount('Cursed pumpkin'))
+						);
+					}
 					if (rewardBank.length > 0) {
 						await oldHolder.addItemsToBank({ items: rewardBank, collectionLog: true });
 					}
@@ -364,6 +374,7 @@ export const halloweenCommand = defineCommand({
 				state.immunityUntil = null;
 				state.greasedUntil = null;
 				state.hasScaredCrow = false;
+				state.scaredCrowAttempts = 0;
 				saveHalloweenState(state);
 				return 'The Cursed Pumpkin has escaped into the wild.';
 			}
@@ -380,7 +391,11 @@ export const halloweenCommand = defineCommand({
 			if (action === 'set_holder') {
 				if (state.currentHolderId && state.currentHolderId !== targetUser.id) {
 					const oldHolder = await mUserFetch(state.currentHolderId);
-					await oldHolder.removeItemsFromBank(new Bank().add('Cursed pumpkin', 1));
+					if (oldHolder.bank.amount('Cursed pumpkin') > 0) {
+						await oldHolder.removeItemsFromBank(
+							new Bank().add('Cursed pumpkin', oldHolder.bank.amount('Cursed pumpkin'))
+						);
+					}
 				}
 				await targetUser.addItemsToBank({ items: new Bank().add('Cursed pumpkin', 1), collectionLog: true });
 				state.currentHolderId = targetUser.id;
@@ -389,6 +404,7 @@ export const halloweenCommand = defineCommand({
 				state.immunityUntil = now + Time.Minute * 30;
 				state.escaped = false;
 				state.hasScaredCrow = false;
+				state.scaredCrowAttempts = 0;
 				state.greasedUntil = null;
 				saveHalloweenState(state);
 				return `Set holder to ${targetUser.usernameOrMention}.`;
@@ -415,6 +431,7 @@ export const halloweenCommand = defineCommand({
 				}
 				await user.removeItemsFromBank(new Bank().add('Scared-crow', 1));
 				state.hasScaredCrow = true;
+				state.scaredCrowAttempts = 0;
 				saveHalloweenState(state);
 				return "Your minion sets out a scared-crow to guard the Cursed pumpkin. Your minion has questions about the scared-crow's qualifications for the job.";
 			}
@@ -497,15 +514,16 @@ export const halloweenCommand = defineCommand({
 			const fifteenMinBlocks = Math.floor(heldDuration / (Time.Minute * 15));
 			chance += fifteenMinBlocks * 5;
 
-			if (state.hasAlluring[user.id]) {
-				chance += 20;
+			const hadAlluring = Boolean(state.hasAlluring[user.id]);
+			if (hadAlluring) {
+				chance += 40;
 				delete state.hasAlluring[user.id];
 			}
 
 			const hadScaredCrow = state.hasScaredCrow;
 			const hadGreasedPumpkin = Boolean(state.greasedUntil && state.greasedUntil > now);
 
-			if (hadGreasedPumpkin) {
+			if (hadGreasedPumpkin && !hadAlluring) {
 				chance -= 15;
 			}
 
@@ -513,24 +531,32 @@ export const halloweenCommand = defineCommand({
 				chance -= 30;
 			}
 
+			let crowDecayed = false;
+			if (hadScaredCrow) {
+				state.scaredCrowAttempts = (state.scaredCrowAttempts ?? 0) + 1;
+				if (state.scaredCrowAttempts >= 3) {
+					crowDecayed = true;
+					state.hasScaredCrow = false;
+					state.scaredCrowAttempts = 0;
+				}
+			}
+
 			chance = clamp(chance, { min: 20, max: 95 });
 			const succeeded = percentChance(chance);
 
 			if (succeeded) {
 				if (hadScaredCrow) {
-					const protectionChance = hadGreasedPumpkin ? 90 : 70;
+					let protectionChance = hadGreasedPumpkin ? 90 : 70;
+					if (hadAlluring) {
+						protectionChance -= 25;
+					}
 					if (percentChance(protectionChance)) {
-						state.hasScaredCrow = false;
 						state.lastStealAttempt[user.id] = now - Time.Minute * 15;
-						const itemAwarded = percentChance(50);
-						if (itemAwarded) {
-							const rewardItem = getRandomGimmickItem();
-							await user.addItemsToBank({ items: new Bank().add(rewardItem.id, 1), collectionLog: true });
-							saveHalloweenState(state);
-							return `Your minion encounters an awfully scared looking scarecrow on the way, so they decide to make it feel better instead of stealing from ${currentHolder.usernameOrMention}. It rewards them with ${aOrAn(rewardItem.name)}! Your steal cooldown has been reduced to 15 minutes.`;
-						}
+						const rewardItem = getRandomGimmickItem();
+						await user.addItemsToBank({ items: new Bank().add(rewardItem.id, 2), collectionLog: true });
 						saveHalloweenState(state);
-						return `Your minion encountered an awfully scared looking scarecrow guarding the pumpkin and was frightened away! Your steal cooldown has been reduced to 15 minutes.`;
+						const decayNote = crowDecayed ? ' The scared-crow has decayed.' : '';
+						return `Your minion encounters an awfully scared looking scarecrow on the way, so they decide to make it feel better instead of stealing from ${currentHolder.usernameOrMention}. It rewards them with 2x ${rewardItem.name}!${decayNote} Your steal cooldown has been reduced to 15 minutes.`;
 					}
 				}
 
@@ -540,13 +566,17 @@ export const halloweenCommand = defineCommand({
 				if (newBoxes > 0) rewardBank.add('Pumpkin-ish box', newBoxes);
 
 				let consolationItem: string | null = null;
-				if (roll(10)) {
-					const consolationLoot = halloweenTripRewardTable.roll();
-					consolationItem = consolationLoot.items()[0][0].name;
+				if (roll(5)) {
+					const consolationLoot = halloweenTripRewardTable.roll(2);
+					consolationItem = consolationLoot.toString();
 					rewardBank.add(consolationLoot);
 				}
 
-				await currentHolder.removeItemsFromBank(new Bank().add('Cursed pumpkin', 1));
+				if (currentHolder.bank.amount('Cursed pumpkin') > 0) {
+					await currentHolder.removeItemsFromBank(
+						new Bank().add('Cursed pumpkin', currentHolder.bank.amount('Cursed pumpkin'))
+					);
+				}
 				if (rewardBank.length > 0) {
 					await currentHolder.addItemsToBank({ items: rewardBank, collectionLog: true });
 				}
@@ -566,6 +596,7 @@ export const halloweenCommand = defineCommand({
 				state.lastTripAt = now;
 				state.immunityUntil = now + immunityDuration;
 				state.hasScaredCrow = false;
+				state.scaredCrowAttempts = 0;
 				state.greasedUntil = null;
 				state.escaped = false;
 				saveHalloweenState(state);
@@ -586,22 +617,23 @@ export const halloweenCommand = defineCommand({
 			}
 
 			state.lastStealAttempt[user.id] = now;
-			if (roll(10)) {
-				const failedLoot = halloweenTripRewardTable.roll();
-				const item = failedLoot.items()[0][0];
+			const decayNote =
+				hadScaredCrow && crowDecayed ? `\n${currentHolder.usernameOrMention}'s scared-crow has decayed.` : '';
+			if (roll(5)) {
+				const failedLoot = halloweenTripRewardTable.roll(2);
 				await user.addItemsToBank({ items: failedLoot, collectionLog: true });
 				saveHalloweenState(state);
-				return `Your minion failed to steal the Cursed Pumpkin from ${currentHolder.usernameOrMention}, but they hope this ${item.name} is close enough!`;
+				return `Your minion failed to steal the Cursed Pumpkin from ${currentHolder.usernameOrMention}, but they hope this ${failedLoot} is close enough!${decayNote}`;
 			}
-			const failedLootRoll = roll(25);
+			const failedLootRoll = roll(12);
 			if (failedLootRoll) {
 				const randomItem = getRandomGimmickItem();
-				await user.addItemsToBank({ items: new Bank().add(randomItem.id, 1), collectionLog: true });
+				await user.addItemsToBank({ items: new Bank().add(randomItem.id, 2), collectionLog: true });
 				saveHalloweenState(state);
-				return `Your minion fails to steal the Cursed pumpkin from ${currentHolder.usernameOrMention}, but trips over ${aOrAn(randomItem.name)} on the way.`;
+				return `Your minion fails to steal the Cursed pumpkin from ${currentHolder.usernameOrMention}, but trips over 2x ${randomItem.name} on the way.${decayNote}`;
 			}
 			saveHalloweenState(state);
-			return `Your minion failed to steal the Cursed pumpkin from ${currentHolder.usernameOrMention}! They must wait 30 minutes before attempting to steal again.`;
+			return `Your minion failed to steal the Cursed pumpkin from ${currentHolder.usernameOrMention}! They must wait 30 minutes before attempting to steal again.${decayNote}`;
 		}
 
 		if (options.pumpkin || (!options.steal && !options.use && !options.admin)) {
@@ -620,7 +652,10 @@ export const halloweenCommand = defineCommand({
 					immunityStr = `Protected for ${formatDuration(state.immunityUntil - now)}`;
 				}
 				const defenses: string[] = [];
-				if (state.hasScaredCrow) defenses.push('Scared-crow Active');
+				if (state.hasScaredCrow) {
+					const remaining = Math.max(0, 3 - (state.scaredCrowAttempts ?? 0));
+					defenses.push(`Scared-crow Active (${remaining} attempt${remaining === 1 ? '' : 's'} left)`);
+				}
 				if (state.greasedUntil && state.greasedUntil > now) {
 					defenses.push(`Greased for ${formatDuration(state.greasedUntil - now)}`);
 				}
@@ -668,7 +703,7 @@ export const halloweenCommand = defineCommand({
 						`• Rotten Raffle Tickets: ${userTickets}\n` +
 						`• Pumpkin-ish Boxes: ${userBoxes}\n` +
 						`• Steal Status: ${cooldownStr}\n` +
-						`• Alluring Pie Buff: ${state.hasAlluring[user.id] ? 'Active (+20%)' : 'None'}`
+						`• Alluring Pie Buff: ${state.hasAlluring[user.id] ? 'Active (+40%)' : 'None'}`
 				);
 
 			return { embeds: [embed] };

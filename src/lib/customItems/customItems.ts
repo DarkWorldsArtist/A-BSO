@@ -15125,6 +15125,18 @@ setCustomItem(
 	5_000_000_000
 );
 
+setCustomItem(
+	75_108,
+	'Pumpkin-ish seeds',
+	'Pumpkin seed',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	10_000
+);
+
 export const discontinuedItems = resolveItems([
 	'Golden partyhat',
 	'Black swan',

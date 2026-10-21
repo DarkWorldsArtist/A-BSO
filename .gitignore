@@ -5,6 +5,7 @@ dist/
 icon_cache/
 .env
 /logs
+data/bso/cursed-pumpkin.json
 
 .yarn
 

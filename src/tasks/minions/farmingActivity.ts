@@ -272,11 +272,15 @@ export const farmingTask: MinionTask = {
 					}
 				}
 
-				if (quantity > patchType.lastQuantity) {
-					loot.add(cropToHarvest, cropYield);
+				if (cropToHarvest) {
+					if (quantity > patchType.lastQuantity) {
+						loot.add(cropToHarvest, cropYield);
+						loot.add('Weeds', quantity - patchType.lastQuantity);
+					} else {
+						loot.add(cropToHarvest, cropYield);
+					}
+				} else if (quantity > patchType.lastQuantity) {
 					loot.add('Weeds', quantity - patchType.lastQuantity);
-				} else {
-					loot.add(cropToHarvest, cropYield);
 				}
 
 				if (shouldCleanHerb && plantToHarvest.herbXp) {
