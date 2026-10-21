@@ -607,7 +607,7 @@ export const halloweenCommand = defineCommand({
 				}
 
 				await globalClient
-					.sendMessage(Channel.GeneralChannel, {
+					.sendMessage(Channel.Notifications, {
 						content: announcement,
 						allowedMentions: { users: [currentHolder.id] }
 					})

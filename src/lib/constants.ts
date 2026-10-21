@@ -117,7 +117,8 @@ export const Roles = {
 	BSOTopMysterious: '1074592096968785960',
 	BSOTopGlobalCL: '848966773885763586',
 	BSOTopFarmer: '894194259731828786',
-	BSODoubleLoot: '923768318442229792'
+	BSODoubleLoot: '1562449863185006673',
+	BSODoubleXP: '1562449902246699058'
 };
 
 export const PatronRoles = {

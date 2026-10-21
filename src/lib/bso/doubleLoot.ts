@@ -25,52 +25,71 @@ export function getNextDoubleLootUsageReset(lastUsage: Date | number) {
 	return Date.UTC(usageDate.getUTCFullYear(), usageDate.getUTCMonth() + 1, 1);
 }
 
-export async function addToDoubleLootTimer(amount: number, reason: string) {
+export async function addDoubleTime({
+	amount,
+	reason,
+	loot = false,
+	xp = false
+}: {
+	amount: number;
+	reason: string;
+	loot?: boolean;
+	xp?: boolean;
+}) {
+	if (!loot && !xp) return;
+
 	const clientSettings = await ClientSettings.fetch({
-		double_loot_finish_time: true
+		double_loot_finish_time: loot,
+		double_xp_finish_time: xp
 	});
-	let current = Number(clientSettings.double_loot_finish_time);
-	if (current < Date.now()) {
-		current = Date.now();
+
+	const updateData: { double_loot_finish_time?: number; double_xp_finish_time?: number } = {};
+	const roles: string[] = [];
+	const types: string[] = [];
+
+	if (loot) {
+		let current = Number(clientSettings.double_loot_finish_time);
+		if (current < Date.now()) {
+			current = Date.now();
+		}
+		const newDoubleLootTimer = current + amount;
+		updateData.double_loot_finish_time = newDoubleLootTimer;
+		DOUBLE_LOOT_FINISH_TIME_CACHE = newDoubleLootTimer;
+		roles.push(Roles.BSODoubleLoot);
+		types.push('Double Loot');
 	}
-	const newDoubleLootTimer = current + amount;
-	await ClientSettings.update({
-		double_loot_finish_time: newDoubleLootTimer
-	});
-	DOUBLE_LOOT_FINISH_TIME_CACHE = newDoubleLootTimer;
+
+	if (xp) {
+		let current = Number(clientSettings.double_xp_finish_time);
+		if (current < Date.now()) {
+			current = Date.now();
+		}
+		const newDoubleXpTimer = current + amount;
+		updateData.double_xp_finish_time = newDoubleXpTimer;
+		DOUBLE_XP_FINISH_TIME_CACHE = newDoubleXpTimer;
+		roles.push(Roles.BSODoubleXP);
+		types.push('Double XP');
+	}
+
+	await ClientSettings.update(updateData);
+
+	const roleMentions = roles.map(r => roleMention(r)).join(' ');
+	const typeStr = types.join(' and ');
 
 	await globalClient.sendMessage(Channel.GeneralChannel, {
-		content: `${roleMention(Roles.BSODoubleLoot)} ${formatDuration(
-			amount
-		)} added to the Double Loot timer because: ${reason}.`,
-		allowedMentions: { roles: [Roles.BSODoubleLoot] }
+		content: `${roleMentions} ${formatDuration(amount)} added to the ${typeStr} timer because: ${reason}.`,
+		allowedMentions: { roles }
 	});
 
 	await syncPrescence();
 }
 
+export async function addToDoubleLootTimer(amount: number, reason: string) {
+	return addDoubleTime({ amount, reason, loot: true });
+}
+
 export async function addToDoubleXpTimer(amount: number, reason: string) {
-	const clientSettings = await ClientSettings.fetch({
-		double_xp_finish_time: true
-	});
-	let current = Number(clientSettings.double_xp_finish_time);
-	if (current < Date.now()) {
-		current = Date.now();
-	}
-	const newDoubleXpTimer = current + amount;
-	await ClientSettings.update({
-		double_xp_finish_time: newDoubleXpTimer
-	});
-	DOUBLE_XP_FINISH_TIME_CACHE = newDoubleXpTimer;
-
-	await globalClient.sendMessage(Channel.GeneralChannel, {
-		content: `${roleMention(Roles.BSODoubleLoot)} ${formatDuration(
-			amount
-		)} added to the Double XP timer because: ${reason}.`,
-		allowedMentions: { roles: [Roles.BSODoubleLoot] }
-	});
-
-	await syncPrescence();
+	return addDoubleTime({ amount, reason, xp: true });
 }
 
 export async function addPatronLootTime(_tier: number, user: MUser | null) {

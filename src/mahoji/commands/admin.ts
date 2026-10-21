@@ -5,7 +5,7 @@ import {
 	isLotteryActive,
 	LOTTERY_TICKET_ITEM
 } from '@/lib/bso/commands/lottery.js';
-import { addToDoubleLootTimer, addToDoubleXpTimer } from '@/lib/bso/doubleLoot.js';
+import { addDoubleTime } from '@/lib/bso/doubleLoot.js';
 import {
 	allLeagueTasks,
 	analyzeLeaguesCompletedTaskIDs,
@@ -1448,9 +1448,7 @@ ${META_CONSTANTS.RENDERED_STR}`
 			if (itemErrors.length > 0) return `Invalid items: ${itemErrors.join(', ')}`;
 
 			if (options.give_items.all) {
-				await interaction.confirmation(
-					`Are you sure you want to give ${items} to ALL users?`
-				);
+				await interaction.confirmation(`Are you sure you want to give ${items} to ALL users?`);
 				const allUsers = await prisma.user.findMany({
 					select: { id: true }
 				});
@@ -1521,13 +1519,20 @@ ${META_CONSTANTS.RENDERED_STR}`
 			const type = options.add_double_time.type;
 			const reason = options.add_double_time.reason ?? `${adminUser.logName} added ${formatDuration(durationMs)}`;
 
+			const addLoot = type === 'Double Loot' || type === 'Both';
+			const addXP = type === 'Double XP' || type === 'Both';
+			await addDoubleTime({
+				amount: durationMs,
+				reason,
+				loot: addLoot,
+				xp: addXP
+			});
+
 			const messages: string[] = [];
-			if (type === 'Double Loot' || type === 'Both') {
-				await addToDoubleLootTimer(durationMs, reason);
+			if (addLoot) {
 				messages.push(`Added ${formatDuration(durationMs)} of Double Loot.`);
 			}
-			if (type === 'Double XP' || type === 'Both') {
-				await addToDoubleXpTimer(durationMs, reason);
+			if (addXP) {
 				messages.push(`Added ${formatDuration(durationMs)} of Double XP.`);
 			}
 
