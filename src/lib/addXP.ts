@@ -1,5 +1,4 @@
 import { GLOBAL_BSO_XP_MULTIPLIER } from '@/lib/bso/bsoConstants.js';
-import { isDoubleXPActive } from '@/lib/bso/doubleLoot.js';
 import {
 	divinersOutfit,
 	empyreanOutfit,
@@ -13,6 +12,7 @@ import {
 	type IslandMaintenanceTimestamps,
 	type IslandUpgradeTiers
 } from '@/lib/bso/commands/islandUpgrades.js';
+import { isDoubleXPActive } from '@/lib/bso/doubleLoot.js';
 import { _itemId } from '@/lib/bso/util/bfcrit.js';
 
 import { bold } from '@oldschoolgg/discord';

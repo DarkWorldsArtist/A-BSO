@@ -46,6 +46,7 @@ interface ChannelConfig {
 	BotLogs: string;
 	GeneralChannel: string;
 	CyrCommandsChannel: string;
+	HalloweenChannel: string;
 }
 
 const OSBChannelConfig: ChannelConfig = {
@@ -56,7 +57,8 @@ const OSBChannelConfig: ChannelConfig = {
 	HelpAndSupport: '668073484731154462',
 	BotLogs: isProduction ? '1051725977320964197' : TEST_SERVER_LOG_CHANNEL,
 	GeneralChannel: GENERAL_CHANNEL_ID,
-	CyrCommandsChannel: '1522315320260562992'
+	CyrCommandsChannel: '1522315320260562992',
+	HalloweenChannel: '1560853025432539186'
 };
 
 const BSOChannelConfig: ChannelConfig = {
@@ -70,7 +72,8 @@ const BSOChannelConfig: ChannelConfig = {
 	HelpAndSupport: '1560853473199792228',
 	BotLogs: '1560853473199792228',
 	GeneralChannel: GENERAL_CHANNEL_ID,
-	CyrCommandsChannel: '1560853473199792228'
+	CyrCommandsChannel: '1560853473199792228',
+	HalloweenChannel: process.env.HALLOWEEN_CHANNEL ?? '1560853025432539186'
 };
 
 const TestChannelConfig: ChannelConfig = {
@@ -81,7 +84,8 @@ const TestChannelConfig: ChannelConfig = {
 	HelpAndSupport: TEST_SERVER_LOG_CHANNEL,
 	BotLogs: TEST_SERVER_LOG_CHANNEL,
 	GeneralChannel: TEST_SERVER_LOG_CHANNEL,
-	CyrCommandsChannel: '1522315320260562992'
+	CyrCommandsChannel: '1522315320260562992',
+	HalloweenChannel: TEST_SERVER_LOG_CHANNEL
 };
 
 export const Channel = isProduction ? (BOT_TYPE === 'OSB' ? OSBChannelConfig : BSOChannelConfig) : TestChannelConfig;

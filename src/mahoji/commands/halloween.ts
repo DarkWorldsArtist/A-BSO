@@ -305,7 +305,7 @@ export const halloweenCommand = defineCommand({
 			]
 		}
 	],
-	run: async ({ options, user }) => {
+	run: async ({ options, user, channelId }) => {
 		const now = Date.now();
 		const state = getHalloweenState();
 
@@ -416,6 +416,10 @@ export const halloweenCommand = defineCommand({
 		}
 
 		if (options.use) {
+			if (globalConfig.isProduction && channelId !== Channel.HalloweenChannel) {
+				return `You can only use Halloween items in <#${Channel.HalloweenChannel}>.`;
+			}
+
 			const itemChoice = options.use.item.toLowerCase();
 			const targetUser = options.use.target ? await mUserFetch(options.use.target.user.id) : null;
 

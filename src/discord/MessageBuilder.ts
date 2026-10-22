@@ -54,7 +54,9 @@ export class MessageBuilderClass {
 
 	setBankImage(opts: MakeBankImageOptions): this {
 		if (this._message.files) {
-			this._message.files = this._message.files.filter((f): f is SendableFile => Boolean(f?.name && !f.name.toLowerCase().endsWith('.png')));
+			this._message.files = this._message.files.filter((f): f is SendableFile =>
+				Boolean(f?.name && !f.name.toLowerCase().endsWith('.png'))
+			);
 		}
 		this.bankImagePromise = makeBankImage(opts);
 		return this;

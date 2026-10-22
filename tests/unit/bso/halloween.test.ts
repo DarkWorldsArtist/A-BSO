@@ -1,14 +1,49 @@
-import { describe, expect, test } from 'vitest';
-import { Time } from '@oldschoolgg/toolkit';
-
 import { PumpkinIshBoxTable } from '@/lib/bso/openables/holidayOpenables.js';
+
+import { Time } from '@oldschoolgg/toolkit';
+import { describe, expect, test } from 'vitest';
+
+import { Channel, globalConfig } from '@/lib/constants.js';
 import {
 	calculateAndAwardHoldRewards,
-	halloweenTripRewardTable,
-	type HalloweenEventState
+	type HalloweenEventState,
+	halloweenCommand,
+	halloweenTripRewardTable
 } from '@/mahoji/commands/halloween.js';
 
 describe('Halloween Event Balance & Adjustments', () => {
+	test('halloween channel restriction', async () => {
+		expect(Channel.HalloweenChannel).toBeDefined();
+
+		const originalIsProd = globalConfig.isProduction;
+		try {
+			// @ts-expect-error override for test
+			globalConfig.isProduction = true;
+
+			const mockUser = { id: '123' } as any;
+
+			const resultBlocked = await halloweenCommand.run({
+				options: {
+					use: {
+						item: 'scared-crow'
+					}
+				},
+				user: mockUser,
+				channelId: 'wrong-channel',
+				interaction: {} as any,
+				member: null,
+				guildId: null,
+				userId: '123',
+				rng: {} as any
+			});
+
+			expect(resultBlocked).toBe(`You can only use Halloween items in <#${Channel.HalloweenChannel}>.`);
+		} finally {
+			// @ts-expect-error restore original value
+			globalConfig.isProduction = originalIsProd;
+		}
+	});
+
 	test('calculateAndAwardHoldRewards awards tripled rewards (tickets every 5m, boxes every 10m)', () => {
 		const state: HalloweenEventState = {
 			currentHolderId: '123',
