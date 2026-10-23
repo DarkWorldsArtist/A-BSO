@@ -11,7 +11,7 @@ import { getReclaimableItemsOfUser } from '@/lib/reclaimableItems.js';
 const independenceDay2Box = 'Independence Day 2 Box';
 const independenceDay2EndDate = new Date('2026-07-20T00:00:00.000Z');
 
-function maxIndy2Boxes(user: MUser): number {
+async function maxIndy2Boxes(user: MUser): Promise<number> {
 	let maxBoxes = 1;
 
 	const clPercent = calcCLDetails(user).percent;
@@ -19,9 +19,9 @@ function maxIndy2Boxes(user: MUser): number {
 	const legitTriggers = [
 		accountAge && accountAge >= 30,
 		user.totalLevel >= 300,
-		user.bitfield.includes(BitField.OriginalCyrSupporter),
+		user.bitfield.includes(BitField.OriginalSupporter),
 		user.bitfield.includes(BitField.BypassAgeRestriction),
-		user.perkTier >= 3
+		(await user.fetchPerkTier()) >= 3
 	];
 	const authorized = legitTriggers.some(Boolean);
 
@@ -51,7 +51,7 @@ const claimables = [
 				return 'This event is no longer claimable.';
 			}
 
-			const maxBoxes = maxIndy2Boxes(user);
+			const maxBoxes = await maxIndy2Boxes(user);
 			if (maxBoxes === 0) {
 				return `You need to be at least 30 days old to claim this. If you think this is a mistake, please ask a mod to fix your 'minion buy date', or bypass the age restriction.`;
 			}
@@ -61,7 +61,7 @@ const claimables = [
 			return true;
 		},
 		action: async (user: MUser) => {
-			const maxBoxes = maxIndy2Boxes(user);
+			const maxBoxes = await maxIndy2Boxes(user);
 			const boxesReceived = user.cl.amount(independenceDay2Box);
 			const boxesRemaining = maxBoxes - boxesReceived;
 			if (boxesRemaining <= 0) {

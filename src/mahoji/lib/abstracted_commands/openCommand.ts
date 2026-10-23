@@ -60,9 +60,8 @@ export async function abstractedOpenUntilCommand(
 		return 'The quantity must be a positive integer.';
 	}
 
-	const elligible = (await user.fetchPerkTier()) || user.bitfield.includes(BitField.OriginalCyrSupporter);
 	if (!maxOpenQuantity) {
-		if (elligible && user.bitfield.includes(BitField.UnlimitedOpenUntil)) {
+		if (user.bitfield.includes(BitField.UnlimitedOpenUntil)) {
 			maxOpenQuantity = 100_000_000;
 		} else {
 			maxOpenQuantity = 1;
@@ -230,8 +229,7 @@ async function finalizeOpening({
 		.map(({ openedItem }) => `${newOpenableScores.amount(openedItem.id)}x ${openedItem.name}`)
 		.join(', ');
 
-	const perkTier = await user.fetchPerkTier();
-	const components: ButtonBuilder[] = buildClueButtons(loot, perkTier, user);
+	const components: ButtonBuilder[] = buildClueButtons(loot, user);
 
 	const response = new MessageBuilder()
 		.setContent(

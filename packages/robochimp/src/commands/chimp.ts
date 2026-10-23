@@ -6,18 +6,18 @@ import { type BotService, botServiceChoices, getBotShutdown, setBotShutdown } fr
 import { detectMischief } from '@/lib/mischiefDetection.js';
 import { patreonTask } from '@/lib/patreon.js';
 import {
-	fetchPremiumTimeBalance,
-	formatPremiumTimeGrant,
-	grantPremiumTime,
-	validatePremiumTimeGrant,
-	validPremiumTimeTiers
-} from '@/lib/premiumTime.js';
+	fetchPatronTimeBalance,
+	formatPatronTimeGrant,
+	grantPatronTime,
+	validatePatronTimeGrant,
+	validPatronTimeTiers
+} from '@/lib/patronTime.js';
 import type { RUser } from '@/structures/RUser.js';
 import { serviceManager } from '@/structures/ServiceManager.js';
 import { CHANNELS, tiers } from '@/util.js';
 
 const tierChoices = [...tiers].reverse().map(tier => ({
-	name: `Magna Tier ${tier.number} (perkTier ${tier.perkTier})`,
+	name: `Tier ${tier.number} (perkTier ${tier.perkTier})`,
 	value: tier.perkTier.toString()
 }));
 
@@ -26,9 +26,9 @@ function availableTiersString() {
 }
 
 async function addPatreonTime(timeMs: number, tier: number, userToGive: RUser, interaction: MInteraction) {
-	if (!validatePremiumTimeGrant(timeMs, tier)) return 'Invalid input.';
+	if (!validatePatronTimeGrant(timeMs, tier)) return 'Invalid input.';
 
-	const currentUser = await fetchPremiumTimeBalance(userToGive.id);
+	const currentUser = await fetchPatronTimeBalance(userToGive.id);
 	const currentBalanceTier = currentUser.premium_balance_tier;
 
 	if (currentBalanceTier !== null && currentBalanceTier !== tier) {
@@ -40,9 +40,9 @@ async function addPatreonTime(timeMs: number, tier: number, userToGive: RUser, i
 		`Are you sure you want to add ${formatDuration(timeMs)} of Tier ${tier} patron to ${userToGive.mention}?`
 	);
 
-	const grant = await grantPremiumTime({ userID: userToGive.id, timeMs, tier });
+	const grant = await grantPatronTime({ userID: userToGive.id, timeMs, tier });
 
-	return `Gave ${formatPremiumTimeGrant(grant)} patron to ${userToGive.mention}. They have ${formatDuration(
+	return `Gave ${formatPatronTimeGrant(grant)} patron to ${userToGive.mention}. They have ${formatDuration(
 		grant.remainingTime
 	)} remaining.`;
 }
@@ -143,7 +143,7 @@ export const chimpCommand = defineCommand({
 							name: 'tier',
 							description: 'The tier to give.',
 							required: true,
-							choices: validPremiumTimeTiers.map(tier => ({ name: tier.toString(), value: tier }))
+							choices: validPatronTimeTiers.map(tier => ({ name: tier.toString(), value: tier }))
 						},
 						{
 							type: 'String',
@@ -298,7 +298,7 @@ export const chimpCommand = defineCommand({
 			}
 
 			await patreonTask.changeTier(targetUser, tier);
-			return `Changed ${targetMention} to Magna Tier ${tier.number} (perkTier ${tier.perkTier}).`;
+			return `Changed ${targetMention} to Tier ${tier.number} (perkTier ${tier.perkTier}).`;
 		}
 		if (options.patreon?.debug) {
 			const res = await patreonTask.fetchPatrons();

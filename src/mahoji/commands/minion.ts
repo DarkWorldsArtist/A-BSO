@@ -75,8 +75,9 @@ export async function getUserInfo(user: MUser) {
 	const task = await ActivityManager.getActivityOfUser(user.id);
 	const taskText = task ? `${task.type}` : 'None';
 
+	const perkTier = await user.fetchPerkTier();
 	const result = {
-		perkTier: user.perkTier,
+		perkTier,
 		isBlacklisted: await user.isBlacklisted(),
 		badges: user.badgesString,
 		isIronman: user.isIronman,
@@ -90,7 +91,7 @@ export async function getUserInfo(user: MUser) {
 		2
 	);
 
-	const premiumPerkTier =
+	const patronTimeTier =
 		roboChimpUser.premium_balance_tier &&
 		roboChimpUser.premium_balance_expiry_date &&
 		roboChimpUser.premium_balance_expiry_date > Date.now()
@@ -103,11 +104,11 @@ export async function getUserInfo(user: MUser) {
 		roboChimpUser.premium_balance_expiry_date &&
 		roboChimpUser.premium_balance_expiry_date > Date.now()
 	) {
-		if (roboChimpUser.premium_balance_tier > roboChimpUser.perk_tier) {
-			perkTierDisplay = `Premium __Tier ${premiumPerkTier - 1}__ - ${formatDuration(Number(roboChimpUser.premium_balance_expiry_date) - Date.now())} remaining`;
+		if (roboChimpUser.premium_balance_tier >= roboChimpUser.perk_tier) {
+			perkTierDisplay = `Tier ${patronTimeTier - 1} patron (${formatDuration(Number(roboChimpUser.premium_balance_expiry_date) - Date.now())} remaining)`;
 		}
 	}
-	if (result.perkTier > roboChimpUser.perk_tier && result.perkTier > premiumPerkTier) {
+	if (result.perkTier > roboChimpUser.perk_tier && result.perkTier > patronTimeTier) {
 		if (user.isMod || user.isWikiContrib || user.isContributor || user.isTrusted) {
 			perkTierDisplay = `**Courtesy** __Tier ${result.perkTier - 1}__`;
 		} else {

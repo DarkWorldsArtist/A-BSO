@@ -189,11 +189,11 @@ export async function gearEquipCommand(args: {
 		return `${user.minionName} is currently out on a trip, so you can't change their gear!`;
 	}
 
+	if (setup === 'other' && (await user.fetchPerkTier()) < PerkTier.Four) {
+		return PATRON_ONLY_GEAR_SETUP;
+	}
 	if (items) {
 		return gearEquipMultiCommand(user, setup, items);
-	}
-	if (setup === 'other' && user.perkTier < PerkTier.Four) {
-		return PATRON_ONLY_GEAR_SETUP;
 	}
 	if (preset) {
 		return gearPresetEquipCommand(user, setup, preset);

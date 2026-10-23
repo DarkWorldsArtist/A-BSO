@@ -167,14 +167,7 @@ export const tickers: {
 			const users = await prisma.$queryRawUnsafe<User[]>(`SELECT *
 FROM users u
 WHERE
-  bitfield && ARRAY[
-    4,  -- PatronTier3
-    5,  -- PatronTier4
-    6,  -- PatronTier5
-    21, -- PatronTier6
-    7   -- Moderator
-  ]::int[]
-AND last_command_date > now() - INTERVAL '5 days'
+  last_command_date > now() - INTERVAL '5 days'
 AND EXISTS (
   SELECT 1
   FROM farmed_crop fc

@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/robochimp';
 
 import type { RUser } from '@/structures/RUser.js';
 import { globalConfig } from '../constants.js';
-import { allPatronBits, Bits, cyrTiers, magnaTiers, type PaidTierSource, type PatronTier, paidTiers } from '../util.js';
+import { allPatronBits, Bits, type PatronTier, paidTiers, patronTiers } from '../util.js';
 import type { OSBPrismaClient } from './prisma.js';
 
 const BadgesEnum = {
@@ -49,10 +49,9 @@ type PatreonUserToUpsert = {
 	patreonID: string;
 };
 
-const ORIGINAL_CYR_PATRON_CUTOFF_UTC = Date.UTC(2026, 7, 16);
+const ORIGINAL_SUPPORTER_CUTOFF_UTC = Date.UTC(2026, 7, 16);
 
 type PatreonMember = {
-	source: PaidTierSource;
 	patreonID: string;
 	discordID?: string;
 	entitledTier: PatronTier | null;
@@ -65,7 +64,6 @@ type Sponsor = {
 };
 
 type CampaignConfig = {
-	source: PaidTierSource;
 	token: string;
 	campaignID: string;
 	webhookSecret?: string;
@@ -132,23 +130,22 @@ function intArraySql(values: readonly number[]) {
 	return values.length === 0 ? Prisma.sql`ARRAY[]::integer[]` : Prisma.sql`ARRAY[${Prisma.join(values)}]::integer[]`;
 }
 
-function canGrantOriginalCyrPatronBits() {
-	return Date.now() < ORIGINAL_CYR_PATRON_CUTOFF_UTC;
+function canGrantOriginalSupporterBits() {
+	return Date.now() < ORIGINAL_SUPPORTER_CUTOFF_UTC;
 }
 
-function getCyrTierConfigs(): PatronTier[] {
+function getPatronTierConfigs(): PatronTier[] {
 	const tierIDMap = new Map<number, string | undefined>([
-		[0, globalConfig.cyrPatreonTier0ID],
-		[1, globalConfig.cyrPatreonTier1ID],
-		[2, globalConfig.cyrPatreonTier2ID],
-		[3, globalConfig.cyrPatreonTier3ID],
-		[4, globalConfig.cyrPatreonTier4ID],
-		[5, globalConfig.cyrPatreonTier5ID],
-		[6, globalConfig.cyrPatreonTier6ID],
-		[7, globalConfig.cyrPatreonTier7ID]
+		[1, globalConfig.alabastorPatreonTier1ID],
+		[2, globalConfig.alabastorPatreonTier2ID],
+		[3, globalConfig.alabastorPatreonTier3ID],
+		[4, globalConfig.alabastorPatreonTier4ID],
+		[5, globalConfig.alabastorPatreonTier5ID],
+		[6, globalConfig.alabastorPatreonTier6ID],
+		[7, globalConfig.alabastorPatreonTier7ID]
 	]);
 
-	return cyrTiers
+	return patronTiers
 		.map(tier => {
 			const id = tierIDMap.get(tier.number);
 			return id ? { ...tier, id } : null;
@@ -156,29 +153,19 @@ function getCyrTierConfigs(): PatronTier[] {
 		.filter(notEmpty);
 }
 
-function getPatreonCampaignConfigs(creator?: 'magna' | 'cyr'): CampaignConfig[] {
+function getPatreonCampaignConfigs(): CampaignConfig[] {
 	const configs: CampaignConfig[] = [];
 
-	if (globalConfig.magnaPatreonToken && globalConfig.magnaPatreonCampaignID) {
+	if (globalConfig.alabastorPatreonToken && globalConfig.alabastorPatreonCampaignID) {
 		configs.push({
-			source: 'magna',
-			token: globalConfig.magnaPatreonToken,
-			campaignID: globalConfig.magnaPatreonCampaignID,
-			webhookSecret: globalConfig.magnaPatreonWebhookSecret,
-			tiers: magnaTiers
-		});
-	}
-	if (globalConfig.cyrPatreonToken && globalConfig.cyrPatreonCampaignID) {
-		configs.push({
-			source: 'cyr',
-			token: globalConfig.cyrPatreonToken,
-			campaignID: globalConfig.cyrPatreonCampaignID,
-			webhookSecret: globalConfig.cyrPatreonWebhookSecret,
-			tiers: getCyrTierConfigs()
+			token: globalConfig.alabastorPatreonToken,
+			campaignID: globalConfig.alabastorPatreonCampaignID,
+			webhookSecret: globalConfig.alabastorPatreonWebhookSecret,
+			tiers: getPatronTierConfigs()
 		});
 	}
 
-	return creator ? configs.filter(c => c.source === creator) : configs;
+	return configs;
 }
 
 function buildPatreonApiURL(campaignID: string) {
@@ -395,7 +382,7 @@ class PatreonTask {
 
 		if (result.errors) {
 			console.error(result.errors);
-			throw new Error(`Failed to fetch ${config.source} patrons.`);
+			throw new Error('Failed to fetch patrons.');
 		}
 
 		const tierMap = new Map(config.tiers.filter(tier => tier.id).map(tier => [tier.id!, tier]));
@@ -409,7 +396,6 @@ class PatreonTask {
 					.sort((a: PatronTier, b: PatronTier) => b.perkTier - a.perkTier)[0] ?? null;
 
 			members.push({
-				source: config.source,
 				patreonID: user.relationships.user.data.id,
 				discordID: socialConnections?.discord?.user_id,
 				entitledTier,
@@ -452,9 +438,7 @@ class PatreonTask {
 					discordID = usersByPatreonID.get(member.patreonID)?.id.toString();
 				}
 				if (!discordID) {
-					messages.push(
-						`Unable to resolve ${member.source} patron ${member.patreonID} to a Discord account.`
-					);
+					messages.push(`Unable to resolve patron ${member.patreonID} to a Discord account.`);
 					continue;
 				}
 
@@ -471,7 +455,7 @@ class PatreonTask {
 			if (!sponsor.tier) continue;
 			const user = usersByGithubID.get(sponsor.githubID);
 			if (!user) continue;
-			const tier = magnaTiers.find(candidate => candidate.perkTier === sponsor.tier);
+			const tier = patronTiers.find(candidate => candidate.perkTier === sponsor.tier);
 			if (!tier) continue;
 			addEntitlement(entitlementsByUserID, user.id.toString(), tier);
 		}
@@ -542,7 +526,7 @@ class PatreonTask {
 	async changeTier(user: RUser, shouldHave: PatronTier | PerkTier | number) {
 		const tier =
 			typeof shouldHave === 'number'
-				? paidTiers.find(candidate => candidate.perkTier === shouldHave && candidate.source === 'magna')
+				? paidTiers.find(candidate => candidate.perkTier === shouldHave)
 				: shouldHave;
 		if (!tier) {
 			throw new Error(`Invalid tier: ${shouldHave}`);
@@ -691,11 +675,11 @@ class PatreonTask {
 				markHasEverBeenPatron: paidBits.length > 0 || user.bits.includes(Bits.HasEverBeenPatron)
 			});
 			if (
-				canGrantOriginalCyrPatronBits() &&
-				entitlements.some(entitlement => entitlement.source === 'cyr') &&
-				!nextBits.includes(Bits.CyrsOriginalPatrons)
+				canGrantOriginalSupporterBits() &&
+				entitlements.length > 0 &&
+				!nextBits.includes(Bits.OriginalSupporter)
 			) {
-				nextBits.push(Bits.CyrsOriginalPatrons);
+				nextBits.push(Bits.OriginalSupporter);
 			}
 			const nextPerkTier = Math.max(
 				getRoboChimpRolePerkTier(user.bits),
@@ -774,7 +758,7 @@ class PatreonTask {
 
 			if (paidBits.length > 0 || oldPerkTier !== user.nextPerkTier) {
 				messages.push(
-					`${discordID}: ${highestPaidTier ? `${highestPaidTier.source} tier ${highestPaidTier.number}` : 'no paid tier'}, perk_tier ${user.nextPerkTier}`
+					`${discordID}: ${highestPaidTier ? `tier ${highestPaidTier.number}` : 'no paid tier'}, perk_tier ${user.nextPerkTier}`
 				);
 			}
 		}
@@ -797,7 +781,7 @@ export function verifyPatreonSecret(body: string, signature?: string | string[])
 		return false;
 	}
 
-	for (const campaign of getPatreonCampaignConfigs('cyr')) {
+	for (const campaign of getPatreonCampaignConfigs()) {
 		if (!campaign.webhookSecret) continue;
 		const hmac = createHmac('md5', campaign.webhookSecret);
 		hmac.update(body);

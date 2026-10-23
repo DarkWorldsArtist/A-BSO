@@ -1,22 +1,22 @@
-import { Time } from '@oldschoolgg/toolkit';
+import { PerkTier, Time } from '@oldschoolgg/toolkit';
 import { describe, expect, test } from 'vitest';
 
-import { getCyrTripBonus, getRoboChimpPaidTierDisplay } from '@/lib/perkTiers.js';
+import { getRoboChimpPaidTierDisplay } from '@/lib/perkTiers.js';
+import { patronMaxTripBonus } from '@/lib/util/calcMaxTripLength.js';
 
 describe('perk tier helpers', () => {
 	test('formats robochimp paid tier labels', () => {
-		expect(getRoboChimpPaidTierDisplay([19, 10], { perkTier: 5 })).toBe('Tier 3 patron');
-		expect(getRoboChimpPaidTierDisplay([], { perkTier: 4 })).toBe('Perk Tier 4');
+		expect(getRoboChimpPaidTierDisplay([19], { perkTier: 4 })).toBe('Tier 3 patron');
+		expect(getRoboChimpPaidTierDisplay([], { perkTier: 4 })).toBe('Tier 3 patron');
 		expect(getRoboChimpPaidTierDisplay([], { perkTier: 0 })).toBe('None');
 	});
 
-	test('computes cyr trip bonus from paid bits', () => {
-		expect(getCyrTripBonus([16])).toBe(Time.Minute * 3);
-		expect(getCyrTripBonus([17])).toBe(Time.Minute * 7);
-		expect(getCyrTripBonus([18])).toBe(Time.Minute * 11);
-		expect(getCyrTripBonus([19])).toBe(Time.Minute * 16);
-		expect(getCyrTripBonus([20])).toBe(Time.Minute * 20);
-		expect(getCyrTripBonus([21])).toBe(Time.Minute * 25);
-		expect(getCyrTripBonus([])).toBe(0);
+	test('computes patron trip bonus from perk tier', () => {
+		expect(patronMaxTripBonus(PerkTier.Two)).toBe(Time.Minute * 3);
+		expect(patronMaxTripBonus(PerkTier.Three)).toBe(Time.Minute * 6);
+		expect(patronMaxTripBonus(PerkTier.Four)).toBe(Time.Minute * 15);
+		expect(patronMaxTripBonus(PerkTier.Five)).toBe(Time.Minute * 20);
+		expect(patronMaxTripBonus(PerkTier.Six)).toBe(Time.Minute * 25);
+		expect(patronMaxTripBonus(PerkTier.Seven)).toBe(Time.Minute * 25);
 	});
 });

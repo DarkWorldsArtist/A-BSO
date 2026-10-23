@@ -8,7 +8,7 @@ import { chunk } from 'remeda';
 
 import type { Giveaway } from '@/prisma/main.js';
 import { giveawayCache } from '@/lib/cache.js';
-import { BitField, patronFeatures } from '@/lib/constants.js';
+import { BitField } from '@/lib/constants.js';
 import { EmojiId } from '@/lib/data/emojis.js';
 import { baseFilters, filterableTypes } from '@/lib/data/filterables.js';
 import { marketPriceOfBank } from '@/lib/marketPrices.js';
@@ -102,12 +102,13 @@ export const giveawayCommand = defineCommand({
 	run: async ({ options, user, guildId, interaction, channelId, user: apiUser, rng }): CommandResponse => {
 		if (user.isIronman) return 'You cannot do giveaways!';
 
+		const perkTier = await user.fetchPerkTier();
 		let maxGiveaways = 10;
-		const cyrFan = user.bitfield.includes(BitField.OriginalCyrSupporter);
-		if (cyrFan) {
-			if (user.perkTier >= 2) maxGiveaways += 5 * (user.perkTier - 1);
+		const originalSupporter = user.bitfield.includes(BitField.OriginalSupporter);
+		if (originalSupporter) {
+			if (perkTier >= 2) maxGiveaways += 5 * (perkTier - 1);
 		} else {
-			if (user.perkTier >= 3) maxGiveaways += 5 * (user.perkTier - 2);
+			if (perkTier >= 3) maxGiveaways += 5 * (perkTier - 2);
 		}
 		if (options.start) {
 			const existingGiveaways = await prisma.giveaway.findMany({
@@ -117,7 +118,7 @@ export const giveawayCommand = defineCommand({
 				}
 			});
 			if (existingGiveaways.length >= maxGiveaways && !userHasUnlimitedGiveaways(user)) {
-				return `You cannot have more than ${cyrFan ? Emoji.Seer : ''} ${maxGiveaways} giveaways active at a time.`;
+				return `You cannot have more than ${originalSupporter ? Emoji.Seer : ''} ${maxGiveaways} giveaways active at a time.`;
 			}
 
 			if (!guildId && !interaction.guildId) {
@@ -252,13 +253,9 @@ export const giveawayCommand = defineCommand({
 				return Emoji.RedX;
 			}
 
-			const perkTier = await user.fetchPerkTier();
-
 			const lines = giveaways.map(
 				(g: Giveaway) =>
-					`${
-						perkTier >= patronFeatures.ShowEnteredInGiveawayList.tier ? `${getEmoji(g)} ` : ''
-					}[${toKMB(marketPriceOfBank(new Bank(g.loot as ItemBank)))} giveaway ending ${time(
+					`${getEmoji(g)} [${toKMB(marketPriceOfBank(new Bank(g.loot as ItemBank)))} giveaway ending ${time(
 						g.finish_date,
 						'R'
 					)}](${messageLink(g.channel_id, g.message_id)})`

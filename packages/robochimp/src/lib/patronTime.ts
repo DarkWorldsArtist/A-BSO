@@ -1,31 +1,31 @@
 import { formatDuration, Time } from '@oldschoolgg/toolkit';
 import type { Prisma } from '@prisma/robochimp';
 
-type PremiumTimeClient = typeof roboChimpClient | Prisma.TransactionClient;
+type PatronTimeClient = typeof roboChimpClient | Prisma.TransactionClient;
 
-export const validPremiumTimeTiers = [1, 2, 3, 4, 5, 6, 7] as const;
+export const validPatronTimeTiers = [1, 2, 3, 4, 5, 6, 7] as const;
 
-export type PremiumTimeBalance = {
+export type PatronTimeBalance = {
 	premium_balance_tier: number | null;
 	premium_balance_expiry_date: bigint | null;
 };
 
-export type PremiumTimeGrant = {
+export type PatronTimeGrant = {
 	expiryTime: number;
 	remainingTime: number;
 	tier: number;
 	timeMs: number;
 };
 
-export function validatePremiumTimeGrant(timeMs: number, tier: number) {
+export function validatePatronTimeGrant(timeMs: number, tier: number) {
 	return (
-		validPremiumTimeTiers.includes(tier as (typeof validPremiumTimeTiers)[number]) &&
+		validPatronTimeTiers.includes(tier as (typeof validPatronTimeTiers)[number]) &&
 		timeMs >= Time.Second &&
 		timeMs <= Time.Year * 3
 	);
 }
 
-export async function fetchPremiumTimeBalance(userID: bigint): Promise<PremiumTimeBalance> {
+export async function fetchPatronTimeBalance(userID: bigint): Promise<PatronTimeBalance> {
 	return roboChimpClient.user.findUniqueOrThrow({
 		where: {
 			id: userID
@@ -37,17 +37,17 @@ export async function fetchPremiumTimeBalance(userID: bigint): Promise<PremiumTi
 	});
 }
 
-export function calculatePremiumTimeGrant({
+export function calculatePatronTimeGrant({
 	currentBalance,
 	timeMs,
 	tier,
 	now = Date.now()
 }: {
-	currentBalance: PremiumTimeBalance;
+	currentBalance: PatronTimeBalance;
 	timeMs: number;
 	tier: number;
 	now?: number;
-}): PremiumTimeGrant {
+}): PatronTimeGrant {
 	const currentBalanceTime =
 		currentBalance.premium_balance_expiry_date === null ? null : Number(currentBalance.premium_balance_expiry_date);
 	const expiryTime =
@@ -63,31 +63,31 @@ export function calculatePremiumTimeGrant({
 	};
 }
 
-export function premiumTimeGrantUpdate(grant: PremiumTimeGrant) {
+export function patronTimeGrantUpdate(grant: PatronTimeGrant) {
 	return {
 		premium_balance_tier: grant.tier,
 		premium_balance_expiry_date: grant.expiryTime
 	};
 }
 
-export async function applyPremiumTimeGrant({
+export async function applyPatronTimeGrant({
 	client = roboChimpClient,
 	userID,
 	grant
 }: {
-	client?: PremiumTimeClient;
+	client?: PatronTimeClient;
 	userID: bigint;
-	grant: PremiumTimeGrant;
+	grant: PatronTimeGrant;
 }) {
 	return client.user.update({
 		where: {
 			id: userID
 		},
-		data: premiumTimeGrantUpdate(grant)
+		data: patronTimeGrantUpdate(grant)
 	});
 }
 
-export async function grantPremiumTime({
+export async function grantPatronTime({
 	userID,
 	timeMs,
 	tier,
@@ -98,18 +98,18 @@ export async function grantPremiumTime({
 	tier: number;
 	now?: number;
 }) {
-	if (!validatePremiumTimeGrant(timeMs, tier)) {
-		throw new Error('Invalid temporary premium grant.');
+	if (!validatePatronTimeGrant(timeMs, tier)) {
+		throw new Error('Invalid temporary patron grant.');
 	}
 
-	const currentBalance = await fetchPremiumTimeBalance(userID);
-	const grant = calculatePremiumTimeGrant({ currentBalance, timeMs, tier, now });
+	const currentBalance = await fetchPatronTimeBalance(userID);
+	const grant = calculatePatronTimeGrant({ currentBalance, timeMs, tier, now });
 
-	await applyPremiumTimeGrant({ userID, grant });
+	await applyPatronTimeGrant({ userID, grant });
 	await globalClient.fetchRUser(userID);
 	return grant;
 }
 
-export function formatPremiumTimeGrant(grant: PremiumTimeGrant) {
+export function formatPatronTimeGrant(grant: PatronTimeGrant) {
 	return `${formatDuration(grant.timeMs)} of Tier ${grant.tier}`;
 }

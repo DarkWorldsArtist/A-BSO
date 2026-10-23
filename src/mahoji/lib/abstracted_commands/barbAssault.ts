@@ -172,8 +172,7 @@ export async function barbAssaultGambleCommand(interaction: MInteraction, user: 
 
 	const str = `You spent ${(cost * quantity).toLocaleString()} Honour Points for ${quantity.toLocaleString()}x ${name} Gamble, and received...`;
 
-	const perkTier = await user.fetchPerkTier();
-	const components: ButtonBuilder[] = buildClueButtons(loot, perkTier, user);
+	const components: ButtonBuilder[] = buildClueButtons(loot, user);
 
 	const response = new MessageBuilder()
 		.setContent(str)

@@ -7,7 +7,7 @@ import { ButtonBuilder, ButtonStyle } from '@oldschoolgg/discord';
 import { stripNonAlphanumeric, toTitleCase } from '@oldschoolgg/toolkit';
 
 import { ClueTiers } from '@/lib/clues/clueTiers.js';
-import { BitField, PerkTier } from '@/lib/constants.js';
+import { BitField } from '@/lib/constants.js';
 import { EmojiId } from '@/lib/data/emojis.js';
 import { InteractionID } from '@/lib/InteractionID.js';
 import { minionBuyButton } from '@/lib/sharedComponents.js';
@@ -68,8 +68,6 @@ export async function minionStatusCommand(
 	user: MUser,
 	channelId: string
 ): Promise<Required<Pick<BaseSendableMessage, 'content' | 'components'>>> {
-	const perkTier = await user.fetchPerkTier();
-
 	const currentActivity = await ActivityManager.getActivityOfUser(user.id);
 	const minionIsBusy = Boolean(currentActivity);
 	const birdhouseDetails = minionIsBusy ? { isReady: false } : user.fetchBirdhouseData();
@@ -93,7 +91,6 @@ export async function minionStatusCommand(
 	const buttons: ButtonBuilder[] = [];
 
 	if (
-		perkTier >= PerkTier.Four &&
 		fishingResult.catchesFromToday.length === 0 &&
 		!user.minionIsBusy &&
 		['Contest rod', "Beginner's tackle box"].every(i => user.hasEquippedOrInBank(i))
@@ -113,9 +110,7 @@ export async function minionStatusCommand(
 				.setEmoji({ id: EmojiId.Minion })
 				.setStyle(ButtonStyle.Secondary)
 		);
-		if (perkTier >= PerkTier.Four) {
-			buttons.push(makeQueueTripButton());
-		}
+		buttons.push(makeQueueTripButton());
 	}
 
 	if (!minionIsBusy && !user.bitfield.includes(BitField.DisableAutoSlayButton)) {
@@ -167,19 +162,17 @@ export async function minionStatusCommand(
 		}
 	}
 
-	if (perkTier >= PerkTier.Two) {
-		const { tame, species, activity } = await user.getTame();
-		if (tame && !activity) {
-			const lastTameAct = await tameLastFinishedActivity(user);
-			if (lastTameAct) {
-				buttons.push(
-					new ButtonBuilder()
-						.setCustomId(InteractionID.Commands.RepeatTameTrip)
-						.setLabel(`Repeat ${shortTameTripDesc(lastTameAct)}`)
-						.setEmoji({ id: species!.emojiID })
-						.setStyle(ButtonStyle.Secondary)
-				);
-			}
+	const { tame, species, activity } = await user.getTame();
+	if (tame && !activity) {
+		const lastTameAct = await tameLastFinishedActivity(user);
+		if (lastTameAct) {
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(InteractionID.Commands.RepeatTameTrip)
+					.setLabel(`Repeat ${shortTameTripDesc(lastTameAct)}`)
+					.setEmoji({ id: species!.emojiID })
+					.setStyle(ButtonStyle.Secondary)
+			);
 		}
 	}
 
@@ -190,7 +183,7 @@ export async function minionStatusCommand(
 
 	const icDetails = ItemContracts.getItemContractDetails(user);
 	if (icDetails !== null) {
-		if (perkTier >= PerkTier.Two && icDetails.currentItem && icDetails.owns) {
+		if (icDetails.currentItem && icDetails.owns) {
 			buttons.push(makeSendICButton(icDetails.currentItem.name));
 		}
 	} else {

@@ -1,4 +1,3 @@
-import { PerkTier } from '@/lib/constants.js';
 import { getAllTrackedLootForUser, getDetailsOfSingleTrackedLoot } from '@/lib/lootTrack.js';
 
 export const lootCommand = defineCommand({
@@ -53,14 +52,6 @@ export const lootCommand = defineCommand({
 	],
 	run: async ({ options, user, interaction }) => {
 		const name = options.view?.name ?? options.reset?.name ?? '';
-		if ((await user.fetchPerkTier()) < PerkTier.Four) {
-			const res = await prisma.lootTrack.count({
-				where: {
-					user_id: BigInt(user.id)
-				}
-			});
-			return `You need to be a Tier 3 Patron to use this feature. You have ${res}x loot trackers stored currently.`;
-		}
 
 		const trackedLoot = await prisma.lootTrack
 			.findFirst({

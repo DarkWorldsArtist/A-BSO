@@ -175,7 +175,7 @@ export class MUserClass extends BaseUser {
 	}
 
 	async calcMaxGearPresets() {
-		return this.perkTier * 2 + 4;
+		return (await this.fetchPerkTier()) * 2 + 4;
 	}
 
 	get perkTier() {
@@ -188,8 +188,7 @@ export class MUserClass extends BaseUser {
 	async fetchPerkTier({ forceNoCache }: { forceNoCache?: boolean } = {}): Promise<PerkTier> {
 		return await getUsersPerkTier({ user: this, forceNoCache });
 	}
-	get premiumTier(): PerkTier | null {
-		// TODO: Replace this with the actual Tier associated with the best entitlement.
+	get patronTier(): PerkTier | null {
 		const cached = getPerkTierCached(this.id);
 		return cached !== null ? Math.max(0, cached - 1) : null;
 	}

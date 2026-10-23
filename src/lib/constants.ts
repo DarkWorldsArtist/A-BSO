@@ -215,7 +215,7 @@ export enum BitField {
 	UnlimitedOpenUntil = 57,
 	Boring = 58,
 
-	OriginalCyrSupporter = 199,
+	OriginalSupporter = 199,
 	HasGivenBirthdayPack = 200,
 	HasPermanentSpawnLamp = 201,
 	HasScrollOfFarming = 202,
@@ -309,7 +309,7 @@ export const BitFieldData: Record<BitField, IBitFieldData> = {
 	[BitField.UsedSirenicTablet]: { name: 'Used Sirenic Tablet', protected: false, userConfigurable: false },
 	[BitField.UsedStrangledTablet]: { name: 'Used Strangled Tablet', protected: false, userConfigurable: false },
 	[BitField.SelfGamblingLocked]: { name: 'Self Gambling Lock', protected: false, userConfigurable: true },
-	[BitField.OriginalCyrSupporter]: { name: "One of Cyr's first Patrons", protected: false, userConfigurable: false },
+	[BitField.OriginalSupporter]: { name: 'Original Supporter', protected: false, userConfigurable: false },
 	[BitField.HasGivenBirthdayPack]: { name: 'Has Given Birthday Pack', protected: false, userConfigurable: false },
 	[BitField.BypassAgeRestriction]: { name: 'Bypassed Age Restriction', protected: false, userConfigurable: false },
 	[BitField.HasPermanentEventBackgrounds]: {
@@ -335,9 +335,9 @@ export const BitFieldData: Record<BitField, IBitFieldData> = {
 		userConfigurable: true
 	},
 	[BitField.UnlimitedOpenUntil]: {
-		name: 'Unlimited Open Until by Default (P)',
+		name: 'Unlimited Open Until by Default',
 		protected: false,
-		userConfigurable: false
+		userConfigurable: true
 	},
 	[BitField.HasFlickeringBoon]: {
 		name: 'Has Flickering Boon',

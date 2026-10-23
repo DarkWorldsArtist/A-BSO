@@ -1,7 +1,7 @@
 import { Time } from '@oldschoolgg/toolkit';
 import { Bank } from 'oldschooljs';
 
-import { premiumPatronTime } from '@/lib/premiumPatronTime.js';
+import { grantPatronTime } from '@/lib/patronTime.js';
 
 const shop = [
 	{
@@ -71,7 +71,7 @@ export const testerShopCommand = defineCommand({
 				return `You bought ${loot}!`;
 			}
 			case '1 Month T1': {
-				const res = await premiumPatronTime(Time.Day * 31, 3, user, null);
+				const res = await grantPatronTime(Time.Day * 31, 3, user, null);
 				return res;
 			}
 			case 'Double loot token': {

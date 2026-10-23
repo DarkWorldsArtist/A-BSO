@@ -1,10 +1,10 @@
 import { formatDuration, Time } from '@oldschoolgg/toolkit';
 
-import { applyPremiumTimeGrant, calculatePremiumTimeGrant, fetchPremiumTimeBalance } from '@/lib/premiumTime.js';
-import { Bits, cyrTiers } from '@/util.js';
+import { applyPatronTimeGrant, calculatePatronTimeGrant, fetchPatronTimeBalance } from '@/lib/patronTime.js';
+import { Bits, patronTiers } from '@/util.js';
 
-const cyrTier4PlusBits = [Bits.CyrPatronTier4, Bits.CyrPatronTier5, Bits.CyrPatronTier6, Bits.CyrPatronTier7] as const;
-const cyrTier5PlusBits = [Bits.CyrPatronTier5, Bits.CyrPatronTier6, Bits.CyrPatronTier7] as const;
+const tier4PlusBits = [Bits.PatronTier4, Bits.PatronTier5, Bits.PatronTier6, Bits.PatronTier7] as const;
+const tier5PlusBits = [Bits.PatronTier5, Bits.PatronTier6, Bits.PatronTier7] as const;
 
 function hasCurrentMonthGift(lastGift: bigint | null, now = Date.now()) {
 	if (lastGift === null) return false;
@@ -14,11 +14,11 @@ function hasCurrentMonthGift(lastGift: bigint | null, now = Date.now()) {
 }
 
 function getGiftTier(bits: readonly number[]) {
-	if (cyrTier5PlusBits.some(bit => bits.includes(bit))) {
-		return cyrTiers.find(tier => tier.number === 3) ?? null;
+	if (tier5PlusBits.some(bit => bits.includes(bit))) {
+		return patronTiers.find(tier => tier.number === 3) ?? null;
 	}
-	if (cyrTier4PlusBits.some(bit => bits.includes(bit))) {
-		return cyrTiers.find(tier => tier.number === 2) ?? null;
+	if (tier4PlusBits.some(bit => bits.includes(bit))) {
+		return patronTiers.find(tier => tier.number === 2) ?? null;
 	}
 	return null;
 }
@@ -64,8 +64,8 @@ export const perksCommand = defineCommand({
 
 			const targetUser = await globalClient.fetchRUser(options.donate_tier.user.user.id);
 			const now = Date.now();
-			const currentBalance = await fetchPremiumTimeBalance(targetUser.id);
-			const grant = calculatePremiumTimeGrant({
+			const currentBalance = await fetchPatronTimeBalance(targetUser.id);
+			const grant = calculatePatronTimeGrant({
 				currentBalance,
 				timeMs: Time.Week,
 				tier: giftTier.perkTier,
@@ -77,7 +77,7 @@ export const perksCommand = defineCommand({
 			);
 
 			await roboChimpClient.$transaction(async tx => {
-				await applyPremiumTimeGrant({
+				await applyPatronTimeGrant({
 					client: tx,
 					userID: targetUser.id,
 					grant

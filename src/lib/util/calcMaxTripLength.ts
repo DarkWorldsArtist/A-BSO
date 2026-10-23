@@ -2,7 +2,7 @@ import { calcPercentOfNum, calcWhatPercent, Time } from '@oldschoolgg/toolkit';
 
 import type { activity_type_enum } from '@/prisma/main.js';
 import { BitField, PerkTier } from '@/lib/constants.js';
-import { getCyrTripBonus, RobochimpBitfieldEnum } from '@/lib/perkTiers.js';
+import { RobochimpBitfieldEnum } from '@/lib/perkTiers.js';
 
 export function patronMaxTripBonus(perkTier: PerkTier) {
 	if (perkTier === PerkTier.Two) return Time.Minute * 3;
@@ -17,7 +17,14 @@ export async function calcMaxTripLength(user: MUser, activity?: activity_type_en
 	const perkTier = await user.fetchPerkTier({ forceNoCache: true });
 	const roboBits = (await Cache.getRoboChimpUser(user.id)).bits;
 	let max = Time.Minute * 30;
-	max += Math.max(patronMaxTripBonus(perkTier), getCyrTripBonus(roboBits));
+	max += patronMaxTripBonus(perkTier);
+
+	if (
+		roboBits.includes(RobochimpBitfieldEnum.OriginalSupporter) ||
+		user.bitfield.includes(BitField.OriginalSupporter)
+	) {
+		max += Time.Minute * 2;
+	}
 
 	if (roboBits.includes(RobochimpBitfieldEnum.BonusMinute)) {
 		max += Time.Minute * 3;

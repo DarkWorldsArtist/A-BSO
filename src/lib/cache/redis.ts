@@ -431,7 +431,7 @@ class CacheManager {
 			}
 		});
 		const badgesString = user
-			? makeBadgeString(user.badges, user.minion_ironman, user.bitfield.includes(BitField.OriginalCyrSupporter))
+			? makeBadgeString(user.badges, user.minion_ironman, user.bitfield.includes(BitField.OriginalSupporter))
 			: '';
 		const badgedUsername = `${badgesString} ${username}`.trim();
 		if (username !== 'Unknown') {

@@ -42,7 +42,9 @@ export class RUser {
 	}
 
 	get perkTier(): PatronTier | null {
-		const tier = tiers.find(t => t.perkTier === this.perkTierRaw);
+		const tier =
+			tiers.find(t => t.perkTier === this.perkTierRaw && t.number === this.perkTierRaw - 1) ??
+			tiers.find(t => t.perkTier === this.perkTierRaw);
 		return tier ?? null;
 	}
 
@@ -51,7 +53,7 @@ export class RUser {
 		if (paidTierDisplay !== 'None') {
 			return paidTierDisplay;
 		}
-		return this.perkTierRaw > 0 ? `Perk Tier ${this.perkTierRaw}` : 'None';
+		return this.perkTierRaw > 1 ? `Tier ${this.perkTierRaw - 1} patron` : 'None';
 	}
 
 	public isSupport(): boolean {

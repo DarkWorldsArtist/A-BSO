@@ -398,12 +398,6 @@ async function globalButtonInteractionHandler({
 	}
 
 	if (id === 'DO_FISHING_CONTEST') {
-		if ((await user.fetchPerkTier()) < PerkTier.Four) {
-			return {
-				content: 'You need to be a Tier 3 patron to use this button.',
-				ephemeral: true
-			};
-		}
 		return runCommand({
 			commandName: 'bsominigames',
 			args: { fishing_contest: { fish: {} } },
@@ -429,17 +423,11 @@ async function globalButtonInteractionHandler({
 		if (!Farming.isPatchName(patchType)) {
 			return { content: 'Invalid patch type.', ephemeral: true };
 		}
-		const perkTier = await user.fetchPerkTier();
-		if (perkTier < 4) {
-			return { content: 'You cannot use this button.', ephemeral: true };
-		}
 		return runCommand({
 			commandName: 'farming',
 			args: {
-				patron: {
-					harvest: {
-						patch: patchType
-					}
+				harvest: {
+					patch_name: patchType
 				}
 			},
 			...options

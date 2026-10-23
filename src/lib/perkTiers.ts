@@ -5,42 +5,25 @@ import { BitField, BOT_TYPE, globalConfig, PatronRoleTiers, PerkTier } from '@/l
 import type { RobochimpUser } from '@/lib/roboChimp.js';
 
 export const RobochimpBitfieldEnum = {
-	MagnaTier1: 8,
-	MagnaTier2: 9,
-	MagnaTier3: 10,
-	MagnaTier4: 11,
-	MagnaTier5: 12,
-	MagnaTier6: 13,
-	CyrTier0: 16,
-	CyrTier1: 17,
-	CyrTier2: 18,
-	CyrTier3: 19,
-	CyrTier4: 20,
-	CyrTier5: 21,
-	CyrTier6: 22,
-	CyrTier7: 23,
-	CyrsOriginalPatrons: 24,
+	PatronTier1: 17,
+	PatronTier2: 18,
+	PatronTier3: 19,
+	PatronTier4: 20,
+	PatronTier5: 21,
+	PatronTier6: 22,
+	PatronTier7: 23,
+	OriginalSupporter: 24,
 	BonusMinute: 25
 };
 
-const CYR_TIER_BITS = [
-	{ bit: RobochimpBitfieldEnum.CyrTier7, number: 7 },
-	{ bit: RobochimpBitfieldEnum.CyrTier6, number: 6 },
-	{ bit: RobochimpBitfieldEnum.CyrTier5, number: 5 },
-	{ bit: RobochimpBitfieldEnum.CyrTier4, number: 4 },
-	{ bit: RobochimpBitfieldEnum.CyrTier3, number: 3 },
-	{ bit: RobochimpBitfieldEnum.CyrTier2, number: 2 },
-	{ bit: RobochimpBitfieldEnum.CyrTier1, number: 1 },
-	{ bit: RobochimpBitfieldEnum.CyrTier0, number: 0 }
-] as const;
-
-const MAGNA_TIER_BITS = [
-	{ bit: RobochimpBitfieldEnum.MagnaTier6, number: 6 },
-	{ bit: RobochimpBitfieldEnum.MagnaTier5, number: 5 },
-	{ bit: RobochimpBitfieldEnum.MagnaTier4, number: 4 },
-	{ bit: RobochimpBitfieldEnum.MagnaTier3, number: 3 },
-	{ bit: RobochimpBitfieldEnum.MagnaTier2, number: 2 },
-	{ bit: RobochimpBitfieldEnum.MagnaTier1, number: 1 }
+const PATRON_TIER_BITS = [
+	{ bit: RobochimpBitfieldEnum.PatronTier7, number: 7 },
+	{ bit: RobochimpBitfieldEnum.PatronTier6, number: 6 },
+	{ bit: RobochimpBitfieldEnum.PatronTier5, number: 5 },
+	{ bit: RobochimpBitfieldEnum.PatronTier4, number: 4 },
+	{ bit: RobochimpBitfieldEnum.PatronTier3, number: 3 },
+	{ bit: RobochimpBitfieldEnum.PatronTier2, number: 2 },
+	{ bit: RobochimpBitfieldEnum.PatronTier1, number: 1 }
 ] as const;
 
 type PerkTierHotCacheEntry = {
@@ -78,56 +61,22 @@ export function getRoboChimpPaidTierDisplay(
 ) {
 	const bits = bitsOrUser && 'bits' in bitsOrUser ? bitsOrUser.bits : bitsOrUser;
 	if (!bits || bits.length === 0) {
-		return perkTier && perkTier > 0 ? `Perk Tier ${perkTier}` : 'None';
+		return perkTier && perkTier > 1 ? `Tier ${perkTier - 1} patron` : 'None';
 	}
 
-	const labels = uniqueArr([
-		...CYR_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Tier ${tier.number} patron`),
-		...MAGNA_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Tier ${tier.number} patron`)
-	]);
+	const labels = uniqueArr(
+		PATRON_TIER_BITS.filter(tier => bits.includes(tier.bit)).map(tier => `Tier ${tier.number} patron`)
+	);
 
 	if (bits.includes(RobochimpBitfieldEnum.BonusMinute)) {
 		labels.push('*Bonus Minute??*');
 	}
 
-	return labels.length === 0 ? (perkTier && perkTier > 0 ? `Perk Tier ${perkTier}` : 'None') : labels.join(', ');
-}
-
-export function getCyrTripBonus(user: RobochimpUser): number;
-export function getCyrTripBonus(bits: number[]): number;
-export function getCyrTripBonus(bitsOrUser: number[] | RobochimpUser | null | undefined) {
-	const bits = bitsOrUser && 'bits' in bitsOrUser ? bitsOrUser.bits : bitsOrUser;
-	if (!bits || bits.length === 0) {
-		return 0;
-	}
-	let cyrBonus = 0;
-	const highestTier = CYR_TIER_BITS.find(tier => bits.includes(tier.bit))?.number;
-	switch (highestTier) {
-		case 1:
-			cyrBonus = Time.Minute * 7;
-			break;
-		case 2:
-			cyrBonus = Time.Minute * 11;
-			break;
-		case 3:
-			cyrBonus = Time.Minute * 16;
-			break;
-		case 4:
-			cyrBonus = Time.Minute * 20;
-			break;
-		default:
-			cyrBonus = Time.Minute * 3;
-			if (highestTier && highestTier >= 5) {
-				cyrBonus = Time.Minute * 25;
-			} else if (highestTier && highestTier >= 3) {
-				cyrBonus = Time.Minute * 16;
-			}
-			break;
-	}
-	if (bits.includes(RobochimpBitfieldEnum.CyrsOriginalPatrons)) {
-		cyrBonus += Time.Minute * 2;
-	}
-	return cyrBonus;
+	return labels.length === 0
+		? perkTier && perkTier > 1
+			? `Tier ${perkTier - 1} patron`
+			: 'None'
+		: labels.join(', ');
 }
 
 export async function getUsersPerkTier({

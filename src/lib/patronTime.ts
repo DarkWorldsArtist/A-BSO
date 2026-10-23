@@ -2,7 +2,7 @@ import { formatDuration, Time } from '@oldschoolgg/toolkit';
 
 import { getUsersPerkTier } from '@/lib/perkTiers.js';
 
-export async function premiumPatronTime(
+export async function grantPatronTime(
 	timeMs: number,
 	tier: number,
 	userToGive: MUser,

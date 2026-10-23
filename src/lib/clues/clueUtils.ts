@@ -9,9 +9,9 @@ export function getClueScoresFromOpenables(openableScores: Bank) {
 	return openableScores.filter(item => Boolean(ClueTiers.find(ct => ct.id === item.id)));
 }
 
-export function buildClueButtons(loot: Bank | null, perkTier: number, user: MUser) {
+export function buildClueButtons(loot: Bank | null, user: MUser) {
 	const components: ButtonBuilder[] = [];
-	if (loot && perkTier > 1 && !user.bitfield.includes(BitField.DisableClueButtons)) {
+	if (loot && !user.bitfield.includes(BitField.DisableClueButtons)) {
 		const clueReceived = ClueTiers.filter(tier => loot.amount(tier.scrollID) > 0);
 		components.push(
 			...clueReceived.map(clue =>
