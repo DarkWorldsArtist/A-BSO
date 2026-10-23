@@ -43,6 +43,7 @@ export const allBosses: Record<string, SimpleMonster> = {
 	DagannothRex,
 	DagannothSupreme,
 	GiantMole,
+	MaggotKing,
 	KalphiteQueen,
 	Obor,
 	Sarachnis,

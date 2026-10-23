@@ -40,9 +40,9 @@ export interface ILeftListStatus {
 
 export interface IKCActivity {
 	[key: string]:
-		| string
-		| string[]
-		| ((user: MUser, minigameScores: MinigameScore[], stats: MUserStats) => Promise<number>);
+	| string
+	| string[]
+	| ((user: MUser, minigameScores: MinigameScore[], stats: MUserStats) => Promise<number>);
 }
 
 export type FormatProgressFunction = ({
@@ -1513,6 +1513,7 @@ export const distilleryCL = resolveItems(['Diluted brimstone', 'Sedryn']);
 export const concontractsCL = resolveItems(['Bamyr']);
 export const allPetsCL = resolveItems([
 	'Beef',
+	'Maggot marquess',
 	'Abyssal orphan',
 	'Ikkle hydra',
 	'Callisto cub',
@@ -2539,3 +2540,4 @@ export const avasDevices: { item: Item; reduction: number }[] = [
 ];
 
 // export * from '@/lib/bso/bsoCl.js';
+export const maggotKingCL = resolveItems(['Maggot marquess', 'Crimson kisten', 'Elder venator fang']);
