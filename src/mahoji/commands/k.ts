@@ -78,9 +78,24 @@ export const minionKCommand = defineCommand({
 			name: 'solo',
 			description: 'Solo (if its a group boss)',
 			required: false
+		},
+		{
+			type: 'Boolean',
+			name: 'take_eggs',
+			description: 'Take Maggot King eggs instead of normal loot.',
+			required: false
 		}
 	],
 	run: async ({ options, user, channelId, interaction, rng }) => {
+<<<<<<< HEAD
+=======
+		if (options.take_eggs && findMonster(options.name)?.id !== Monsters.MaggotKing.id) {
+			return 'The take_eggs option is only available for Maggot King.';
+		}
+		if (options.show_info) {
+			return interaction.returnStringOrFile(await monsterInfo(user, options.name));
+		}
+>>>>>>> c44ff2a31 (Add Maggot King egg-taking mode with temporary supply rate)
 		return minionKillCommand(
 			user,
 			interaction,
@@ -91,8 +106,12 @@ export const minionKCommand = defineCommand({
 			options.method,
 			options.wilderness,
 			options.solo,
+<<<<<<< HEAD
 			// @ts-expect-error: Passed by the bot only
 			options.onTask
+=======
+			options.take_eggs
+>>>>>>> c44ff2a31 (Add Maggot King egg-taking mode with temporary supply rate)
 		);
 	}
 });

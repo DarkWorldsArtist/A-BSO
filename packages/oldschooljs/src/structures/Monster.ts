@@ -46,6 +46,8 @@ export interface MonsterKillOptions {
 	hasSuperiors?: SimpleMonster;
 	farmingLevel?: number;
 	isAwakened?: boolean;
+	/** Take eggs instead of normal Maggot King rewards. */
+	takeEggs?: boolean;
 	lootTableOptions?: LootTableRollOptions;
 	rng?: RNGProvider;
 }

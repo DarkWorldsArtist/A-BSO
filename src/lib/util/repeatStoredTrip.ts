@@ -435,8 +435,8 @@ const tripHandlers: {
 		args: (data: FarmingActivityTaskOptions) =>
 			data.autoFarmed
 				? {
-						auto_farm: {}
-					}
+					auto_farm: {}
+				}
 				: {}
 	},
 	[activity_type_enum.FightCaves]: {
@@ -579,7 +579,8 @@ const tripHandlers: {
 				quantity: data.iQty,
 				method,
 				wilderness: data.isInWilderness,
-				onTask: data.onTask
+				onTask: data.onTask,
+				take_eggs: data.takeEggs
 			};
 		}
 	},

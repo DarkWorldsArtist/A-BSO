@@ -40,7 +40,8 @@ export async function minionKillCommand(
 	method: PvMMethod | undefined,
 	wilderness: boolean | undefined,
 	_solo: boolean | undefined,
-	onTask: boolean | undefined
+	onTask: boolean | undefined,
+	takeEggs = false
 ): CommandResponse {
 	if (inputQuantity !== undefined && inputQuantity < 1) return 'Quantity must be greater than 0.';
 	if (await user.minionIsBusy()) {
@@ -183,6 +184,7 @@ export async function minionKillCommand(
 		iQty: inputQuantity,
 		duration: dtdResult ? Time.Second * 5 : result.duration,
 		type: 'MonsterKilling',
+		takeEggs: takeEggs || undefined,
 		usingCannon: !usingCannon ? undefined : usingCannon,
 		cannonMulti: !cannonMulti ? undefined : cannonMulti,
 		chinning: !chinning ? undefined : chinning,
@@ -197,6 +199,7 @@ export async function minionKillCommand(
 
 	let response = `${minionName} is now killing ${result.quantity}x ${monster.name}, ${dtdResult ? `using a <:deathtouched_dart:1560872986934902934> **Deathtouched dart**, it'll take around ${formatTripDuration(user, Time.Second * 5)}` : `It'll take around ${formatTripDuration(user, result.duration)} to finish`}. Attack styles used: ${result.attackStyles.join(', ')}.`;
 
+	if (takeEggs) result.messages.push('Taking eggs instead of normal loot.');
 	if (result.messages.length > 0) {
 		response += `\n\n${result.messages.join(', ')}`;
 	}

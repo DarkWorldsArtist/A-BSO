@@ -1,5 +1,6 @@
 import { EMonster } from '@/EMonster.js';
 import { MonsterSlayerMaster } from '@/meta/monsterData.js';
+import { maggotEggRates } from '@/simulation/openables/MaggotEgg.js';
 import { Bank } from '@/structures/Bank.js';
 import LootTable from '@/structures/LootTable.js';
 import { Monster, type MonsterKillOptions } from '@/structures/Monster.js';
@@ -42,11 +43,23 @@ export const MaggotKingNormalTable: LootTable = new LootTable({ limit: 8840 })
 	.tertiary(3500, 'Maggot marquess')
 	.tertiary(40, 'Clue scroll (elite)');
 
+// Temporary supply chance requested by the project author: 60/1500 = 1/25.
+// TODO: Check wiki in future for accurate drop rates
+export const MaggotKingEggTable: LootTable = new LootTable({ limit: 1500 })
+	.add(SupplyTable, 1, 60)
+	.tertiary(40, 'Clue scroll (elite)');
+
+for (const egg of maggotEggRates) {
+	MaggotKingEggTable.add(egg.id, 1, egg.weight);
+}
+// 493 egg slots + 60 supply slots leave 947 empty slots.
+
 class MaggotKingSingleton extends Monster {
 	public kill(quantity = 1, options: MonsterKillOptions = {}): Bank {
 		const loot = new Bank();
-		MaggotKingNormalTable.roll(quantity, { ...options.lootTableOptions, targetBank: loot });
-		if (options.onSlayerTask && options.slayerMaster === MonsterSlayerMaster.Konar) {
+		const table = options.takeEggs ? MaggotKingEggTable : MaggotKingNormalTable;
+		table.roll(quantity, { ...options.lootTableOptions, targetBank: loot });
+		if (!options.takeEggs && options.onSlayerTask && options.slayerMaster === MonsterSlayerMaster.Konar) {
 			BrimstoneTable.roll(quantity, { targetBank: loot });
 		}
 		return loot;
@@ -57,5 +70,7 @@ export const MaggotKing: MaggotKingSingleton = new MaggotKingSingleton({
 	id: EMonster.MAGGOT_KING,
 	name: 'Maggot King',
 	aliases: ['maggot king', 'maggotking'],
-	allItems: [...MaggotKingNormalTable.allItems, ...BrimstoneTable.allItems]
+	allItems: [
+		...new Set([...MaggotKingNormalTable.allItems, ...MaggotKingEggTable.allItems, ...BrimstoneTable.allItems])
+	]
 });

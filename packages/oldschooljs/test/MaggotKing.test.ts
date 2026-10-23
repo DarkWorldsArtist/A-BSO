@@ -3,7 +3,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { EMonster } from '@/EMonster.js';
 import { MonsterSlayerMaster } from '@/meta/monsterData.js';
-import { MaggotKing, MaggotKingCommonTable, MaggotKingNormalTable } from '@/simulation/monsters/bosses/MaggotKing.js';
+import {
+	MaggotKing,
+	MaggotKingCommonTable,
+	MaggotKingEggTable,
+	MaggotKingNormalTable
+} from '@/simulation/monsters/bosses/MaggotKing.js';
 import { Monsters } from '@/simulation/monsters/index.js';
 import Openables from '@/simulation/openables/index.js';
 import { MaggotEggs, maggotEggRates } from '@/simulation/openables/MaggotEgg.js';
@@ -122,5 +127,69 @@ describe('Maggot eggs', () => {
 		const petChance = maggotEggRates.reduce((sum, egg) => sum + egg.weight / 1500 / egg.petRate, 0);
 		expect(1 / petChance).toBeCloseTo(1502.40384615, 6);
 		expect(maggotEggRates.reduce((sum, egg) => sum + egg.weight, 0)).toBe(493);
+	});
+});
+
+describe('Maggot King Take-eggs rewards', () => {
+	test('uses the temporary 1/25 supply rate without changing unconditional egg weights', () => {
+		expect(MaggotKingEggTable.limit).toBe(1500);
+		expect(MaggotKingEggTable.table[0].weight! / 1500).toBe(1 / 25);
+		for (const egg of maggotEggRates) {
+			expect(MaggotKingEggTable.table.find(row => row.item === egg.id)?.weight).toBe(egg.weight);
+		}
+		expect(MaggotKingEggTable.totalWeight).toBe(553);
+		expect(MaggotKingEggTable.limit! - MaggotKingEggTable.totalWeight).toBe(947);
+	});
+
+	test('awards the two supplies together instead of an egg or normal loot', () => {
+		vi.mocked(randArrItem).mockImplementation(arr => arr[0]);
+		const loot = MaggotKing.kill(1, { takeEggs: true });
+		expect(loot.amount('Dull ancient medal')).toBe(1);
+		expect(loot.amount('Stymphike tartare')).toBeGreaterThanOrEqual(2);
+		expect(loot.amount('Stymphike tartare')).toBeLessThanOrEqual(4);
+		expect(loot.length).toBe(2);
+	});
+
+	test('can award nothing and handles zero kills', () => {
+		expect(MaggotKing.kill(1, { takeEggs: true }).length).toBe(0);
+		expect(MaggotKing.kill(0, { takeEggs: true }).length).toBe(0);
+	});
+
+	test('awards unopened eggs and supports multiple kills', () => {
+		// Slots 0-59 are supplies; slot 60 is the first base egg slot.
+		vi.mocked(randArrItem).mockImplementation(arr => arr[60]);
+		const loot = MaggotKing.kill(3, { takeEggs: true });
+		expect(loot.amount('Maggot egg (base)')).toBe(3);
+		expect(loot.length).toBe(1);
+		expect(MaggotKing.allItems).toContain(Items.getId('Maggot egg (writhing)'));
+	});
+
+	test('keeps elite clues but omits normal uniques, direct pets and normal-table keys', () => {
+		vi.mocked(roll).mockReturnValue(true);
+		const loot = MaggotKing.kill(1, {
+			takeEggs: true,
+			onSlayerTask: true,
+			slayerMaster: MonsterSlayerMaster.Konar
+		});
+		expect(loot.amount('Clue scroll (elite)')).toBe(1);
+		expect(loot.amount('Elder venator fang')).toBe(0);
+		expect(loot.amount('Crimson kisten')).toBe(0);
+		expect(loot.amount('Maggot marquess')).toBe(0);
+		expect(loot.amount('Brimstone key')).toBe(0);
+		expect(roll).not.toHaveBeenCalledWith(3500);
+	});
+
+	test('preserves the adjusted elite clue chance', () => {
+		MaggotKing.kill(1, {
+			takeEggs: true,
+			lootTableOptions: { tertiaryItemPercentageChanges: new Map([['Clue scroll (elite)', 5]]) }
+		});
+		expect(roll).toHaveBeenCalledWith(38);
+	});
+
+	test('still uses normal loot by default or when takeEggs is false', () => {
+		vi.mocked(randArrItem).mockImplementation(arr => arr[0]);
+		expect(MaggotKing.kill().amount('Elder venator fang')).toBe(1);
+		expect(MaggotKing.kill(1, { takeEggs: false }).amount('Elder venator fang')).toBe(1);
 	});
 });
