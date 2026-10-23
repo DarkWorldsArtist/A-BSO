@@ -58,7 +58,8 @@ export const quests: Quest[] = [
 			herblore: 64,
 			magic: 57
 		},
-		rewards: new Bank().add('Hallowed flail').add('Sunspear').add(33715).freeze(),
+		// Represent the six XP choices as six individually consumable tomes.
+		rewards: new Bank().add('Hallowed flail').add('Sunspear').add(33_715, 6).freeze(),
 		// Bot duration; OSRS labels this quest Very Long, without a fixed time.
 		calcTime: () => Time.Hour * 3
 	},

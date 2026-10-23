@@ -16,6 +16,12 @@ interface IXPLamp {
 
 export const XPLamps: IXPLamp[] = [
 	{
+		itemID: 33_715,
+		amount: 30_000,
+		name: 'Tome of experience (The Blood Moon Rises)',
+		minimumLevel: 70
+	},
+	{
 		itemID: 11_137,
 		amount: 2500,
 		name: 'Antique lamp 1',
