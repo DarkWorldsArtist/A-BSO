@@ -607,7 +607,7 @@ export const badges: { [key: number]: string } = {
 	[BadgesEnum.Slayer]: Emoji.Slayer,
 	[BadgesEnum.TopGiveawayer]: Emoji.SantaHat,
 	[BadgesEnum.Farmer]: Emoji.Farming,
-	[BadgesEnum.Hacktoberfest]: '<:hacktoberfest:1304259875634942082>',
+	[BadgesEnum.Hacktoberfest]: '<:hacktoberfest:1563656417196515338>',
 	[BadgesEnum.CyrEarlySupporter]: Emoji.Seer,
 	[BadgesEnum.TopClueHunter]: Emoji.ClueScroll
 };

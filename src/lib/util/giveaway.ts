@@ -3,6 +3,7 @@ import { debounce, Events, Time } from '@oldschoolgg/toolkit';
 import { Bank, type ItemBank } from 'oldschooljs';
 
 import type { Giveaway } from '@/prisma/main.js';
+import { flagSuspiciousBondEconomyActivity } from '@/lib/bonds.js';
 
 async function refundGiveaway(creator: MUser, loot: Bank) {
 	await creator.transactItems({
@@ -131,6 +132,12 @@ export async function handleGiveawayCompletion(_giveaway: Giveaway) {
 				type: 'giveaway'
 			}
 		});
+		await flagSuspiciousBondEconomyActivity(
+			creator.id,
+			winner.id,
+			'giveaway',
+			`${loot}`
+		);
 
 		globalClient.emit(
 			Events.EconomyLog,

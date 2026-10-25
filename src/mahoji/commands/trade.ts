@@ -3,6 +3,7 @@ import { Events, ellipsize } from '@oldschoolgg/toolkit';
 import { Bank } from 'oldschooljs';
 
 import { choicesOf, filterOption } from '@/discord/index.js';
+import { flagSuspiciousBondEconomyActivity } from '@/lib/bonds.js';
 import { type BankSortMethod, BankSortMethods, sorts } from '@/lib/sorts.js';
 import itemIsTradeable from '@/lib/util/itemIsTradeable.js';
 import { parseBank } from '@/lib/util/parseStringBank.js';
@@ -271,6 +272,12 @@ export const tradeCommand = defineCommand({
 				type: 'trade'
 			}
 		});
+		await flagSuspiciousBondEconomyActivity(
+			senderUser.id,
+			recipientUser.id,
+			'trade',
+			`sent: ${itemsSent} | received: ${itemsReceived}`
+		);
 		globalClient.emit(
 			Events.EconomyLog,
 			`${senderUser.mention} sold ${itemsSent} to ${recipientUser.mention} for ${itemsReceived}.`

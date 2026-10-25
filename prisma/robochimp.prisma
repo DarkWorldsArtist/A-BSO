@@ -68,6 +68,12 @@ model User {
   premium_balance_expiry_date BigInt?
   last_patreon_gift           BigInt?
 
+  bonds                Int     @default(0)
+  gifted_bonds         Int     @default(0)
+  bond_playtime_ms     BigInt  @default(0)
+  bond_osb_baseline_ms BigInt?
+  bond_bso_baseline_ms BigInt?
+
   user_group_id String?    @db.Uuid
   userGroup     UserGroup? @relation(fields: [user_group_id], references: [id])
 
@@ -141,4 +147,33 @@ model DiscordUser {
   created_at  DateTime @db.Timestamp(6)
 
   @@map("discord_user")
+}
+
+model BondGiftLog {
+  id           Int      @id @default(autoincrement())
+  sender_id    BigInt
+  recipient_id BigInt
+  quantity     Int      @default(1)
+  created_at   DateTime @default(now()) @db.Timestamp(6)
+  flagged      Boolean  @default(false)
+  flag_reason  String?
+  alerted      Boolean  @default(false)
+
+  @@index([sender_id])
+  @@index([recipient_id])
+  @@index([created_at])
+  @@map("bond_gift_log")
+}
+
+model BondRwtAlert {
+  id              Int      @id @default(autoincrement())
+  gift_log_id     Int?
+  bot_type        String   @db.VarChar(16)
+  transaction_ref String   @unique
+  sender_id       BigInt
+  recipient_id    BigInt
+  details         String
+  created_at      DateTime @default(now()) @db.Timestamp(6)
+
+  @@map("bond_rwt_alert")
 }

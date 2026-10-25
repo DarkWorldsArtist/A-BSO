@@ -21,6 +21,7 @@ import { adminCommand } from '@/mahoji/commands/admin.js';
 import { askCommand } from '@/mahoji/commands/ask.js';
 import { bankCommand } from '@/mahoji/commands/bank.js';
 import { bingoCommand } from '@/mahoji/commands/bingo.js';
+import { bondsCommand } from '@/mahoji/commands/bonds.js';
 import { bsCommand } from '@/mahoji/commands/bs.js';
 import { buildCommand } from '@/mahoji/commands/build.js';
 import { buyCommand } from '@/mahoji/commands/buy.js';
@@ -158,6 +159,7 @@ export const allCommandsDONTIMPORT: AnyCommand[] = [
 	tksCommand,
 	mahojiUseCommand,
 	bingoCommand,
+	bondsCommand,
 	bankCommand,
 	casketCommand,
 	finishCommand,

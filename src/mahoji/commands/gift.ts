@@ -4,6 +4,7 @@ import { miniID, truncateString } from '@oldschoolgg/toolkit';
 import { Bank, type ItemBank } from 'oldschooljs';
 
 import { GiftBoxStatus } from '@/prisma/main.js';
+import { flagSuspiciousBondEconomyActivity } from '@/lib/bonds.js';
 import { BOT_TYPE } from '@/lib/constants.js';
 import itemIsTradeable from '@/lib/util/itemIsTradeable.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
@@ -267,6 +268,12 @@ ${items}`
 				},
 				select: { id: true }
 			});
+			await flagSuspiciousBondEconomyActivity(
+				user.id,
+				recipient.id,
+				'gift',
+				`GiftBox ${giftBox.id}`
+			);
 			return `You sent the gift box to ${recipient.badgedUsername}!`;
 		}
 

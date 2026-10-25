@@ -1,6 +1,7 @@
 import { Emoji, Events, sleep } from '@oldschoolgg/toolkit';
 import { Bank, toKMB } from 'oldschooljs';
 
+import { flagSuspiciousBondEconomyActivity } from '@/lib/bonds.js';
 import { BOT_TYPE } from '@/lib/constants.js';
 import { MUserClass } from '@/lib/user/MUser.js';
 import { mahojiParseNumber } from '@/mahoji/mahojiSettings.js';
@@ -55,6 +56,12 @@ async function handleFinishUpdates({
 			type: 'duel'
 		}
 	});
+	await flagSuspiciousBondEconomyActivity(
+		loser.id,
+		winner.id,
+		'duel',
+		`${amountGPWinnerReceives.toLocaleString()} GP`
+	);
 	return {
 		amountGPWinnerReceives,
 		taxPaid: tax

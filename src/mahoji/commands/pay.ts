@@ -2,6 +2,7 @@ import { Events, sleep } from '@oldschoolgg/toolkit';
 import { Bank } from 'oldschooljs';
 
 import type { Prisma } from '@/prisma/main.js';
+import { flagSuspiciousBondEconomyActivity } from '@/lib/bonds.js';
 import { mahojiParseNumber } from '@/mahoji/mahojiSettings.js';
 
 export const payCommand = defineCommand({
@@ -95,6 +96,12 @@ export const payCommand = defineCommand({
 			},
 			select: { id: true }
 		});
+		await flagSuspiciousBondEconomyActivity(
+			user.id,
+			recipient.id,
+			'pay',
+			`${amount.toLocaleString()} GP`
+		);
 
 		globalClient.emit(Events.EconomyLog, `${user.mention} paid ${amount} GP to ${recipient.mention}.`);
 		await ClientSettings.addToGPTaxBalance(user, amount);
