@@ -36,6 +36,22 @@ async function getAdapter(
 	}
 	const dataDir = `./.db/${type.toLowerCase()}${process.env.TEST ? '-test' : ''}`;
 	const pgLiteClient = new PGlite({ dataDir });
+	const originalPgLiteQuery = pgLiteClient.query.bind(pgLiteClient);
+	pgLiteClient.query = ((...args: Parameters<typeof pgLiteClient.query>) => {
+		const [sql, params, options] = args;
+		const parsers = {
+			...options?.parsers,
+			1016: (val: string) =>
+				val
+					? val
+							.slice(1, -1)
+							.split(',')
+							.map(s => s.trim())
+							.filter(Boolean)
+					: []
+		};
+		return originalPgLiteQuery(sql, params, { ...options, parsers });
+	}) as typeof pgLiteClient.query;
 	const createDbSQL = execSync(
 		`prisma migrate diff --from-empty --to-schema-datamodel ./prisma/${type === 'robochimp' ? 'robochimp' : 'schema'}.prisma --script`,
 		{

@@ -119,9 +119,21 @@ class SActivityManager {
 	}
 
 	async processPendingActivities(): Promise<void> {
-		const activities: Activity[] = globalConfig.isProduction
-			? await prisma.$queryRaw`SELECT * FROM activity WHERE completed = false AND finish_date < NOW() LIMIT 5;`
-			: await prisma.$queryRaw`SELECT * FROM activity WHERE completed = false;`;
+		const activities = globalConfig.isProduction
+			? await prisma.activity.findMany({
+					where: {
+						completed: false,
+						finish_date: {
+							lt: new Date()
+						}
+					},
+					take: 5
+				})
+			: await prisma.activity.findMany({
+					where: {
+						completed: false
+					}
+				});
 
 		if (activities.length > 0) {
 			await prisma.activity.updateMany({
