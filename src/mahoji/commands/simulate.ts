@@ -219,7 +219,7 @@ export const simulateCommand = defineCommand({
 
 			for (let i = 0; i < options.petroll.quantity; i++) {
 				for (const pet of pets) {
-					if (roll(pet.chance)) received.push(pet.emoji);
+					if (roll(pet.chance)) received.push(pet.emoji ?? pet.name);
 				}
 			}
 

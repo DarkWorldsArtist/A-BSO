@@ -5,11 +5,13 @@ import { AwakenedDukeSucellus } from './AwakenedDukeSucellus.js';
 import { AwakenedTheLeviathan } from './AwakenedTheLeviathan.js';
 import { AwakenedTheWhisperer } from './AwakenedTheWhisperer.js';
 import { AwakenedVardorvis } from './AwakenedVardorvis.js';
+import { Brutus } from './Brutus.js';
 import { Bryophyta } from './Bryophyta.js';
 import { CommanderZilyana } from './CommanderZilyana.js';
 import { DagannothPrime } from './DagannothPrime.js';
 import { DagannothRex } from './DagannothRex.js';
 import { DagannothSupreme } from './DagannothSupreme.js';
+import { DemonicBrutus } from './DemonicBrutus.js';
 import { DerangedArchaeologist } from './DerangedArchaeologist.js';
 import { DukeSucellus } from './DukeSucellus.js';
 import { GeneralGraardor } from './GeneralGraardor.js';
@@ -50,6 +52,8 @@ export const allBosses: Record<string, SimpleMonster> = {
 	Kreearra,
 	KrilTsutsaroth,
 	Bryophyta,
+	Brutus,
+	DemonicBrutus,
 	Skotizo,
 	DerangedArchaeologist,
 	PhantomMuspah,

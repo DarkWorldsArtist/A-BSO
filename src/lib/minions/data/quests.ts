@@ -35,7 +35,9 @@ export enum QuestID {
 	TheFinalDawn = 15,
 	'Scrambled!' = 16,
 	ShadowsOfCustodia = 17,
-	TutorialIsland = 18
+	TutorialIsland = 18,
+	AKingdomDivided = 19,
+	TheIdesOfMilk = 20
 }
 
 export const quests: Quest[] = [
@@ -453,6 +455,19 @@ export const quests: Quest[] = [
 			.add(995, 25),
 		calcTime: () => {
 			return Time.Minute * 7;
+		}
+	},
+	{
+		id: QuestID.TheIdesOfMilk,
+		qp: 1,
+		name: 'The Ides of Milk',
+		rewards: new Bank().add('Cowbell amulet').add(33117).freeze(),
+		calcTime: (user: MUser) => {
+			let duration = Time.Minute * 2;
+			if (user.combatLevel < 15) {
+				duration += Time.Minute * 5;
+			}
+			return duration;
 		}
 	}
 ];

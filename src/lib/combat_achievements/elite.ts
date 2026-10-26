@@ -1803,5 +1803,16 @@ export const eliteCombatAchievements: CombatAchievement[] = [
 				isCertainMonsterTrip(Monsters.Eldric.id)(data) ||
 				isCertainMonsterTrip(Monsters.RoyalTitans.id)(data)
 		}
+	},
+	{
+		id: 1161,
+		name: 'Brutus Speed-Trialist',
+		type: 'speed',
+		monster: 'Brutus',
+		desc: 'Kill Brutus in less than 2 seconds.',
+		rng: {
+			chancePerKill: 100,
+			hasChance: isCertainMonsterTrip(Monsters.Brutus.id)
+		}
 	}
 ];
