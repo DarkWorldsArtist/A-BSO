@@ -136,14 +136,10 @@ export async function luckyPickCommand(
 	await user.removeItemsFromBank(new Bank().add('Coins', amount));
 
 	const buttons = getButtons(rng);
-	await interaction.reply({
-		content: `${user}, Pick *one* button!`,
-		components: getCurrentButtons({ showTrueNames: false, pickedButtonId: null, buttons: getButtons(rng) })
-	});
 
 	const selectionResult = await globalClient.pickStringWithButtons({
 		interaction,
-		options: buttons.map(_b => ({ label: '', id: _b.id, emoji: EmojiId.MysteryBox })),
+		options: buttons.map(_b => ({ id: _b.id, emoji: EmojiId.MysteryBox })),
 		content: `${user}, Pick *one* button!`
 	});
 	if (!selectionResult) {

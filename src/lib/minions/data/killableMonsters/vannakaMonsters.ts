@@ -1108,6 +1108,7 @@ export const vannakaMonsters: KillableMonster[] = [
 		aliases: Monsters.OgressWarrior.aliases,
 		timeToFinish: Time.Second * 25,
 		table: makeKillTable(Monsters.OgressWarrior.table!.tertiary(6500, 'Ishi')),
+		notifyDrops: resolveItems(['Ishi']),
 		wildy: false,
 		difficultyRating: 2,
 		qpRequired: 0,

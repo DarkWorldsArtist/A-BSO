@@ -3,7 +3,7 @@ import { handleSpecialCoxLoot } from '@/lib/bso/handleSpecialCoxLoot.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
 import { userHasFlappy } from '@/lib/bso/skills/invention/inventions.js';
 
-import { Emoji } from '@oldschoolgg/toolkit';
+import { Emoji, Events, formatOrdinal } from '@oldschoolgg/toolkit';
 import { MathRNG, randArrItem, randomVariation, roll } from 'node-rng';
 import { Bank, ChambersOfXeric, resolveItems } from 'oldschooljs';
 
@@ -195,6 +195,19 @@ export const raidsTask: MinionTask = {
 
 			const str = specialLoot ? `${emote} ||${itemsAdded}||` : itemsAdded.toString();
 			const deathStr = deaths === 0 ? '' : new Array(deaths).fill(Emoji.Skull).join(' ');
+
+			if (specialLoot) {
+				const itemsToAnnounce = itemsAdded.filter(
+					item => coxPurpleItems.includes(item.id) || orangeItems.includes(item.id)
+				);
+				const kc = await user.fetchMinigameScore(minigameID);
+				globalClient.emit(
+					Events.ServerNotification,
+					`${emote} **${user.badgedUsername}** just received **${itemsToAnnounce}** on their ${formatOrdinal(
+						kc
+					)} ${challengeMode ? 'Challenge Mode ' : ''}Chambers of Xeric raid.`
+				);
+			}
 
 			resultMessage += `\n${deathStr} **${user}** received: ${str} (${personalPoints?.toLocaleString()} pts, ${
 				Emoji.Skull

@@ -41,7 +41,9 @@ export async function makeParty(options: MakePartyOptions): Promise<MUser[]> {
 		allowedMentions: { users: [] as string[] }
 	});
 
-	await interaction.defer({ ephemeral: false });
+	if (!interaction.deferred && !interaction.replied) {
+		await interaction.defer({ ephemeral: false });
+	}
 	await interaction.reply(await getMessageContent());
 
 	const updateUsersIn = debounce(async () => {

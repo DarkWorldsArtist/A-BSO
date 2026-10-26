@@ -82,7 +82,7 @@ export const QueenBlackDragon: CustomMonster = {
 			'Ancient rejuvenation pool': 6
 		}
 	},
-	notifyDrops: resolveItems(['Queen black dragonling']),
+	notifyDrops: resolveItems(['Queen black dragonling', 'Royal dragon kiteshield', 'Draconic visage']),
 	baseMonster: Monsters.Vorkath,
 	itemInBankBoosts: [
 		{

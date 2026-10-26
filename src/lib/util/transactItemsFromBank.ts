@@ -1,5 +1,6 @@
 import { Bank, type ItemBank } from 'oldschooljs';
 
+import { handleSpecialDropNotifications } from '@/lib/bso/specialDropNotifications.js';
 import { handleNewCLItems } from '@/lib/handleNewCLItems.js';
 import { filterLootReplace } from '@/lib/slayer/slayerUtil.js';
 import type { SafeUserUpdateInput } from '@/lib/user/update.js';
@@ -145,6 +146,10 @@ export async function unqueuedTransactItems({
 				bingo.handleNewItems(user.id, itemsAdded);
 			}
 		}
+	}
+
+	if (collectionLog) {
+		handleSpecialDropNotifications({ user, itemsAdded, newCL });
 	}
 
 	if (!neverUpdateHistory) {

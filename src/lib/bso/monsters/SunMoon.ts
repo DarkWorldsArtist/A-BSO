@@ -99,7 +99,8 @@ export const Solis: CustomMonster = {
 				}
 			]
 		}
-	]
+	],
+	notifyDrops: resolveItems(['Eagle egg', 'Sun-metal scraps'])
 };
 
 export const Celestara: CustomMonster = {
@@ -178,7 +179,8 @@ export const Celestara: CustomMonster = {
 				}
 			]
 		}
-	]
+	],
+	notifyDrops: resolveItems(['Noom', 'Moonlight essence', 'Moondash charm'])
 };
 
 export const SunMoonMonsters = {

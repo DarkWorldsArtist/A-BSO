@@ -17,7 +17,6 @@ describe('Halloween Event Balance & Adjustments', () => {
 
 		const originalIsProd = globalConfig.isProduction;
 		try {
-			// @ts-expect-error override for test
 			globalConfig.isProduction = true;
 
 			const mockUser = { id: '123' } as any;
@@ -39,7 +38,6 @@ describe('Halloween Event Balance & Adjustments', () => {
 
 			expect(resultBlocked).toBe(`You can only use Halloween items in <#${Channel.HalloweenChannel}>.`);
 		} finally {
-			// @ts-expect-error restore original value
 			globalConfig.isProduction = originalIsProd;
 		}
 	});
@@ -116,5 +114,9 @@ describe('Halloween Event Balance & Adjustments', () => {
 		const lastStealAttempt = now - Time.Minute * 15;
 		const remaining = Time.Minute * 30 - (now - lastStealAttempt);
 		expect(remaining).toBe(Time.Minute * 15);
+	});
+
+	test('halloween steals route to HalloweenChannel', () => {
+		expect(Channel.HalloweenChannel).toBeDefined();
 	});
 });

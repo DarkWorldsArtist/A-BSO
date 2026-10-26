@@ -17,6 +17,7 @@ export const gwdKillables: KillableMonster[] = [
 
 		difficultyRating: 7,
 		qpRequired: 1,
+		notifyDrops: resolveItems(['Bandos hilt', 'Bandos chestplate', 'Bandos tassets', 'Pet general graardor']),
 		itemInBankBoosts: [
 			{
 				[itemID('Dragon warhammer')]: 10,
@@ -59,6 +60,7 @@ export const gwdKillables: KillableMonster[] = [
 
 		difficultyRating: 7,
 		qpRequired: 1,
+		notifyDrops: resolveItems(['Saradomin hilt', 'Armadyl crossbow', 'Pet zilyana']),
 		itemInBankBoosts: [
 			{
 				[itemID('Ranger boots')]: 3,
@@ -114,6 +116,7 @@ export const gwdKillables: KillableMonster[] = [
 
 		difficultyRating: 7,
 		qpRequired: 1,
+		notifyDrops: resolveItems(['Armadyl hilt', 'Armadyl chestplate', 'Armadyl chainskirt', "Pet kree'arra"]),
 		itemInBankBoosts: [
 			{
 				[itemID('Armadyl crossbow')]: 5,
@@ -166,6 +169,7 @@ export const gwdKillables: KillableMonster[] = [
 
 		difficultyRating: 7,
 		qpRequired: 1,
+		notifyDrops: resolveItems(['Zamorak hilt', 'Staff of the dead', 'Zamorakian spear', "Pet k'ril tsutsaroth"]),
 		itemInBankBoosts: [
 			{
 				[itemID('Dragon warhammer')]: 10,

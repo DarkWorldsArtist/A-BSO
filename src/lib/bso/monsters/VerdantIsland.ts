@@ -460,7 +460,8 @@ export const CrystallineSentinel: CustomMonster = {
 			gearSetup: 'melee',
 			items: [{ boostPercent: 10, itemID: itemID("Brawler's hook necklace") }]
 		}
-	]
+	],
+	notifyDrops: resolveItems(['Sentinel core', 'Starfire bow (u)'])
 };
 
 export const FungalBehemoth: CustomMonster = {
@@ -563,7 +564,8 @@ export const FungalBehemoth: CustomMonster = {
 		const scalingFactor = 8.5 - exponentialT * 5.1;
 
 		return scalingFactor;
-	}
+	},
+	notifyDrops: resolveItems(['Verdant heart', 'Prolific twine'])
 };
 
 export const ElderMimic: CustomMonster = {
@@ -698,7 +700,14 @@ export const Orym: CustomMonster = {
 			gearSetup: 'melee',
 			items: [{ boostPercent: 7, itemID: itemID('Searcrown band') }]
 		}
-	]
+	],
+	notifyDrops: resolveItems([
+		'Forsaken tear',
+		'Sacrilegious flask',
+		'Orylin',
+		'Primordial heartstring',
+		'Primordial spine'
+	])
 };
 
 export const Orrodil: CustomMonster = {
@@ -781,7 +790,14 @@ export const Orrodil: CustomMonster = {
 			gearSetup: 'melee',
 			items: [{ boostPercent: 7, itemID: itemID('Searcrown band') }]
 		}
-	]
+	],
+	notifyDrops: resolveItems([
+		'Celestial flame',
+		'Shattered pendant',
+		'Orrodin',
+		'Primordial heartstring',
+		'Primordial spine'
+	])
 };
 
 export const BurningDominionTemplate: CustomMonster = {

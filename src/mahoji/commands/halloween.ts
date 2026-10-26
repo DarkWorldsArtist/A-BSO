@@ -449,7 +449,28 @@ export const halloweenCommand = defineCommand({
 
 				if (action === 'status') {
 					await removeAllOtherCursedPumpkins(state.escaped ? null : state.currentHolderId);
-					return `\`\`\`json\n${JSON.stringify(state, null, 2)}\n\`\`\``;
+					const fullJson = JSON.stringify(state, null, 2);
+					const summary = {
+						currentHolderId: state.currentHolderId,
+						heldSince: state.heldSince,
+						lastTripAt: state.lastTripAt,
+						immunityUntil: state.immunityUntil,
+						greasedUntil: state.greasedUntil,
+						hasScaredCrow: state.hasScaredCrow,
+						scaredCrowAttempts: state.scaredCrowAttempts,
+						escaped: state.escaped,
+						previousHolderId: state.previousHolderId,
+						trackedHolders: Object.keys(state.totalHoldTimes).length,
+						trackedCooldowns: Object.keys(state.tripCooldowns).length
+					};
+					const content = `\`\`\`json\n${JSON.stringify(summary, null, 2)}\n\`\`\``;
+					if (fullJson.length > 1800) {
+						return {
+							content,
+							files: [{ buffer: Buffer.from(fullJson, 'utf-8'), name: 'cursed-pumpkin-state.json' }]
+						};
+					}
+					return `\`\`\`json\n${fullJson}\n\`\`\``;
 				}
 			}
 
@@ -649,7 +670,7 @@ export const halloweenCommand = defineCommand({
 					}
 
 					await globalClient
-						.sendMessage(Channel.Notifications, {
+						.sendMessage(Channel.HalloweenChannel, {
 							content: announcement,
 							allowedMentions: { users: [currentHolder.id] }
 						})
