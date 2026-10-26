@@ -52,6 +52,7 @@ export const miscBossKillables: KillableMonster[] = [
 		wildy: false,
 
 		difficultyRating: 8,
+		notifyDrops: resolveItems(['Vorki', 'Draconic visage', 'Skeletal visage']),
 		itemsRequired: deepResolveItems([
 			['Pernix body', 'Armadyl chestplate'],
 			['Pernix chaps', 'Armadyl chainskirt']
@@ -161,6 +162,7 @@ export const miscBossKillables: KillableMonster[] = [
 		wildy: false,
 
 		difficultyRating: 7,
+		notifyDrops: resolveItems(['Kalphite princess', 'Dragon chainbody', 'Jar of sand']),
 		itemsRequired: deepResolveItems([
 			"Verac's flail",
 			"Verac's plateskirt",
@@ -317,6 +319,13 @@ export const miscBossKillables: KillableMonster[] = [
 		wildy: false,
 
 		difficultyRating: 7,
+		notifyDrops: resolveItems([
+			'Hellpuppy',
+			'Primordial crystal',
+			'Pegasian crystal',
+			'Eternal crystal',
+			'Jar of souls'
+		]),
 		itemsRequired: deepResolveItems([
 			["Torag's platebody", "Dharok's platebody", 'Bandos chestplate', 'Torva platebody', "Inquisitor's hauberk"],
 			["Torag's platelegs", "Dharok's platelegs", 'Bandos tassets', 'Torva platelegs', "Inquisitor's plateskirt"],

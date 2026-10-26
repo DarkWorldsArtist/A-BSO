@@ -152,6 +152,14 @@ const clueItemsToNotifyOf = resolveItems([
 	.concat(
 		resolveItems([
 			'Dwarven blessing',
+			'Bloodhound',
+			'Blabberbeak',
+			'Octo',
+			'Ring of luck',
+			'Third age dye',
+			'Blood dye',
+			'Shadow dye',
+			'Ice dye',
 			'First age tiara',
 			'First age amulet',
 			'First age cape',

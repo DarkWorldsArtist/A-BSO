@@ -74,7 +74,7 @@ export const moktangTask: MinionTask = {
 		});
 
 		const newKC = await user.getKC(EBSOMonster.MOKTANG);
-		for (const item of resolveItems(['Igne gear frame', 'Mini moktang'])) {
+		for (const item of resolveItems(['Igne gear frame', 'Mini moktang', 'Volcanic dye'])) {
 			if (loot.has(item)) {
 				globalClient.emit(
 					Events.ServerNotification,

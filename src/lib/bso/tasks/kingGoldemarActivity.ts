@@ -97,6 +97,12 @@ export const kingGoldemarTask: MinionTask = {
 				isOnTask: false,
 				taskQuantity: null
 			});
+			if (loot.has('Dwarven crate')) {
+				globalClient.emit(
+					Events.ServerNotification,
+					`**${user.badgedUsername}** just received a **Dwarven crate** from King Goldemar!`
+				);
+			}
 			await user.addItemsToBank({ items: loot, collectionLog: true });
 			teamLoot.add(user.id, loot);
 

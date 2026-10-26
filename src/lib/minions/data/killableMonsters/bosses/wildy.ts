@@ -1,6 +1,6 @@
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
-import { Bank, deepResolveItems, itemID, Monsters } from 'oldschooljs';
+import { Bank, deepResolveItems, itemID, Monsters, resolveItems } from 'oldschooljs';
 
 import type { KillableMonster } from '@/lib/minions/types.js';
 
@@ -12,6 +12,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Callisto,
 		timeToFinish: Time.Minute * 7,
 		emoji: '<:Callisto_cub:1560874084647047169>',
+		notifyDrops: resolveItems(['Callisto cub', 'Voidwaker hilt', 'Tyrannical ring', 'Claws of callisto']),
 		wildy: true,
 		wildyMulti: true,
 		canBePked: true,
@@ -138,6 +139,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Artio,
 		timeToFinish: Time.Minute * 3.2,
 		emoji: '<:Callisto_cub:1560874084647047169>',
+		notifyDrops: resolveItems(['Callisto cub', 'Voidwaker hilt', 'Tyrannical ring', 'Claws of callisto']),
 		wildy: true,
 		wildyMulti: false,
 		canBePked: true,
@@ -260,6 +262,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Vetion,
 		timeToFinish: Time.Minute * 11.95,
 		emoji: '<:Vetion_jr:1560874265157435507>',
+		notifyDrops: resolveItems(["Vet'ion jr.", 'Voidwaker blade', 'Ring of the gods', "Skull of vet'ion"]),
 		wildy: true,
 		wildyMulti: true,
 		canBePked: true,
@@ -377,6 +380,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Calvarion,
 		timeToFinish: Time.Minute * 7.17,
 		emoji: '<:Vetion_jr:1560874265157435507>',
+		notifyDrops: resolveItems(["Vet'ion jr.", 'Voidwaker blade', 'Ring of the gods', "Skull of vet'ion"]),
 		wildy: true,
 		wildyMulti: false,
 		canBePked: true,
@@ -490,6 +494,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Venenatis,
 		timeToFinish: Time.Minute * 14.35,
 		emoji: '<:Venenatis_spiderling:1560874261332103258>',
+		notifyDrops: resolveItems(['Venenatis spiderling', 'Voidwaker gem', 'Treasonous ring', 'Fangs of venenatis']),
 		wildy: true,
 		wildyMulti: true,
 		canBePked: true,
@@ -632,6 +637,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Spindel,
 		timeToFinish: Time.Minute * 7.46,
 		emoji: '<:Venenatis_spiderling:1560874261332103258>',
+		notifyDrops: resolveItems(['Venenatis spiderling', 'Voidwaker gem', 'Treasonous ring', 'Fangs of venenatis']),
 		wildy: true,
 		wildyMulti: false,
 		canBePked: true,
@@ -769,6 +775,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.ChaosElemental,
 		timeToFinish: Time.Minute * 4.3,
 		emoji: '<:Pet_chaos_elemental:1560874157002981497>',
+		notifyDrops: resolveItems(['Pet chaos elemental']),
 		wildy: true,
 		canBePked: true,
 		pkActivityRating: 4,
@@ -873,6 +880,7 @@ export const wildyKillableMonsters: KillableMonster[] = [
 		table: Monsters.Scorpia,
 		timeToFinish: Time.Minute * 3.0,
 		emoji: '<:Scorpias_offspring:1560874238272082031>',
+		notifyDrops: resolveItems(["Scorpia's offspring"]),
 		wildy: true,
 		canBePked: true,
 		pkActivityRating: 6,

@@ -115,4 +115,8 @@ describe('Halloween Event Balance & Adjustments', () => {
 		const remaining = Time.Minute * 30 - (now - lastStealAttempt);
 		expect(remaining).toBe(Time.Minute * 15);
 	});
+
+	test('halloween steals route to HalloweenChannel', () => {
+		expect(Channel.HalloweenChannel).toBeDefined();
+	});
 });

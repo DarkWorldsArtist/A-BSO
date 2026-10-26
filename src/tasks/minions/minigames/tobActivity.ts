@@ -1,6 +1,6 @@
 import { CHINCANNON_MESSAGES } from '@/lib/bso/bsoConstants.js';
 
-import { Emoji, miniID } from '@oldschoolgg/toolkit';
+import { Emoji, Events, formatOrdinal, miniID } from '@oldschoolgg/toolkit';
 import { randArrItem, roll } from 'node-rng';
 import { cryptoRng } from 'node-rng/crypto';
 import { Bank } from 'oldschooljs';
@@ -220,6 +220,22 @@ export const tobTask: MinionTask = {
 		const successfulRaidCount = quantity - wipeCount;
 		if (successfulRaidCount > 0) {
 			await Promise.all(uniqueUsers.map(u => u.incrementMinigameScore(minigameID, successfulRaidCount)));
+		}
+
+		for (const u of uniqueUsers) {
+			const userLoot = teamsLoot.get(u.id);
+			const itemsToAnnounce = userLoot.filter(
+				item => TOBUniques.includes(item.id) || item.name === "Lil' zik" || tobMetamorphPets.includes(item.id)
+			);
+			if (itemsToAnnounce.length > 0) {
+				const kc = await u.fetchMinigameScore(minigameID);
+				globalClient.emit(
+					Events.ServerNotification,
+					`${Emoji.Purple} **${u.badgedUsername}** just received **${itemsToAnnounce}** on their ${formatOrdinal(
+						kc
+					)} ${hardMode ? 'Hard Mode ' : ''}Theatre of Blood raid.`
+				);
+			}
 		}
 		if (wipeCount > 0) {
 			await ClientSettings.updateBankSetting('tob_cost', globalTobCost);

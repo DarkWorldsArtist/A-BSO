@@ -3,7 +3,7 @@ import type { CustomMonster } from '@/lib/bso/monsters/CustomMonster.js';
 
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
-import { Bank, LootTable, Monsters } from 'oldschooljs';
+import { Bank, LootTable, Monsters, resolveItems } from 'oldschooljs';
 
 import { HighSeedPackTable, LowSeedPackTable, MediumSeedPackTable } from '@/lib/data/seedPackTables.js';
 
@@ -115,5 +115,16 @@ export const Treebeard: CustomMonster = {
 			'Axe of the high sungod': 10
 		}).toJSON()
 	],
+	notifyDrops: resolveItems([
+		'Mysterious seed',
+		'Ent hide',
+		'Grand crystal acorn',
+		20_661,
+		24_555,
+		24_557,
+		24_559,
+		24_561,
+		24_563
+	]),
 	canBePked: true
 };

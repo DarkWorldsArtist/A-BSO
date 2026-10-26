@@ -2,6 +2,7 @@ import type { ArchonEventOptions, ArchonOptions } from '@/lib/bso/bsoTypes.js';
 import { getMegabossLootBonus, getMegabossUniqueBonus } from '@/lib/bso/commands/islandUpgrades.js';
 import { EBSOMonster } from '@/lib/bso/EBSOMonster.js';
 
+import { Events } from '@oldschoolgg/toolkit';
 import { roll } from 'node-rng';
 import { Bank } from 'oldschooljs';
 
@@ -51,6 +52,13 @@ export const archonTask: MinionTask = {
 		if (isSolo) {
 			await user.transactItems({ itemsToAdd: realUserLoot, collectionLog: true });
 
+			if (realUniqueLoot.length > 0) {
+				globalClient.emit(
+					Events.ServerNotification,
+					`**${user.badgedUsername}** just received **${realUniqueLoot}** from defeating the **${presentation.name}**!`
+				);
+			}
+
 			for (let i = 1; i < lootResults.length; i++) {
 				const { uniqueLoot: dummyUnique } = lootResults[i];
 				for (const unique of uniquesForTier) {
@@ -82,6 +90,12 @@ export const archonTask: MinionTask = {
 				const combinedLoot = new Bank().add(regularLoot).add(uniqueLoot);
 				const recipient = await mUserFetch(userId);
 				await recipient.transactItems({ itemsToAdd: combinedLoot, collectionLog: true });
+				if (uniqueLoot.length > 0) {
+					globalClient.emit(
+						Events.ServerNotification,
+						`**${recipient.badgedUsername}** just received **${uniqueLoot}** from defeating the **${presentation.name}**!`
+					);
+				}
 			}
 		}
 

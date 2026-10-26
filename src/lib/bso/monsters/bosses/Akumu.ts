@@ -85,5 +85,6 @@ export const Akumu: CustomMonster = {
 	],
 	kcRequirements: {
 		[EBSOMonster.SOLIS]: 1
-	}
+	},
+	notifyDrops: resolveItems(['Mini akumu', 'Demon statuette', 'Cursed onyx'])
 };

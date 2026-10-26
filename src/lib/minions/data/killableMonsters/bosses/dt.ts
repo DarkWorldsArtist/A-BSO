@@ -580,7 +580,7 @@ export const desertTreasureKillableBosses: KillableMonster[] = [
 		aliases: Monsters.Vardorvis.aliases,
 		timeToFinish: Time.Minute * 4.1,
 		table: Monsters.Vardorvis,
-		notifyDrops: resolveItems(['Baron']),
+		notifyDrops: resolveItems(['Butch']),
 		qpRequired: 100,
 		equippedItemBoosts: [
 			{
@@ -670,7 +670,7 @@ export const desertTreasureKillableBosses: KillableMonster[] = [
 		aliases: Monsters.AwakenedVardorvis.aliases,
 		timeToFinish: Time.Minute * 15.5,
 		table: Monsters.AwakenedVardorvis,
-		notifyDrops: resolveItems(['Baron']),
+		notifyDrops: resolveItems(['Butch']),
 		qpRequired: 100,
 		equippedItemBoosts: [
 			{
