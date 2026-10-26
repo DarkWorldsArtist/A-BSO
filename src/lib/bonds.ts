@@ -109,7 +109,7 @@ export async function getBondStatusForUser(user: MUser): Promise<string> {
 	const totalRedeemable = earnedBonds + giftedBonds;
 	const playtimeMs = Number(roboUser.bond_playtime_ms ?? 0n);
 	const remainingMs = Math.max(0, BOND_PLAYTIME_REQUIRED_MS - playtimeMs);
-	const percent = Math.min(100, ((playtimeMs / BOND_PLAYTIME_REQUIRED_MS) * 100)).toFixed(2);
+	const percent = Math.min(100, (playtimeMs / BOND_PLAYTIME_REQUIRED_MS) * 100).toFixed(2);
 
 	const now = Date.now();
 	const expiry = roboUser.premium_balance_expiry_date ? Number(roboUser.premium_balance_expiry_date) : null;
@@ -164,8 +164,7 @@ export async function redeemUserBonds(
 
 	const useFromGifted = Math.min(giftedBonds, quantity);
 	const useFromEarned = quantity - useFromGifted;
-	const baseExpiry =
-		hasActiveBalance && roboUser.premium_balance_tier === BOND_PERK_TIER ? currentExpiry! : now;
+	const baseExpiry = hasActiveBalance && roboUser.premium_balance_tier === BOND_PERK_TIER ? currentExpiry! : now;
 	const newExpiry = baseExpiry + durationToAdd;
 
 	const updatedUser = await roboChimpClient.user.update({

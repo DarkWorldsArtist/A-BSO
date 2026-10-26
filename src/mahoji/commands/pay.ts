@@ -96,12 +96,7 @@ export const payCommand = defineCommand({
 			},
 			select: { id: true }
 		});
-		await flagSuspiciousBondEconomyActivity(
-			user.id,
-			recipient.id,
-			'pay',
-			`${amount.toLocaleString()} GP`
-		);
+		await flagSuspiciousBondEconomyActivity(user.id, recipient.id, 'pay', `${amount.toLocaleString()} GP`);
 
 		globalClient.emit(Events.EconomyLog, `${user.mention} paid ${amount} GP to ${recipient.mention}.`);
 		await ClientSettings.addToGPTaxBalance(user, amount);

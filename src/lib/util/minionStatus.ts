@@ -385,6 +385,19 @@ export function minionStatus(user: MUser, currentTask: ActivityTaskData | null, 
 
 			const plants = Farming.Plants.find(plants => plants.name === data.plantsName);
 
+			const isCombinedAutoFarm =
+				Boolean(data.autoFarmCombined) &&
+				((data.autoFarmPlan && data.autoFarmPlan.length > 0) || data.autoFarmSummary);
+
+			if (isCombinedAutoFarm) {
+				const totalRemaining = Math.max(0, durationRemaining);
+				const formattedCombinedDuration = `${formatTripDuration(user, totalRemaining)} remaining.`;
+				const currentStep = plants?.name ? ` Current step: ${plants.name} (${data.quantity}x).` : '';
+				return `${name} is currently auto farming.${currentStep} ${formattedCombinedDuration} Your ${
+					Emoji.Farming
+				} Farming level is ${user.skillsAsLevels.farming}.`;
+			}
+
 			return `${name} is currently farming ${data.quantity}x ${plants?.name}. ${formattedDuration} Your ${
 				Emoji.Farming
 			} Farming level is ${user.skillsAsLevels.farming}.`;

@@ -3,7 +3,6 @@ import { customPetsCL } from '@/lib/bso/collection-log/main.js';
 import { Events, formatOrdinal } from '@oldschoolgg/toolkit';
 import { type Bank, Items, resolveItems } from 'oldschooljs';
 
-// Pets that are already explicitly announced with KC or custom messages by their specific activity/monster
 const alreadyAnnouncedPetIDs = resolveItems([
 	'Ori',
 	'Voidling',
