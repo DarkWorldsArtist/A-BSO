@@ -5,7 +5,7 @@ import {
 	PumpkinIshBoxTable
 } from '@/lib/bso/openables/holidayOpenables.js';
 
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { EmbedBuilder, userMention } from '@oldschoolgg/discord';
 import { formatDuration, noOp, Time } from '@oldschoolgg/toolkit';
@@ -107,7 +107,12 @@ const defaultState: HalloweenEventState = {
 	boxesAwarded: {}
 };
 
+let memoryState: HalloweenEventState | null = null;
+
 export function getHalloweenState(): HalloweenEventState {
+	if (process.env.TEST && memoryState) {
+		return { ...memoryState };
+	}
 	if (!existsSync(STATE_FILE_PATH)) {
 		return { ...defaultState };
 	}
@@ -131,6 +136,14 @@ export function getHalloweenState(): HalloweenEventState {
 }
 
 export function saveHalloweenState(state: HalloweenEventState) {
+	if (process.env.TEST) {
+		memoryState = { ...state };
+		return;
+	}
+	const dir = path.dirname(STATE_FILE_PATH);
+	if (!existsSync(dir)) {
+		mkdirSync(dir, { recursive: true });
+	}
 	writeFileSync(STATE_FILE_PATH, JSON.stringify(state, null, 2), 'utf-8');
 }
 
@@ -173,6 +186,7 @@ export async function handleHalloweenTripFinish({
 	data: ActivityTaskData;
 	messages: string[];
 }): Promise<{ itemsToAddWithCL?: Bank; contentAppendix?: string } | void> {
+	if (process.env.TEST) return;
 	return withPumpkinLock(async () => {
 		const state = getHalloweenState();
 		const now = Date.now();

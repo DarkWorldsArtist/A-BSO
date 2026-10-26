@@ -268,12 +268,7 @@ ${items}`
 				},
 				select: { id: true }
 			});
-			await flagSuspiciousBondEconomyActivity(
-				user.id,
-				recipient.id,
-				'gift',
-				`GiftBox ${giftBox.id}`
-			);
+			await flagSuspiciousBondEconomyActivity(user.id, recipient.id, 'gift', `GiftBox ${giftBox.id}`);
 			return `You sent the gift box to ${recipient.badgedUsername}!`;
 		}
 
