@@ -125,5 +125,6 @@ export const VladimirDrakan: CustomMonster = {
 		calculateQuantity: (opts: { quantity: number }) => Math.ceil(randomVariation(opts.quantity * 50, 5)),
 		requiredAmmo: resolveItems(['Silver bolts'])
 	},
+	notifyDrops: resolveItems(['Echo', 'Blightbrand']),
 	allItems: uniqueArr([...table.allItems, ...vladDrakanCL])
 };

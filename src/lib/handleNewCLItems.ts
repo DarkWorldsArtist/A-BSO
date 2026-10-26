@@ -66,15 +66,15 @@ export async function handleNewCLItems({
 
 	let newCLPercentMessage: string | null = null;
 
-	const milestonePercentages = [25, 50, 70, 80, 90, 95, 100];
+	const milestonePercentages = [100, 95, 90, 80, 70, 50, 25];
 	for (const milestone of milestonePercentages) {
 		if (previousCLDetails.percent < milestone && newCLDetails.percent >= milestone) {
 			newCLPercentMessage = `${user} just reached ${milestone}% Collection Log completion, after receiving ${newCLItems.toString().slice(0, 500)}!`;
 			if (previousCLRank !== newCLRank && newCLRank !== null && previousCLRank !== null) {
 				newCLPercentMessage += ` In the overall CL leaderboard, they went from rank ${previousCLRank} to rank ${newCLRank}.`;
 			}
+			break;
 		}
-		break;
 	}
 
 	if (newCLPercentMessage) {

@@ -86,5 +86,6 @@ export const Venatrix: CustomMonster = {
 	requiredBitfield: BitField.HasUnlockedVenatrix,
 	kcRequirements: {
 		[EBSOMonster.CELESTARA]: 1
-	}
+	},
+	notifyDrops: resolveItems(['Venatrix webbing', 'Spiders leg bottom'])
 };
