@@ -1,6 +1,6 @@
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
-import { Bank, Monsters, resolveItems } from 'oldschooljs';
+import { Bank, itemID, Monsters, resolveItems } from 'oldschooljs';
 
 import { maggotKingCL } from '@/lib/data/CollectionsExport.js';
 import { QuestID } from '@/lib/minions/data/quests.js';
@@ -27,6 +27,56 @@ export const maggotKingKillable: KillableMonster = {
 		melee: { [GearStat.AttackCrush]: 70, [GearStat.MeleeStrength]: 70 },
 		range: { [GearStat.AttackRanged]: 100, [GearStat.RangedStrength]: 50 }
 	},
+	equippedItemBoosts: [
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [
+				{ itemID: itemID("Inquisitor's mace"), boostPercent: 8 },
+				{ itemID: itemID('Soulreaper axe'), boostPercent: 6 },
+				{ itemID: itemID('Abyssal bludgeon'), boostPercent: 4 }
+			]
+		},
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [
+				{ itemID: itemID("Inquisitor's hauberk"), boostPercent: 3 },
+				{ itemID: itemID('Torva platebody'), boostPercent: 2 }
+			]
+		},
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [
+				{ itemID: itemID("Inquisitor's plateskirt"), boostPercent: 3 },
+				{ itemID: itemID('Torva platelegs'), boostPercent: 2 }
+			]
+		},
+		{
+			gearSetup: 'range',
+			required: false,
+			items: [
+				{ itemID: itemID('Zaryte crossbow'), boostPercent: 8 },
+				{ itemID: itemID('Armadyl crossbow'), boostPercent: 5 },
+				{ itemID: itemID('Dragon hunter crossbow'), boostPercent: 3 },
+				{ itemID: itemID('Dragon crossbow'), boostPercent: 3 }
+			]
+		}
+	],
+	itemInBankBoosts: [
+		{
+			[itemID('Crimson kisten')]: 6,
+			[itemID('Voidwaker')]: 4,
+			[itemID('Dragon claws')]: 3,
+			[itemID('Burning claws')]: 2
+		},
+		{
+			[itemID('Webweaver bow')]: 3,
+			[itemID("Craw's bow")]: 3,
+			[itemID('Venator bow')]: 2
+		}
+	],
 	projectileUsage: { required: true, calculateQuantity: ({ quantity }) => quantity * 20 },
 	defaultAttackStyles: ['attack', 'ranged'],
 	disallowedAttackStyles: ['magic'],
@@ -46,6 +96,22 @@ export const maggotKingKillable: KillableMonster = {
 
 const mageKillable: KillableMonster = {
 	...maggotKingKillable,
+	equippedItemBoosts: [
+		...maggotKingKillable.equippedItemBoosts!.filter(boost => boost.gearSetup === 'melee'),
+		{
+			gearSetup: 'mage',
+			required: false,
+			items: [
+				{ itemID: itemID('Harmonised nightmare staff'), boostPercent: 8 },
+				{ itemID: itemID('Twinflame staff'), boostPercent: 6 }
+			]
+		},
+		{
+			gearSetup: 'mage',
+			required: false,
+			items: [{ itemID: itemID('Confliction gauntlets'), boostPercent: 4 }]
+		}
+	],
 	// Wiki magic MMG: approximately 25 kills/hour before bot modifiers.
 	timeToFinish: Time.Minute * 2.4,
 	levelRequirements: { attack: 80, strength: 85, defence: 70, magic: 75, prayer: 74 },
@@ -102,13 +168,38 @@ export function resolveMaggotKingMethod(gearBank: GearBank): KillableMonster | s
 		gearBank.skillsAsLevels.magic >= 75 &&
 		mage.meetsStatRequirements(mageKillable.minimumGearRequirements!.mage!)[0]
 	) {
+		if (mage.hasEquipped('Tome of fire') && gearBank.bank.amount('Burnt page') >= 2) {
+			return {
+				...mageKillable,
+				equippedItemBoosts: [
+					...mageKillable.equippedItemBoosts!,
+					{
+						gearSetup: 'mage',
+						required: false,
+						items: [{ itemID: itemID('Tome of fire'), boostPercent: 4 }]
+					}
+				],
+				itemCost: [
+					{ itemCost: new Bank().add('Prayer potion(4)'), qtyPerKill: 0.5 },
+					{ itemCost: new Bank().add('Super combat potion(4)'), qtyPerKill: 0.1 },
+					{ itemCost: new Bank().add('Antidote++(4)'), qtyPerKill: 0.1 },
+					{
+						itemCost: new Bank().add('Blood rune', 30),
+						qtyPerKill: 1,
+						isRuneCost: true
+					},
+					{
+						itemCost: new Bank().add('Burnt page'),
+						qtyPerKill: 1.5
+					}
+				]
+			};
+		}
 		return mageKillable;
 	}
 	return 'Maggot King requires melee plus a ranged or fire-magic setup. Equip a crossbow with 85 Ranged and 100 ranged attack, or a fire staff with 75 Magic and 70 magic attack.';
 }
 
 export function isMaggotKingTakeEggs(name: string): boolean {
-	return ['maggot king (take-eggs)', 'maggot king eggs'].includes(
-		name.trim().toLowerCase()
-	);
+	return ['maggot king (take-eggs)', 'maggot king eggs'].includes(name.trim().toLowerCase());
 }

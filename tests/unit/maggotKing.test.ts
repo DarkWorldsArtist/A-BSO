@@ -2,17 +2,19 @@ import { MathRNG } from 'node-rng';
 import { Bank, Monsters } from 'oldschooljs';
 import { describe, expect, test } from 'vitest';
 
+import Createables from '@/lib/data/createables.js';
 import {
 	isMaggotKingTakeEggs,
 	maggotKingKillable,
 	resolveMaggotKingMethod
 } from '@/lib/minions/data/killableMonsters/bosses/maggotKing.js';
+import { autocompleteMonsters } from '@/lib/minions/data/killableMonsters/index.js';
 import { QuestID } from '@/lib/minions/data/quests.js';
 import { addMonsterXPRaw } from '@/lib/minions/functions/addMonsterXPRaw.js';
+import MiscCraftables from '@/lib/skilling/skills/crafting/craftables/misc.js';
 import { Gear } from '@/lib/structures/Gear.js';
-import { makeGearBank } from './utils.js';
 import findMonster from '@/lib/util/findMonster.js';
-import { autocompleteMonsters } from '@/lib/minions/data/killableMonsters/index.js';
+import { makeGearBank } from './utils.js';
 
 function makeCombatGear() {
 	const gear = makeGearBank();
@@ -40,6 +42,69 @@ function equipMage(gear: ReturnType<typeof makeGearBank>) {
 }
 
 describe('Maggot King PvM', () => {
+	test('Necklace of rupture requires both ingredients and awards 500 Crafting XP', () => {
+		const recipe = MiscCraftables.find(item => item.name === 'Necklace of rupture');
+		if (!recipe) throw new Error('Necklace recipe missing');
+
+		expect(recipe.level).toBe(84);
+		expect(recipe.xp).toBe(500);
+		expect(recipe.inputItems.amount('Necklace of anguish')).toBe(1);
+		expect(recipe.inputItems.amount('Etched elder venator fang')).toBe(1);
+	});
+	test('Etching requires 84 Crafting and consumes only the fang', () => {
+		const recipe = Createables.find(item => item.name === 'Etched elder venator fang');
+		if (!recipe) throw new Error('Etching recipe missing');
+
+		const inputs = new Bank(recipe.inputItems);
+		const outputs = new Bank(recipe.outputItems);
+
+		expect(recipe.requiredSkills?.crafting).toBe(84);
+		expect(inputs.amount('Elder venator fang')).toBe(1);
+		expect(inputs.amount('Chisel')).toBe(0);
+		expect(outputs.amount('Etched elder venator fang')).toBe(1);
+		expect(recipe.customReq).toBeDefined();
+	});
+	test('Tome of fire uses pages and falls back when pages are unavailable', () => {
+		const gear = makeCombatGear();
+		gear.gear.mage = new Gear({
+			weapon: 'Kodai wand',
+			body: "Ahrim's robetop",
+			legs: "Ahrim's robeskirt",
+			neck: 'Occult necklace',
+			cape: 'Imbued saradomin cape',
+			shield: 'Tome of fire'
+		});
+		gear.bank.add('Burnt page', 2);
+
+		const method = resolveMaggotKingMethod(gear);
+		if (typeof method === 'string') throw new Error(method);
+		if (!Array.isArray(method.itemCost)) throw new Error('Expected supply list');
+
+		expect(method.itemCost.some(cost => cost.itemCost.has('Fire rune'))).toBe(false);
+		expect(method.itemCost.find(cost => cost.itemCost.has('Burnt page'))?.qtyPerKill).toBe(1.5);
+
+		gear.bank.remove('Burnt page', 2);
+
+		const fallback = resolveMaggotKingMethod(gear);
+		if (typeof fallback === 'string') throw new Error(fallback);
+		if (!Array.isArray(fallback.itemCost)) throw new Error('Expected supply list');
+
+		expect(fallback.itemCost.some(cost => cost.itemCost.has('Fire rune'))).toBe(true);
+		expect(fallback.itemCost.some(cost => cost.itemCost.has('Burnt page'))).toBe(false);
+	});
+	test('Magic route includes melee and magic boosts, but no ranged boosts', () => {
+		const gear = makeCombatGear();
+		equipMage(gear);
+
+		const method = resolveMaggotKingMethod(gear);
+		if (typeof method === 'string') throw new Error(method);
+
+		const setups = method.equippedItemBoosts!.map(boost => boost.gearSetup);
+
+		expect(setups).toContain('melee');
+		expect(setups).toContain('mage');
+		expect(setups).not.toContain('range');
+	});
 	test('Only egg target names enable Take-eggs mode', () => {
 		expect(isMaggotKingTakeEggs('Maggot King (Take-eggs)')).toBe(true);
 		expect(isMaggotKingTakeEggs('maggot king eggs')).toBe(true);
@@ -50,9 +115,7 @@ describe('Maggot King PvM', () => {
 		expect(isMaggotKingTakeEggs('Goblin')).toBe(false);
 	});
 	test('Take-eggs is selectable and shares the Maggot King identity', () => {
-		const choice = autocompleteMonsters.find(
-			monster => monster.name === 'Maggot King (Take-eggs)'
-		);
+		const choice = autocompleteMonsters.find(monster => monster.name === 'Maggot King (Take-eggs)');
 
 		expect(choice).toBeDefined();
 		expect(choice?.id).toBe(Monsters.MaggotKing.id);

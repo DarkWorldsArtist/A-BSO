@@ -312,6 +312,35 @@ const blackMaskBoost: Boost = {
 // if an array, only the highest applies
 export const mainBoostEffects: (Boost | Boost[])[] = [
 	{
+		description: 'Maggot King Eye of Ayak switch',
+		run: ({ monster, gearBank, addPostBoostEffect }) => {
+			if (
+				monster.id !== EMonster.MAGGOT_KING ||
+				!monster.defaultAttackStyles?.includes('magic') ||
+				!gearBank.hasEquippedOrInBank('Eye of ayak')
+			) {
+				return null;
+			}
+
+			addPostBoostEffect({
+				description: 'Maggot King Eye of Ayak switch',
+				run: ({ quantity }) => {
+					if (gearBank.chargeBank.amount('ayak_charges') < quantity) {
+						return null;
+					}
+
+					return {
+						percentageReduction: 5,
+						charges: new ChargeBank().add('ayak_charges', quantity),
+						message: `5% for Eye of Ayak (${quantity} charges)`
+					};
+				}
+			});
+
+			return null;
+		}
+	},
+	{
 		description: 'Item Boosts',
 		run: ({ monster, gearBank }) => {
 			const results: BoostResult[] = [];

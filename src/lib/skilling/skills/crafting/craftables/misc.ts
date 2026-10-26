@@ -4,6 +4,14 @@ import type { Craftable } from '@/lib/skilling/types.js';
 
 const Misc: Craftable[] = [
 	{
+		name: 'Necklace of rupture',
+		id: itemID('Necklace of rupture'),
+		level: 84,
+		xp: 500,
+		inputItems: new Bank().add('Necklace of anguish').add('Etched elder venator fang'),
+		tickRate: 0
+	},
+	{
 		name: 'Drift net',
 		id: itemID('Drift net'),
 		level: 26,
