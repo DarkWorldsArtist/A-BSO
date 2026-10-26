@@ -245,12 +245,7 @@ export const gambleCommand = defineCommand({
 					type: 'gri'
 				}
 			});
-			await flagSuspiciousBondEconomyActivity(
-				senderUser.id,
-				recipientuser.id,
-				'gri',
-				`${loot}`
-			);
+			await flagSuspiciousBondEconomyActivity(senderUser.id, recipientuser.id, 'gri', `${loot}`);
 			const debug = new Bank();
 			for (const t of bank) debug.add(t[0].id);
 

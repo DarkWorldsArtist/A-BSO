@@ -132,12 +132,7 @@ export async function handleGiveawayCompletion(_giveaway: Giveaway) {
 				type: 'giveaway'
 			}
 		});
-		await flagSuspiciousBondEconomyActivity(
-			creator.id,
-			winner.id,
-			'giveaway',
-			`${loot}`
-		);
+		await flagSuspiciousBondEconomyActivity(creator.id, winner.id, 'giveaway', `${loot}`);
 
 		globalClient.emit(
 			Events.EconomyLog,

@@ -1602,6 +1602,7 @@ enum command_name_enum {
   birdhouse
   blastfurnace
   blowpipe
+  bonds
   bossrecords
   botleagues
   botstats

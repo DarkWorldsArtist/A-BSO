@@ -378,7 +378,10 @@ export async function onMinionActivityFinish(activity: ActivityTaskData) {
 	try {
 		await recordBondPlaytimeFromActivity(activity.userID, activity.duration);
 	} catch (err) {
-		Logging.logError(err as Error, { context: 'recordBondPlaytimeFromActivity', activity: JSON.stringify(activity) });
+		Logging.logError(err as Error, {
+			context: 'recordBondPlaytimeFromActivity',
+			activity: JSON.stringify(activity)
+		});
 	}
 
 	try {
