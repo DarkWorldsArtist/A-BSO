@@ -24,7 +24,7 @@ You may join the discord server [here](https://discord.gg/aADVmGc2t4)
 
 ## Contributing
 
-Anyone is free to create a PR with improvements and additions to the repository. If you have questions, ask in the `#developers` channel on the Discord server. If you intend to use AI in the development of any PRs, you must demonstrate a knowledgeable and literate understand of the code you are intending to add.
+Anyone is free to create a PR with improvements and additions to the repository. If you have questions, ask in the `#developers` channel on the Discord server. If you intend to use AI in the development of any PRs, you must demonstrate a knowledgeable and literate understanding of the code you are intending to add.
 
 [Read this file for help setting up a bot](SETUP.md)
 
