@@ -2,11 +2,17 @@ import { MathRNG } from 'node-rng';
 import { Bank, Monsters } from 'oldschooljs';
 import { describe, expect, test } from 'vitest';
 
-import { maggotKingKillable, resolveMaggotKingMethod } from '@/lib/minions/data/killableMonsters/bosses/maggotKing.js';
+import {
+	isMaggotKingTakeEggs,
+	maggotKingKillable,
+	resolveMaggotKingMethod
+} from '@/lib/minions/data/killableMonsters/bosses/maggotKing.js';
 import { QuestID } from '@/lib/minions/data/quests.js';
 import { addMonsterXPRaw } from '@/lib/minions/functions/addMonsterXPRaw.js';
 import { Gear } from '@/lib/structures/Gear.js';
 import { makeGearBank } from './utils.js';
+import findMonster from '@/lib/util/findMonster.js';
+import { autocompleteMonsters } from '@/lib/minions/data/killableMonsters/index.js';
 
 function makeCombatGear() {
 	const gear = makeGearBank();
@@ -34,6 +40,26 @@ function equipMage(gear: ReturnType<typeof makeGearBank>) {
 }
 
 describe('Maggot King PvM', () => {
+	test('Only egg target names enable Take-eggs mode', () => {
+		expect(isMaggotKingTakeEggs('Maggot King (Take-eggs)')).toBe(true);
+		expect(isMaggotKingTakeEggs('maggot king eggs')).toBe(true);
+		expect(isMaggotKingTakeEggs('  MAGGOT KING (TAKE-EGGS)  ')).toBe(true);
+
+		expect(isMaggotKingTakeEggs('Maggot King')).toBe(false);
+		expect(isMaggotKingTakeEggs('maggotking')).toBe(false);
+		expect(isMaggotKingTakeEggs('Goblin')).toBe(false);
+	});
+	test('Take-eggs is selectable and shares the Maggot King identity', () => {
+		const choice = autocompleteMonsters.find(
+			monster => monster.name === 'Maggot King (Take-eggs)'
+		);
+
+		expect(choice).toBeDefined();
+		expect(choice?.id).toBe(Monsters.MaggotKing.id);
+		expect(findMonster('Maggot King (Take-eggs)')).toBe(maggotKingKillable);
+		expect(findMonster('maggot king eggs')).toBe(maggotKingKillable);
+		expect(findMonster('Maggot King')).toBe(maggotKingKillable);
+	});
 	test('requires the named quest and cannot be group killed', () => {
 		expect(maggotKingKillable.requiredQuests).toContain(QuestID.TheBloodMoonRises);
 		expect(maggotKingKillable.groupKillable).toBe(false);

@@ -14,7 +14,7 @@ import { Monsters } from 'oldschooljs';
 import { colosseumCommand } from '@/lib/colosseum.js';
 import type { PvMMethod } from '@/lib/constants.js';
 import { trackLoot } from '@/lib/lootTrack.js';
-import { resolveMaggotKingMethod } from '@/lib/minions/data/killableMonsters/bosses/maggotKing.js';
+import { isMaggotKingTakeEggs, resolveMaggotKingMethod } from '@/lib/minions/data/killableMonsters/bosses/maggotKing.js';
 import { revenantMonsters } from '@/lib/minions/data/killableMonsters/revs.js';
 import type { MonsterActivityTaskOptions } from '@/lib/types/minions.js';
 import findMonster from '@/lib/util/findMonster.js';
@@ -88,6 +88,7 @@ export async function minionKillCommand(
 
 	if (!monster) return invalidMonsterMsg;
 	if (monster.id === Monsters.MaggotKing.id) {
+		takeEggs = takeEggs || isMaggotKingTakeEggs(name);
 		const method = resolveMaggotKingMethod(user.gearBank);
 		if (typeof method === 'string') return method;
 		monster = method;

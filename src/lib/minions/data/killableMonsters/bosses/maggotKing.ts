@@ -12,7 +12,7 @@ import type { GearBank } from '@/lib/structures/GearBank.js';
 export const maggotKingKillable: KillableMonster = {
 	id: Monsters.MaggotKing.id,
 	name: Monsters.MaggotKing.name,
-	aliases: Monsters.MaggotKing.aliases,
+	aliases: [...Monsters.MaggotKing.aliases, 'maggot king (take-eggs)', 'maggot king eggs'],
 	table: Monsters.MaggotKing,
 	timeToFinish: Time.Minute * 3,
 	respawnTime: Time.Second * 5.4,
@@ -105,4 +105,10 @@ export function resolveMaggotKingMethod(gearBank: GearBank): KillableMonster | s
 		return mageKillable;
 	}
 	return 'Maggot King requires melee plus a ranged or fire-magic setup. Equip a crossbow with 85 Ranged and 100 ranged attack, or a fire staff with 75 Magic and 70 magic attack.';
+}
+
+export function isMaggotKingTakeEggs(name: string): boolean {
+	return ['maggot king (take-eggs)', 'maggot king eggs'].includes(
+		name.trim().toLowerCase()
+	);
 }
