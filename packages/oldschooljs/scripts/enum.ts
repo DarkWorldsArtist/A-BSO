@@ -94,7 +94,11 @@ async function main() {
 		['NIGHTMARE', 9415],
 		['MIMIC', 23_184],
 		['ZALCANO', 9049],
-		['NEX', 11_278]
+		['NEX', 11_278],
+		['BRANDA', 12_596],
+		['ELDRIC', 14_147],
+		['ROYAL_TITANS', 14_148],
+		['POLLNIVNIAN_BANDIT', 736]
 	] as [string, number][];
 	for (const [name, id] of monstersToEnum.sort((a, b) => a[0].localeCompare(b[0]))) {
 		let key = name.replaceAll(' ', '_');
