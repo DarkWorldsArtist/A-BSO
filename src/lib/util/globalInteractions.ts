@@ -142,7 +142,7 @@ async function queueTripHandler(user: MUser, id: string, interaction: OSInteract
 	const perkTier = await user.fetchPerkTier();
 	if (perkTier < PerkTier.Four) {
 		return {
-			content: 'Trip queuing is a patron perk (Tier 3: 1 trip, Tier 4: 2 trips, Tier 5: 4 trips).',
+			content: 'Trip queuing is a patron perk (Tier 4: 1 trip, Tier 5: 2 trips, Tier 6+: 4 trips).',
 			ephemeral: true
 		};
 	}

@@ -155,6 +155,7 @@ export const mixCommand = defineCommand({
 			zahur: Boolean(zahur),
 			wesley: Boolean(wesley),
 			quantity,
+			iQty: options.quantity ? options.quantity : undefined,
 			duration,
 			type: 'Herblore'
 		});

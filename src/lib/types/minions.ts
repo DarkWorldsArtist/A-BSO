@@ -20,6 +20,7 @@ export interface ActivityTaskOptions {
 	finishDate: number;
 	channelId: string;
 	cantBeDoubled?: boolean;
+	iQty?: number;
 }
 
 export interface ActivityTaskOptionsWithNoChanges extends ActivityTaskOptions {

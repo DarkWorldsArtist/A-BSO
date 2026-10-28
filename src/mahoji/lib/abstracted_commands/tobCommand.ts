@@ -537,6 +537,7 @@ export async function tobStartCommand(
 		wipedRooms,
 		fakeDuration: totalFakeDuration,
 		quantity: qty,
+		iQty: quantity,
 		deaths,
 		solo: teamSize,
 		cc: chinCannonUser?.id

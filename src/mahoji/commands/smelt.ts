@@ -168,6 +168,7 @@ export const smeltingCommand = defineCommand({
 			userID: user.id,
 			channelId,
 			quantity,
+			iQty: options.quantity ? options.quantity : undefined,
 			blastf: blast_furnace,
 			duration,
 			type: 'Smelting'
