@@ -125,6 +125,7 @@ export const fletchCommand = defineCommand({
 			userID: user.id,
 			channelId,
 			quantity,
+			iQty: options.quantity ? options.quantity : undefined,
 			duration,
 			type: 'Fletching'
 		});

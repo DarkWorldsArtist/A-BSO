@@ -123,7 +123,11 @@ export const queueCommand = defineCommand({
 							const nameMatch = mon.name.toLowerCase().includes(query);
 							const aliasMatch = mon.aliases?.some(a => a.toLowerCase().includes(query));
 							if (nameMatch || aliasMatch) {
-								results.push({ name: `Monster: ${mon.name}`, value: `monster_${mon.id}` });
+								const label =
+									'canBePked' in mon && mon.canBePked
+										? `Monster: ${mon.name} (Wilderness)`
+										: `Monster: ${mon.name}`;
+								results.push({ name: label, value: `monster_${mon.id}` });
 							}
 						}
 
@@ -158,6 +162,12 @@ export const queueCommand = defineCommand({
 					required: false,
 					min_value: 1,
 					max_value: 4
+				},
+				{
+					type: 'Boolean',
+					name: 'wilderness',
+					description: 'Whether to fight the monster in the wilderness (if applicable).',
+					required: false
 				}
 			]
 		},
@@ -208,7 +218,7 @@ export const queueCommand = defineCommand({
 		const maxDepth = getMaxQueueDepth(perkTier);
 
 		if (maxDepth === 0) {
-			return 'Trip queuing is a patron perk (Tier 3: 1 trip, Tier 4: 2 trips, Tier 5: 4 trips).';
+			return 'Trip queuing is a patron perk (Tier 4: 1 trip, Tier 5: 2 trips, Tier 6+: 4 trips).';
 		}
 
 		if (options.add) {
@@ -275,6 +285,9 @@ export const queueCommand = defineCommand({
 								all_user_ids: [BigInt(user.id)]
 							};
 						}
+						const isWildy = Boolean(
+							options.add?.wilderness ?? ('canBePked' in mon && mon.canBePked ? true : false)
+						);
 						return {
 							id: 0,
 							user_id: BigInt(user.id),
@@ -292,7 +305,7 @@ export const queueCommand = defineCommand({
 								cannonMulti: false,
 								chinning: false,
 								bob: 0,
-								isInWilderness: false,
+								isInWilderness: isWildy,
 								onTask: false
 							},
 							all_user_ids: [BigInt(user.id)]
@@ -301,6 +314,7 @@ export const queueCommand = defineCommand({
 				}
 				if (sel.startsWith('wc_')) {
 					const logName = sel.replace('wc_', '');
+					const log = Woodcutting.Logs.find(l => l.name.toLowerCase() === logName.toLowerCase());
 					return {
 						id: 0,
 						user_id: BigInt(user.id),
@@ -311,7 +325,7 @@ export const queueCommand = defineCommand({
 						group_activity: false,
 						type: activity_type_enum.Woodcutting,
 						channel_id: BigInt(channelId),
-						data: { logID: logName, iQty: undefined, powerchop: false },
+						data: { logID: log ? log.id : logName, iQty: undefined, powerchop: false },
 						all_user_ids: [BigInt(user.id)]
 					};
 				}
@@ -358,7 +372,7 @@ export const queueCommand = defineCommand({
 						group_activity: false,
 						type: activity_type_enum.Raids,
 						channel_id: BigInt(channelId),
-						data: {},
+						data: { users: [user.id], challengeMode: false },
 						all_user_ids: [BigInt(user.id)]
 					};
 				}
@@ -373,7 +387,7 @@ export const queueCommand = defineCommand({
 						group_activity: false,
 						type: activity_type_enum.TheatreOfBlood,
 						channel_id: BigInt(channelId),
-						data: {},
+						data: { users: [user.id], solo: true, hardMode: false },
 						all_user_ids: [BigInt(user.id)]
 					};
 				}
@@ -388,7 +402,7 @@ export const queueCommand = defineCommand({
 						group_activity: false,
 						type: activity_type_enum.TombsOfAmascut,
 						channel_id: BigInt(channelId),
-						data: {},
+						data: { users: [user.id], solo: true, raidLevel: 1 },
 						all_user_ids: [BigInt(user.id)]
 					};
 				}

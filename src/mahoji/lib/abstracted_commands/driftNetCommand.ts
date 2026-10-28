@@ -12,6 +12,7 @@ export async function driftNetCommand(
 	const userBank = user.bank;
 	const maxTripLength = await user.calcMaxTripLength('DriftNet');
 
+	const inputMinutes = minutes;
 	if (!minutes) {
 		minutes = Math.floor(maxTripLength / Time.Minute);
 	}
@@ -81,7 +82,8 @@ export async function driftNetCommand(
 		quantity,
 		minutes,
 		duration,
-		type: 'DriftNet'
+		type: 'DriftNet',
+		iQty: inputMinutes
 	});
 
 	await user.removeItemsFromBank(itemsToRemove);

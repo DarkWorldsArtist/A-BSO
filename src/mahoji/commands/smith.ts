@@ -169,6 +169,7 @@ export const smithCommand = defineCommand({
 			userID: user.id,
 			channelId,
 			quantity,
+			iQty: options.quantity ? options.quantity : undefined,
 			duration,
 			type: 'Smithing',
 			cantBeDoubled: smithedItem.cantBeDoubled

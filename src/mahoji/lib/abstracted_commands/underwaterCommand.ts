@@ -23,6 +23,7 @@ export async function underwaterAgilityThievingCommand({
 	const userBank = user.bank;
 	const maxTripLength = await user.calcMaxTripLength('UnderwaterAgilityThieving');
 
+	const inputMinutes = minutes;
 	if (!minutes) {
 		minutes = Math.floor(maxTripLength / Time.Minute);
 	}
@@ -91,7 +92,8 @@ export async function underwaterAgilityThievingCommand({
 		minutes,
 		duration,
 		noStams,
-		type: 'UnderwaterAgilityThieving'
+		type: 'UnderwaterAgilityThieving',
+		iQty: inputMinutes
 	});
 
 	await user.transactItems({ itemsToRemove });

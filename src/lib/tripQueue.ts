@@ -16,8 +16,14 @@ export function describeActivity(activity: { type: activity_type_enum; data?: an
 	const data = (activity.data ?? {}) as Record<string, any>;
 	switch (activity.type) {
 		case activity_type_enum.MonsterKilling: {
-			const mon = killableMonsters.find(m => m.id === data.monsterID);
-			return mon ? `${mon.name} (${data.quantity ?? 1}x)` : 'Monster Killing';
+			const mon = killableMonsters.find(m => m.id === (data.mi ?? data.monsterID));
+			const qty = data.q ?? data.quantity ?? 1;
+			const wildyStr = data.isInWilderness ? ' (Wilderness)' : '';
+			return mon
+				? `${mon.name} (${qty}x)${wildyStr}`
+				: data.isInWilderness
+					? 'Monster Killing (Wilderness)'
+					: 'Monster Killing';
 		}
 		case activity_type_enum.Woodcutting: {
 			const log = data.logID ? Items.getItem(data.logID) : null;
@@ -32,7 +38,7 @@ export function describeActivity(activity: { type: activity_type_enum; data?: an
 			return fish ? `${fish.name} Fishing` : data.fishName ? `${data.fishName} Fishing` : 'Fishing';
 		}
 		case activity_type_enum.ClueCompletion: {
-			const clue = ClueTiers.find(c => c.id === data.clueID);
+			const clue = ClueTiers.find(c => c.id === (data.ci ?? data.clueID));
 			return clue ? `${clue.name} Clues` : 'Clue Scrolls';
 		}
 		case activity_type_enum.Crafting: {
@@ -184,7 +190,7 @@ export async function queueTrip({
 	const perkTier = await user.fetchPerkTier();
 	const maxDepth = getMaxQueueDepth(perkTier);
 	if (maxDepth === 0) {
-		return 'Trip queuing is a patron perk (Tier 3: 1 trip, Tier 4: 2 trips, Tier 5: 4 trips).';
+		return 'Trip queuing is a patron perk (Tier 4: 1 trip, Tier 5: 2 trips, Tier 6+: 4 trips).';
 	}
 
 	if (!taskCanBeRepeated(activity)) {
@@ -246,12 +252,23 @@ export async function processNextQueuedTrip(userID: string, channelId: string): 
 
 	await prisma.queuedTrip.delete({ where: { id: nextTrip.id } });
 
+	let duration = (nextTrip.data as any)?.duration ?? 0;
+	if (nextTrip.activity_id) {
+		const originalActivity = await prisma.activity.findUnique({
+			where: { id: nextTrip.activity_id },
+			select: { duration: true }
+		});
+		if (originalActivity) {
+			duration = originalActivity.duration;
+		}
+	}
+
 	const activityObj: Activity = {
 		id: nextTrip.activity_id ?? 0,
 		user_id: BigInt(userID),
 		start_date: new Date(),
 		finish_date: new Date(),
-		duration: 0,
+		duration,
 		completed: true,
 		group_activity: false,
 		type: nextTrip.activity_type,

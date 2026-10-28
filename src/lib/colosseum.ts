@@ -835,6 +835,7 @@ export async function colosseumCommand(itx: OSInteraction, inputQuantity?: numbe
 		duration: totalDuration,
 		type: 'Colosseum',
 		quantity,
+		iQty: inputQuantity,
 		fakeDuration: totalFakeDuration,
 		maxGlory,
 		diedAt: diedAt,
