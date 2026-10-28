@@ -39,9 +39,7 @@ export async function decantCommand(user: MUser, itemName: string, dose = 4) {
 			});
 		}
 
-		return `You decanted ${potionTypes} potion types into ${dose}-dose potions.${
-			dose > 2 ? ' Mixes were skipped because they only support 1 or 2 doses.' : ''
-		} Any leftover doses were kept.`;
+		return `You decanted ${potionTypes} potion types into ${dose}-dose potions. Any leftover doses were kept.`;
 	}
 	const res = decantPotionFromBank(user.bank, itemName, dose);
 	if (res.error !== null) return res.error;
