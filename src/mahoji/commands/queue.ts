@@ -30,6 +30,7 @@ const staticActivities: { name: string; value: string; aliases: string[] }[] = [
 	{ name: 'Minigame: Wintertodt', value: 'mg_wintertodt', aliases: ['wintertodt', 'wt'] },
 	{ name: 'Minigame: Tempoross', value: 'mg_tempoross', aliases: ['tempoross', 'tempo'] },
 	{ name: 'Minigame: Zalcano', value: 'mg_zalcano', aliases: ['zalcano', 'zalc'] },
+	{ name: 'Activity: Questing', value: 'activity_questing', aliases: ['quest', 'questing'] },
 	{ name: 'Clue: Beginner', value: 'clue_beginner', aliases: ['beginner', 'beginner clue'] },
 	{ name: 'Clue: Easy', value: 'clue_easy', aliases: ['easy', 'easy clue'] },
 	{ name: 'Clue: Medium', value: 'clue_medium', aliases: ['medium', 'medium clue', 'med clue'] },
@@ -521,6 +522,21 @@ export const queueCommand = defineCommand({
 						completed: true,
 						group_activity: false,
 						type: activity_type_enum.Zalcano,
+						channel_id: BigInt(channelId),
+						data: {},
+						all_user_ids: [BigInt(user.id)]
+					};
+				}
+				if (sel === 'activity_questing' || sel === 'quest' || sel === 'questing') {
+					return {
+						id: 0,
+						user_id: BigInt(user.id),
+						start_date: new Date(),
+						finish_date: new Date(),
+						duration: 0,
+						completed: true,
+						group_activity: false,
+						type: activity_type_enum.Questing,
 						channel_id: BigInt(channelId),
 						data: {},
 						all_user_ids: [BigInt(user.id)]

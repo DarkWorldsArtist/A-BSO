@@ -1,4 +1,4 @@
-import { sumArr, Time } from '@oldschoolgg/toolkit';
+import { sumArr } from '@oldschoolgg/toolkit';
 
 import { MAX_GLOBAL_QP, MAX_QP, quests } from '@/lib/minions/data/quests.js';
 import type { ActivityTaskOptionsWithNoChanges, SpecificQuestOptions } from '@/lib/types/minions.js';
@@ -81,7 +81,7 @@ export async function questCommand(user: MUser, channelId: string, name?: string
 
 	const boosts = [];
 
-	let duration = Time.Minute * 30;
+	let duration = await user.calcMaxTripLength('Questing');
 
 	if (user.hasGracefulEquipped()) {
 		duration *= 0.9;
