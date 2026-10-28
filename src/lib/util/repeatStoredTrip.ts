@@ -120,7 +120,8 @@ export const taskCanBeRepeated = (activity: Activity) => {
 			activity_type_enum.Birdhouse,
 			activity_type_enum.StrongholdOfSecurity,
 			activity_type_enum.CombatRing,
-			activity_type_enum.ArchonEvent
+			activity_type_enum.ArchonEvent,
+			activity_type_enum.SpecificQuest
 		] as activity_type_enum[]
 	).includes(activity.type);
 };

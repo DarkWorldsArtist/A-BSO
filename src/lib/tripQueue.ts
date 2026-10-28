@@ -105,6 +105,8 @@ export function describeActivity(activity: { type: activity_type_enum; data?: an
 			return 'Nex';
 		case activity_type_enum.Nightmare:
 			return data.isSanctuary ? 'Ash Sanctuary' : 'The Nightmare';
+		case activity_type_enum.Questing:
+			return 'Questing';
 		default:
 			return activity.type;
 	}
