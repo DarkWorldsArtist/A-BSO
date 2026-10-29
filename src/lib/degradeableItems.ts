@@ -57,6 +57,19 @@ interface RefundResult {
 
 export const degradeableItems: DegradeableItem[] = [
 	{
+		item: Items.getOrThrow('Dodgy necklace'),
+		settingsKey: 'dodgy_necklace_charges',
+		itemsToRefundOnBreak: new Bank().freeze(),
+		refundVariants: [],
+		setup: 'skilling',
+		aliases: ['dodgy', 'dodgy necklace'],
+		chargeInput: {
+			cost: new Bank().add('Dodgy necklace').freeze(),
+			charges: 10
+		},
+		emoji: '📿'
+	},
+	{
 		item: Items.getOrThrow('Abyssal tentacle'),
 		settingsKey: 'tentacle_charges',
 		itemsToRefundOnBreak: new Bank().add('Kraken tentacle').freeze(),

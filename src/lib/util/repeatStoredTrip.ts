@@ -632,7 +632,11 @@ const tripHandlers: {
 	},
 	[activity_type_enum.Pickpocket]: {
 		commandName: 'steal',
-		args: (data: PickpocketActivityTaskOptions) => ({ name: data.monsterID, quantity: data.quantity })
+		args: (data: PickpocketActivityTaskOptions) => ({
+			name: data.monsterID,
+			quantity: data.quantity,
+			shadow_veil: (data.shadowVeilCasts ?? 0) > 0
+		})
 	},
 	[activity_type_enum.Plunder]: {
 		commandName: 'minigames',
