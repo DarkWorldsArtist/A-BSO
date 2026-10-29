@@ -141,7 +141,11 @@ export class DiscordClient extends AsyncEventEmitter<DiscordClientEventsMap> imp
 	private async onReady(_d: GatewayReadyDispatchData) {
 		const application: APIApplication = (await this.rest.get(Routes.currentApplication())) as APIApplication;
 		this.application = application;
-		await this.fetchCommands();
+		try {
+			await this.fetchCommands();
+		} catch (err) {
+			console.error('Failed to fetch application commands on ready:', err);
+		}
 		this.isReady = true;
 		this.emit('ready', { application });
 	}

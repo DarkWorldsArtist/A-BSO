@@ -27,8 +27,13 @@ export function findFishingSpotForStoredTrip(identifier: unknown): Fish | null {
 	return fish;
 }
 
-export function ensureValidStoredFishingTripIdentifier({ fishID }: Pick<FishingActivityTaskOptions, 'fishID'>): Fish {
-	const fish = findFishingSpotForStoredTrip(fishID);
+export function ensureValidStoredFishingTripIdentifier(data: {
+	fishID?: unknown;
+	identifier?: unknown;
+	fishName?: unknown;
+}): Fish {
+	const identifier = data.fishID ?? data.identifier ?? data.fishName;
+	const fish = findFishingSpotForStoredTrip(identifier);
 	if (!fish) {
 		throw new FishingStoredTripError();
 	}

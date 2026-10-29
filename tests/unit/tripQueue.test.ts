@@ -136,6 +136,12 @@ describe('Trip Queueing System', () => {
 			expect(describeActivity({ type: 'Tempoross' as any })).toBe('Tempoross');
 			expect(describeActivity({ type: 'Nightmare' as any, data: { isSanctuary: true } })).toBe('Ash Sanctuary');
 			expect(describeActivity({ type: 'Nightmare' as any, data: { isSanctuary: false } })).toBe('The Nightmare');
+			expect(describeActivity({ type: 'Fishing' as any, data: { fishID: 'Lobster' } })).toBe('Lobster Fishing');
+			expect(describeActivity({ type: 'Fishing' as any, data: { identifier: 'Lobster' } })).toBe('Lobster Fishing');
+			expect(describeActivity({ type: 'Fishing' as any, data: { fishID: 'Barbarian fishing' } })).toBe(
+				'Barbarian fishing'
+			);
+			expect(describeActivity({ type: 'Fishing' as any, data: {} })).toBe('Fishing');
 		});
 	});
 });
