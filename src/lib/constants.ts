@@ -214,6 +214,7 @@ export enum BitField {
 	DisableBankFavorites = 56,
 	UnlimitedOpenUntil = 57,
 	Boring = 58,
+	DisableDodgyNecklace = 61,
 
 	OriginalSupporter = 199,
 	HasGivenBirthdayPack = 200,
@@ -565,6 +566,11 @@ export const BitFieldData: Record<BitField, IBitFieldData> = {
 		name: 'Boring',
 		protected: true,
 		userConfigurable: false
+	},
+	[BitField.DisableDodgyNecklace]: {
+		name: 'Disable Dodgy Necklace',
+		protected: false,
+		userConfigurable: true
 	}
 } as const;
 

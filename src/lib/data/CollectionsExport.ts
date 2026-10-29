@@ -1512,6 +1512,7 @@ export const aerialFishingCL = resolveItems([
 export const distilleryCL = resolveItems(['Diluted brimstone', 'Sedryn']);
 export const concontractsCL = resolveItems(['Bamyr']);
 export const allPetsCL = resolveItems([
+	'Beef',
 	'Abyssal orphan',
 	'Ikkle hydra',
 	'Callisto cub',
@@ -2500,6 +2501,16 @@ export const vardorvisCL = resolveItems([
 
 export const amoxliatlCL = resolveItems(['Moxi', 'Glacial temotli', 'Pendant of ates (inert)', 'Frozen tear']);
 
+export const brutusCL = resolveItems(['Mooleta', 'Bottomless milk bucket (empty)', 'Cow slippers', 'Beef']);
+
+export const doomOfMokhaiotlCL = resolveItems([
+	'Dom',
+	'Avernic treads',
+	'Eye of ayak (uncharged)',
+	'Mokhaiotl cloth',
+	'Mokhaiotl waystone',
+	'Demon tear'
+]);
 export const chompyHats = [
 	[Items.getOrThrow('Chompy bird hat (ogre bowman)'), 30],
 	[Items.getOrThrow('Chompy bird hat (bowman)'), 40],
