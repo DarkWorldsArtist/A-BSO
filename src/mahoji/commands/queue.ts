@@ -358,7 +358,7 @@ export const queueCommand = defineCommand({
 						group_activity: false,
 						type: activity_type_enum.Fishing,
 						channel_id: BigInt(channelId),
-						data: { identifier: fishName },
+						data: { fishID: fishName },
 						all_user_ids: [BigInt(user.id)]
 					};
 				}

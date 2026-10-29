@@ -7,6 +7,7 @@ import { type Activity, activity_type_enum, type QueuedTrip } from '@/prisma/mai
 import { ClueTiers } from '@/lib/clues/clueTiers.js';
 import { globalConfig, PerkTier } from '@/lib/constants.js';
 import killableMonsters from '@/lib/minions/data/killableMonsters/index.js';
+import { Fishing } from '@/lib/skilling/skills/fishing/fishing.js';
 import { OSInteraction } from '@/lib/structures/OSInteraction.js';
 import { repeatTrip, taskCanBeRepeated } from '@/lib/util/repeatStoredTrip.js';
 
@@ -34,8 +35,22 @@ export function describeActivity(activity: { type: activity_type_enum; data?: an
 			return ore ? `${ore.name} Mining` : 'Mining';
 		}
 		case activity_type_enum.Fishing: {
-			const fish = data.fishID ? Items.getItem(data.fishID) : null;
-			return fish ? `${fish.name} Fishing` : data.fishName ? `${data.fishName} Fishing` : 'Fishing';
+			const fishIdentifier = data.fishID ?? data.fishName ?? data.identifier;
+			if (fishIdentifier) {
+				const spot = Fishing.Fishes.find(
+					f => f.name.toLowerCase() === String(fishIdentifier).toLowerCase()
+				);
+				if (spot) {
+					return spot.name.toLowerCase().endsWith('fishing') ? spot.name : `${spot.name} Fishing`;
+				}
+				const item =
+					typeof fishIdentifier === 'number' || !Number.isNaN(Number(fishIdentifier))
+						? Items.getItem(Number(fishIdentifier))
+						: Items.getItem(fishIdentifier);
+				if (item) return `${item.name} Fishing`;
+				return `${fishIdentifier} Fishing`;
+			}
+			return 'Fishing';
 		}
 		case activity_type_enum.ClueCompletion: {
 			const clue = ClueTiers.find(c => c.id === (data.ci ?? data.clueID));

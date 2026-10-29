@@ -40,7 +40,7 @@ export function mentionCommand(name: string, subCommand?: string, subSubCommand?
 	return `</${name}:${apiCommand.id}>`;
 }
 
-function convertCommandToAPICommand(
+export function convertCommandToAPICommand(
 	cmd: AnyCommand
 ): RESTPostAPIApplicationGuildCommandsJSONBody & { description: string } {
 	const defaultMemberPermissions =

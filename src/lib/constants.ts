@@ -671,7 +671,7 @@ export const globalConfig = globalConfigSchema.parse({
 	timeZone: process.env.TZ,
 
 	moderatorLogsChannels: '1560853473199792228',
-	supportServerID: '1520360916917551266',
+	supportServerID: process.env.SUPPORT_SERVER_ID ?? (isProduction ? '1520360916917551266' : TEST_SERVER_ID),
 	guildIdsToCache: ['1520360916917551266', TEST_SERVER_ID, ...parsedTestingServers, ...emojiServers]
 });
 
