@@ -37,9 +37,7 @@ export function describeActivity(activity: { type: activity_type_enum; data?: an
 		case activity_type_enum.Fishing: {
 			const fishIdentifier = data.fishID ?? data.fishName ?? data.identifier;
 			if (fishIdentifier) {
-				const spot = Fishing.Fishes.find(
-					f => f.name.toLowerCase() === String(fishIdentifier).toLowerCase()
-				);
+				const spot = Fishing.Fishes.find(f => f.name.toLowerCase() === String(fishIdentifier).toLowerCase());
 				if (spot) {
 					return spot.name.toLowerCase().endsWith('fishing') ? spot.name : `${spot.name} Fishing`;
 				}

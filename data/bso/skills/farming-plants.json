@@ -2164,6 +2164,38 @@
 		"time_per_harvest": 20
 	},
 	{
+		"id": 75108,
+		"level": 1,
+		"plant_xp": 8,
+		"check_xp": 0,
+		"harvest_xp": 10,
+		"input_items": {
+			"75108": 1
+		},
+		"name": "Pumpkin-ish seeds",
+		"pet_chance": 281040,
+		"seed_type": "allotment",
+		"growth_time": 20,
+		"num_of_stages": 4,
+		"chance_1": 99,
+		"chance_99": 149.3,
+		"chance_of_death": 0,
+		"needs_chop_for_harvest": false,
+		"fixed_output": true,
+		"fixed_output_amount": 1,
+		"gives_logs": false,
+		"gives_crops": true,
+		"default_num_of_patches": 2,
+		"can_pay_farmer": false,
+		"can_compost_patch": true,
+		"can_compostand_pay": false,
+		"additional_patches_by_qp": [[1, 2], [15, 3], [33, 5]],
+		"additional_patches_by_farm_lvl": [],
+		"additional_patches_by_farm_guild_and_lvl": [[45, 2]],
+		"time_per_patch_travel": 20,
+		"time_per_harvest": 10
+	},
+	{
 		"id": 207,
 		"level": 32,
 		"plant_xp": 0,
