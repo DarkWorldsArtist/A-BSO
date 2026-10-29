@@ -1,6 +1,6 @@
 {
-	"hash": "29c453d88eb4d0ad50c74accb910cc21",
-	"date": "2026-10-18T13:18:10.072Z",
+	"hash": "89af3e484e888ad4847772fc0afe0866",
+	"date": "2026-10-29T04:14:09.377Z",
 	"data": [
 		{
 			"name": "activities",
@@ -46,6 +46,11 @@
 			"name": "bingo",
 			"desc": "Bingo!",
 			"subOptions": ["create_bingo", "items", "leaderboard", "leave_team", "make_team", "manage_bingo", "view"]
+		},
+		{
+			"name": "bonds",
+			"desc": "View, redeem, or gift patron bonds earned from playtime.",
+			"subOptions": ["gift", "redeem", "status"]
 		},
 		{
 			"name": "bs",
@@ -188,6 +193,7 @@
 				"default_compost",
 				"harvest",
 				"plant",
+				"set_preferred",
 				"tithe_farm"
 			]
 		},

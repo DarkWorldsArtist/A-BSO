@@ -1,5 +1,4 @@
 import type { Fish } from '@/lib/skilling/types.js';
-import type { FishingActivityTaskOptions } from '@/lib/types/minions.js';
 import { Fishing } from './fishing.js';
 
 export const FISHING_REWORK_MESSAGE = 'Warning: Fishing has been reworked.\n\nPlease send a fresh **/fish** command.';

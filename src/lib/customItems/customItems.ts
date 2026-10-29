@@ -15137,6 +15137,71 @@ setCustomItem(
 	10_000
 );
 
+setCustomItem(
+	75_109,
+	"H'ween trophy",
+	'Coal',
+	{
+		highalch: 100_000_000,
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	1_000_000_000
+);
+
+setCustomItem(
+	75_110,
+	"Burnished h'ween trophy",
+	'Coal',
+	{
+		highalch: 100_000_000,
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	2_000_000_000
+);
+
+setCustomItem(
+	75_111,
+	"Silvered h'ween trophy",
+	'Coal',
+	{
+		highalch: 100_000_000,
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	3_000_000_000
+);
+
+setCustomItem(
+	75_112,
+	"Gilded h'ween trophy",
+	'Coal',
+	{
+		highalch: 100_000_000,
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	4_000_000_000
+);
+
+setCustomItem(
+	75_113,
+	"Platinized h'ween trophy",
+	'Coal',
+	{
+		highalch: 100_000_000,
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	5_000_000_000
+);
+
 export const discontinuedItems = resolveItems([
 	'Golden partyhat',
 	'Black swan',

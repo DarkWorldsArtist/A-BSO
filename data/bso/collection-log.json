@@ -363,6 +363,38 @@
 					"Verac's plateskirt"
 				]
 			},
+			"brutus": {
+				"kc_activity": {
+					"default": ["Brutus", "Demonic Brutus"],
+					"brutus": "Brutus",
+					"demonic_brutus": "Demonic Brutus"
+				},
+				"all_items": [
+					"Acorn",
+					"Air rune",
+					"Beef",
+					"Bottomless milk bucket (empty)",
+					"Brutus slippers",
+					"Bull bones",
+					"Chaos rune",
+					"Clue scroll (beginner)",
+					"Clue scroll (easy)",
+					"Cow slippers",
+					"Cowhide",
+					"Iron arrow",
+					"Iron full helm",
+					"Iron platebody",
+					"Iron platelegs",
+					"Iron plateskirt",
+					"Logs",
+					"Mind rune",
+					"Mooleta",
+					"Oak logs",
+					"Potato seed",
+					"Raw t-bone steak"
+				],
+				"items": ["Beef", "Bottomless milk bucket (empty)", "Cow slippers", "Mooleta"]
+			},
 			"bryophyta": {
 				"all_items": [
 					"Adamant arrow",
@@ -8268,6 +8300,7 @@
 					"Potato cactus",
 					"Potato cactus seed",
 					"Potato seed",
+					"Pumpkin-ish seeds",
 					"Ranarr seed",
 					"Redberries",
 					"Redberry seed",
@@ -9248,6 +9281,7 @@
 					"Baby mole",
 					"Baron",
 					"Beaver",
+					"Beef",
 					"Bloodhound",
 					"Bran",
 					"Butch",

@@ -1,6 +1,6 @@
 {
-	"hash": "2700eb997888a7384fc71a9f91785e56",
-	"date": "2026-08-21T21:57:12.669Z",
+	"hash": "69b8b9c671fbd3e8c0a8c87fabc4d749",
+	"date": "2026-10-29T04:14:09.382Z",
 	"data": [
 		{
 			"id": 2,
@@ -795,6 +795,27 @@
 			"items_required": ["Anti-dragon shield"],
 			"qp_required": 0,
 			"item_in_bank_boosts": [],
+			"can_barrage": false,
+			"can_chin": false,
+			"can_cannon": false,
+			"cannon_multi": false
+		},
+		{
+			"id": 15627,
+			"name": "Brutus",
+			"base_kill_time_ms": 25000,
+			"respawn_time_ms": 21600,
+			"is_wildy": false,
+			"is_slayer_only": false,
+			"can_be_pked": false,
+			"is_wildy_multi": false,
+			"items_required": [],
+			"qp_required": 0,
+			"item_in_bank_boosts": [
+				{
+					"Cowbell amulet": 15
+				}
+			],
 			"can_barrage": false,
 			"can_chin": false,
 			"can_cannon": false,
@@ -1644,6 +1665,23 @@
 			"is_wildy_multi": false,
 			"items_required": [],
 			"qp_required": 111,
+			"item_in_bank_boosts": [],
+			"can_barrage": false,
+			"can_chin": false,
+			"can_cannon": false,
+			"cannon_multi": false
+		},
+		{
+			"id": 15628,
+			"name": "Demonic Brutus",
+			"base_kill_time_ms": 573000,
+			"respawn_time_ms": 21600,
+			"is_wildy": false,
+			"is_slayer_only": false,
+			"can_be_pked": false,
+			"is_wildy_multi": false,
+			"items_required": [],
+			"qp_required": 0,
 			"item_in_bank_boosts": [],
 			"can_barrage": false,
 			"can_chin": false,

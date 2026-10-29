@@ -219,6 +219,15 @@
 		}
 	},
 	{
+		"id": 20,
+		"qp": 1,
+		"name": "The Ides of Milk",
+		"rewards": {
+			"33103": 1,
+			"33117": 1
+		}
+	},
+	{
 		"id": 2,
 		"qp": 2,
 		"name": "The Path of Glouphrie",

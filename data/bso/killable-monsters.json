@@ -151,7 +151,8 @@
 		],
 		"kc_requirements": {
 			"129124": 1
-		}
+		},
+		"notify_drops": ["Cursed onyx", "Demon statuette", "Mini akumu"]
 	},
 	{
 		"id": 8615,
@@ -727,6 +728,7 @@
 		"name": "Artio",
 		"time_to_finish": 192000,
 		"emoji": "<:Callisto_cub:1560874084647047169>",
+		"notify_drops": ["Callisto cub", "Claws of callisto", "Tyrannical ring", "Voidwaker hilt"],
 		"wildy": true,
 		"wildy_multi": false,
 		"can_be_pked": true,
@@ -1373,6 +1375,29 @@
 		"attack_styles_used": ["attack_slash"]
 	},
 	{
+		"id": 15627,
+		"name": "Brutus",
+		"time_to_finish": 25000,
+		"respawn_time": 21600,
+		"required_quests": [20],
+		"qp_required": 0,
+		"difficulty_rating": 1,
+		"can_cannon": false,
+		"notify_drops": ["Beef"],
+		"uniques": ["Beef", "Bottomless milk bucket (empty)", "Cow slippers", "Mooleta"],
+		"default_attack_styles": ["attack"],
+		"custom_monster_hp": 58,
+		"combat_xp_multiplier": 2,
+		"heal_amount_needed": 10,
+		"attack_style_to_use": "attack_slash",
+		"attack_styles_used": ["attack_crush"],
+		"item_in_bank_boosts": [
+			{
+				"33103": 15
+			}
+		]
+	},
+	{
 		"id": 8195,
 		"name": "Bryophyta",
 		"time_to_finish": 75000,
@@ -1569,6 +1594,7 @@
 		"name": "Callisto",
 		"time_to_finish": 420000,
 		"emoji": "<:Callisto_cub:1560874084647047169>",
+		"notify_drops": ["Callisto cub", "Claws of callisto", "Tyrannical ring", "Voidwaker hilt"],
 		"wildy": true,
 		"wildy_multi": true,
 		"can_be_pked": true,
@@ -1781,6 +1807,7 @@
 		"name": "Calvar'ion",
 		"time_to_finish": 430200,
 		"emoji": "<:Vetion_jr:1560874265157435507>",
+		"notify_drops": ["Ring of the gods", "Skull of vet'ion", "Vet'ion jr.", "Voidwaker blade"],
 		"wildy": true,
 		"wildy_multi": false,
 		"can_be_pked": true,
@@ -2160,7 +2187,8 @@
 					}
 				]
 			}
-		]
+		],
+		"notify_drops": ["Moondash charm", "Moonlight essence", "Noom"]
 	},
 	{
 		"id": 5862,
@@ -2169,6 +2197,7 @@
 		"emoji": "<:Hellpuppy:1560874110211596369>",
 		"wildy": false,
 		"difficulty_rating": 7,
+		"notify_drops": ["Eternal crystal", "Hellpuppy", "Jar of souls", "Pegasian crystal", "Primordial crystal"],
 		"items_required": [
 			[4749, 4720, 11832, 709, 24420],
 			[4751, 4722, 11834, 2404, 24421],
@@ -2249,6 +2278,7 @@
 		"name": "Chaos Elemental",
 		"time_to_finish": 258000,
 		"emoji": "<:Pet_chaos_elemental:1560874157002981497>",
+		"notify_drops": ["Pet chaos elemental"],
 		"wildy": true,
 		"can_be_pked": true,
 		"pk_activity_rating": 4,
@@ -2400,6 +2430,7 @@
 		"wildy": false,
 		"difficulty_rating": 7,
 		"qp_required": 1,
+		"notify_drops": ["Armadyl crossbow", "Pet zilyana", "Saradomin hilt"],
 		"item_in_bank_boosts": [
 			{
 				"2577": 3,
@@ -2812,7 +2843,8 @@
 					}
 				]
 			}
-		]
+		],
+		"notify_drops": ["Sentinel core", "Starfire bow (u)"]
 	},
 	{
 		"id": 2097,
@@ -3018,6 +3050,108 @@
 		"wildy": false,
 		"difficulty_rating": 3,
 		"qp_required": 111
+	},
+	{
+		"id": 15628,
+		"name": "Demonic Brutus",
+		"time_to_finish": 573000,
+		"respawn_time": 21600,
+		"required_quests": [20, 1],
+		"qp_required": 0,
+		"difficulty_rating": 9,
+		"can_cannon": false,
+		"notify_drops": ["Beef"],
+		"uniques": ["Beef", "Brutus slippers"],
+		"default_attack_styles": ["attack"],
+		"custom_monster_hp": 1237,
+		"heal_amount_needed": 300,
+		"minimum_heal_amount": 20,
+		"attack_style_to_use": "attack_slash",
+		"attack_styles_used": ["attack_crush", "attack_magic", "attack_ranged"],
+		"level_requirements": {
+			"attack": 75,
+			"strength": 75,
+			"defence": 75,
+			"hitpoints": 75,
+			"prayer": 43
+		},
+		"death_props": {
+			"hardness": 0.6,
+			"steepness": 0.99
+		},
+		"equipped_item_boosts": [
+			{
+				"gear_setup": "melee",
+				"items": [
+					{
+						"item_id": 25484,
+						"boost_percent": 20
+					},
+					{
+						"item_id": 29796,
+						"boost_percent": 15
+					},
+					{
+						"item_id": 23995,
+						"boost_percent": 10
+					},
+					{
+						"item_id": 12006,
+						"boost_percent": 7
+					},
+					{
+						"item_id": 4151,
+						"boost_percent": 5
+					},
+					{
+						"item_id": 28810,
+						"boost_percent": 3
+					}
+				]
+			},
+			{
+				"gear_setup": "melee",
+				"items": [
+					{
+						"item_id": 22322,
+						"boost_percent": 5
+					},
+					{
+						"item_id": 12954,
+						"boost_percent": 3
+					}
+				]
+			},
+			{
+				"gear_setup": "melee",
+				"items": [
+					{
+						"item_id": 29801,
+						"boost_percent": 5
+					},
+					{
+						"item_id": 19553,
+						"boost_percent": 3
+					},
+					{
+						"item_id": 6585,
+						"boost_percent": 1
+					}
+				]
+			}
+		],
+		"degradeable_item_usage": [
+			{
+				"required": false,
+				"gear_setup": "melee",
+				"items": [
+					{
+						"item_id": 22325,
+						"boost_percent": 25
+					}
+				]
+			}
+		]
 	},
 	{
 		"id": 7144,
@@ -3896,7 +4030,8 @@
 					}
 				]
 			}
-		]
+		],
+		"notify_drops": ["Prolific twine", "Verdant heart"]
 	},
 	{
 		"is_custom": true,
@@ -4010,6 +4145,7 @@
 		"wildy": false,
 		"difficulty_rating": 7,
 		"qp_required": 1,
+		"notify_drops": ["Bandos chestplate", "Bandos hilt", "Bandos tassets", "Pet general graardor"],
 		"item_in_bank_boosts": [
 			{
 				"11804": 5,
@@ -4843,6 +4979,7 @@
 		"wildy": false,
 		"difficulty_rating": 7,
 		"qp_required": 1,
+		"notify_drops": ["Pet k'ril tsutsaroth", "Staff of the dead", "Zamorak hilt", "Zamorakian spear"],
 		"item_in_bank_boosts": [
 			{
 				"11804": 5,
@@ -4901,6 +5038,7 @@
 		"emoji": "<:Kalphite_princess_2nd_form:1560874134697934918>",
 		"wildy": false,
 		"difficulty_rating": 7,
+		"notify_drops": ["Dragon chainbody", "Jar of sand", "Kalphite princess"],
 		"items_required": [4755, 4759, [605, 2503, 4736, 11828], [4272, 2497, 4738, 11830]],
 		"qp_required": 0,
 		"item_in_bank_boosts": [
@@ -5057,6 +5195,7 @@
 		"wildy": false,
 		"difficulty_rating": 7,
 		"qp_required": 1,
+		"notify_drops": ["Armadyl chainskirt", "Armadyl chestplate", "Armadyl hilt", "Pet kree'arra"],
 		"item_in_bank_boosts": [
 			{
 				"11785": 5,
@@ -5815,6 +5954,7 @@
 		"name": "Ogress Warrior",
 		"time_to_finish": 25000,
 		"table": {},
+		"notify_drops": ["Ishi"],
 		"wildy": false,
 		"difficulty_rating": 2,
 		"qp_required": 0,
@@ -5931,6 +6071,13 @@
 					}
 				]
 			}
+		],
+		"notify_drops": [
+			"Celestial flame",
+			"Orrodin",
+			"Primordial heartstring",
+			"Primordial spine",
+			"Shattered pendant"
 		]
 	},
 	{
@@ -6043,7 +6190,8 @@
 					}
 				]
 			}
-		]
+		],
+		"notify_drops": ["Forsaken tear", "Orylin", "Primordial heartstring", "Primordial spine", "Sacrilegious flask"]
 	},
 	{
 		"id": 2843,
@@ -6458,7 +6606,7 @@
 				"ancient_rejuvenation_pool": 6
 			}
 		},
-		"notify_drops": ["Queen black dragonling"],
+		"notify_drops": ["Draconic visage", "Queen black dragonling", "Royal dragon kiteshield"],
 		"item_in_bank_boosts": [
 			{
 				"50098": 8
@@ -8165,6 +8313,7 @@
 		"name": "Scorpia",
 		"time_to_finish": 180000,
 		"emoji": "<:Scorpias_offspring:1560874238272082031>",
+		"notify_drops": ["Scorpia's offspring"],
 		"wildy": true,
 		"can_be_pked": true,
 		"pk_activity_rating": 6,
@@ -8622,7 +8771,8 @@
 					}
 				]
 			}
-		]
+		],
+		"notify_drops": ["Eagle egg", "Sun-metal scraps"]
 	},
 	{
 		"id": 3019,
@@ -8691,6 +8841,7 @@
 		"name": "Spindel",
 		"time_to_finish": 447600,
 		"emoji": "<:Venenatis_spiderling:1560874261332103258>",
+		"notify_drops": ["Fangs of venenatis", "Treasonous ring", "Venenatis spiderling", "Voidwaker gem"],
 		"wildy": true,
 		"wildy_multi": false,
 		"can_be_pked": true,
@@ -10159,6 +10310,17 @@
 				"73072": 10
 			}
 		],
+		"notify_drops": [
+			"Crystal tangleroot",
+			"Dragonfruit tangleroot",
+			"Ent hide",
+			"Grand crystal acorn",
+			"Herb tangleroot",
+			"Mysterious seed",
+			"Redwood tangleroot",
+			"Tangleroot",
+			"White lily tangleroot"
+		],
 		"can_be_pked": true
 	},
 	{
@@ -10355,7 +10517,7 @@
 		"id": 12223,
 		"name": "Vardorvis",
 		"time_to_finish": 245999.99999999997,
-		"notify_drops": ["Baron"],
+		"notify_drops": ["Butch"],
 		"qp_required": 100,
 		"equipped_item_boosts": [
 			{
@@ -10482,7 +10644,7 @@
 		"id": 12224,
 		"name": "Vardorvis (Awakened)",
 		"time_to_finish": 930000,
-		"notify_drops": ["Baron"],
+		"notify_drops": ["Butch"],
 		"qp_required": 100,
 		"equipped_item_boosts": [
 			{
@@ -10667,13 +10829,15 @@
 		"required_bitfield": 229,
 		"kc_requirements": {
 			"129125": 1
-		}
+		},
+		"notify_drops": ["Spiders leg bottom", "Venatrix webbing"]
 	},
 	{
 		"id": 6610,
 		"name": "Venenatis",
 		"time_to_finish": 861000,
 		"emoji": "<:Venenatis_spiderling:1560874261332103258>",
+		"notify_drops": ["Fangs of venenatis", "Treasonous ring", "Venenatis spiderling", "Voidwaker gem"],
 		"wildy": true,
 		"wildy_multi": true,
 		"can_be_pked": true,
@@ -10953,6 +11117,7 @@
 		"name": "Vet'ion",
 		"time_to_finish": 717000,
 		"emoji": "<:Vetion_jr:1560874265157435507>",
+		"notify_drops": ["Ring of the gods", "Skull of vet'ion", "Vet'ion jr.", "Voidwaker blade"],
 		"wildy": true,
 		"wildy_multi": true,
 		"can_be_pked": true,
@@ -11186,6 +11351,7 @@
 			"required": true,
 			"required_ammo": ["Silver bolts"]
 		},
+		"notify_drops": ["Blightbrand", "Echo"],
 		"all_items": [
 			"Adamant platebody",
 			"Adamantite stone spirit",
@@ -11249,6 +11415,7 @@
 		"emoji": "<:Vorki:1560874270400315483>",
 		"wildy": false,
 		"difficulty_rating": 8,
+		"notify_drops": ["Draconic visage", "Skeletal visage", "Vorki"],
 		"items_required": [[605, 11828], [4272, 11830]],
 		"qp_required": 205,
 		"item_in_bank_boosts": [

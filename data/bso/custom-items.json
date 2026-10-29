@@ -5809,6 +5809,21 @@
 		"price": 1
 	},
 	{
+		"id": 75110,
+		"name": "Burnished h'ween trophy",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 100000000,
+		"buy_limit": 13000,
+		"price": 2000000000,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
 		"id": 121234,
 		"name": "Burnt celebratory cake",
 		"tradeable": true,
@@ -12374,6 +12389,21 @@
 	{
 		"id": 52616,
 		"name": "Double loot token",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 27,
+		"buy_limit": 13000,
+		"price": 100000000,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
+		"id": 52615,
+		"name": "Double xp token",
 		"tradeable": true,
 		"tradeable_on_ge": true,
 		"noteable": true,
@@ -22535,6 +22565,21 @@
 		}
 	},
 	{
+		"id": 75112,
+		"name": "Gilded h'ween trophy",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 100000000,
+		"buy_limit": 13000,
+		"price": 4000000000,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
 		"id": 72038,
 		"name": "Ginger root",
 		"tradeable": true,
@@ -25765,6 +25810,21 @@
 		"highalch": 27,
 		"buy_limit": 13000,
 		"price": 1,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
+		"id": 75109,
+		"name": "H'ween trophy",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 100000000,
+		"buy_limit": 13000,
+		"price": 1000000000,
 		"customItemData": {
 			"cantDropFromMysteryBoxes": true
 		}
@@ -36216,6 +36276,21 @@
 		}
 	},
 	{
+		"id": 75113,
+		"name": "Platinized h'ween trophy",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 100000000,
+		"buy_limit": 13000,
+		"price": 5000000000,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
 		"id": 1810,
 		"name": "Plopper",
 		"members": true,
@@ -37355,6 +37430,21 @@
 		"highalch": 27,
 		"buy_limit": 13000,
 		"price": 100000,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
+		"id": 75108,
+		"name": "Pumpkin-ish seeds",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 27,
+		"buy_limit": 13000,
+		"price": 10000,
 		"customItemData": {
 			"cantDropFromMysteryBoxes": true
 		}
@@ -42298,6 +42388,21 @@
 		"highalch": 27,
 		"buy_limit": 13000,
 		"price": 100,
+		"customItemData": {
+			"cantDropFromMysteryBoxes": true
+		}
+	},
+	{
+		"id": 75111,
+		"name": "Silvered h'ween trophy",
+		"tradeable": true,
+		"tradeable_on_ge": true,
+		"noteable": true,
+		"cost": 45,
+		"lowalch": 18,
+		"highalch": 100000000,
+		"buy_limit": 13000,
+		"price": 3000000000,
 		"customItemData": {
 			"cantDropFromMysteryBoxes": true
 		}
