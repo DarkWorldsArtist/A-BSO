@@ -376,17 +376,31 @@ export function doMonsterTrip(data: newOptions) {
 	// Loot
 	const finalQuantity = quantity - newSuperiorCount;
 
-	const loot = wiped
-		? new Bank()
-		: monster.table.kill(
-				oriEffect({ gearBank, quantity: finalQuantity, duration, messages, monster: monster.name }),
-				killOptions
-			);
+	const guaranteesVorkathHead =
+		!wiped && monster.id === Monsters.Vorkath.id && currentKC < 50 && currentKC + quantity >= 50;
+
+	const lootQuantity = wiped
+		? 0
+		: oriEffect({
+				gearBank,
+				quantity: finalQuantity,
+				duration,
+				messages,
+				monster: monster.name
+			});
+
+	const loot = wiped ? new Bank() : monster.table.kill(lootQuantity - (guaranteesVorkathHead ? 1 : 0), killOptions);
+
+	if (guaranteesVorkathHead) {
+		const milestoneLoot = monster.table.kill(1, killOptions);
+		milestoneLoot.set("Vorkath's head", 1);
+		loot.add(milestoneLoot);
+	}
+
 	if (isDoubleLootActive(duration)) {
 		loot.multiply(2);
 		messages.push('**Double loot activated!**');
 	}
-
 	if (!wiped) {
 		if (monster.specialLoot) {
 			monster.specialLoot({ loot, ownedItems: gearBank.bank, quantity: finalQuantity, cl: data.cl });
