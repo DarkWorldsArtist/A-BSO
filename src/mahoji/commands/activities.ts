@@ -301,9 +301,10 @@ export const activitiesCommand = defineCommand({
 					name: 'potion_name',
 					description: 'The name of the potion.',
 					autocomplete: async ({ value }: StringAutoComplete) => {
-						return Potions.filter(p =>
-							!value ? true : p.name.toLowerCase().includes(value.toLowerCase())
-						).map(p => ({ name: p.name, value: p.name }));
+						return [
+							{ name: 'All potions', value: 'all' },
+							...Potions.map(p => ({ name: p.name, value: p.name }))
+						].filter(choice => (!value ? true : choice.name.toLowerCase().includes(value.toLowerCase())));
 					},
 					required: true
 				},
