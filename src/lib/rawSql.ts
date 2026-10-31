@@ -46,8 +46,7 @@ WHERE ${u.id} = '${userID}';`,
 			throw new Error(`Invalid userId passed to updateUserLastCommandDate: ${userId}`);
 		}
 		return prisma.$executeRawUnsafe(`
-SET LOCAL synchronous_commit = OFF;
-UPDATE USERS
+UPDATE users
 SET last_command_date = now()
 WHERE id = '${userId}'`);
 	},
