@@ -49,7 +49,6 @@ import { gearPresetsCommand } from '@/mahoji/commands/gearpresets.js';
 import { giftCommand } from '@/mahoji/commands/gift.js';
 import { giveawayCommand } from '@/mahoji/commands/giveaway.js';
 import { gpCommand } from '@/mahoji/commands/gp.js';
-import { halloweenCommand } from '@/mahoji/commands/halloween.js';
 import { helpCommand } from '@/mahoji/commands/help.js';
 import { huntCommand } from '@/mahoji/commands/hunt.js';
 import { inviteCommand } from '@/mahoji/commands/invite.js';
@@ -120,7 +119,6 @@ export const allCommandsDONTIMPORT: AnyCommand[] = [
 	gambleCommand,
 	gearCommand,
 	giveawayCommand,
-	halloweenCommand,
 	helpCommand,
 	huntCommand,
 	giftCommand,
