@@ -213,7 +213,13 @@ export const farmingTask: MinionTask = {
 				: [taskToAutoFarmStep(data), ...storedPlan];
 			for (const step of steps) {
 				const stepData = makeStepTaskData(data, channelId, step);
-				result = await executeFarmingStep({ user, channelID: channelId, data: stepData, rng });
+				result = await executeFarmingStep({
+					user,
+					channelID: channelId,
+					data: stepData,
+					rng,
+					tripDuration: data.duration
+				});
 				if (!result) {
 					await handleTripFinish({
 						user,
@@ -235,7 +241,13 @@ export const farmingTask: MinionTask = {
 				});
 			}
 		} else {
-			result = await executeFarmingStep({ user, channelID: channelId, data, rng });
+			result = await executeFarmingStep({
+				user,
+				channelID: channelId,
+				data,
+				rng,
+				tripDuration: data.duration
+			});
 			if (!result) {
 				await handleTripFinish({
 					user,
@@ -276,7 +288,10 @@ export const farmingTask: MinionTask = {
 		}
 		const message = files.length > 0 ? { content: finalContent, files } : finalContent;
 		const tripFinishData = shouldRenderCombinedSummary
-			? ({ ...data, duration: updatedSummary!.totalDuration } satisfies FarmingActivityTaskOptions)
+			? ({
+					...data,
+					duration: Math.max(data.duration, updatedSummary!.totalDuration)
+				} satisfies FarmingActivityTaskOptions)
 			: data;
 
 		await handleTripFinish({

@@ -93,14 +93,23 @@ class SActivityManager {
 		}
 
 		try {
+			let tripFinishPromise: Promise<unknown> | null = null;
+			const wrappedHandleTripFinish = ((...args: any[]) => {
+				const p = (handleTripFinish as any)(...args);
+				tripFinishPromise = p;
+				return p;
+			}) as typeof handleTripFinish;
 			await task.run(
 				{ ...activity, channelId: activity.channelId },
 				{
 					user,
-					handleTripFinish,
+					handleTripFinish: wrappedHandleTripFinish,
 					rng: cryptoRng
 				}
 			);
+			if (tripFinishPromise) {
+				await tripFinishPromise;
+			}
 		} catch (err) {
 			const date = new Date();
 			Logging.logError(err as Error, {

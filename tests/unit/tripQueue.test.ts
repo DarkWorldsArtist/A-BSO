@@ -144,6 +144,8 @@ describe('Trip Queueing System', () => {
 				'Barbarian fishing'
 			);
 			expect(describeActivity({ type: 'Fishing' as any, data: {} })).toBe('Fishing');
+			expect(describeActivity({ type: 'MotherlodeMining' as any })).toBe('Motherlode Mine');
+			expect(describeActivity({ type: 'TitheFarm' as any })).toBe('Tithe Farm');
 		});
 	});
 });

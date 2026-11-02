@@ -34,6 +34,10 @@ export function describeActivity(activity: { type: activity_type_enum; data?: an
 			const ore = data.oreID ? Items.getItem(data.oreID) : null;
 			return ore ? `${ore.name} Mining` : 'Mining';
 		}
+		case activity_type_enum.MotherlodeMining:
+			return 'Motherlode Mine';
+		case activity_type_enum.TitheFarm:
+			return 'Tithe Farm';
 		case activity_type_enum.Fishing: {
 			const fishIdentifier = data.fishID ?? data.fishName ?? data.identifier;
 			if (fishIdentifier) {
@@ -185,12 +189,23 @@ export function createSyntheticInteraction({
 		command_name: 'queue',
 		command_type: ApplicationCommandType.ChatInput
 	};
-	return new OSInteraction({
+	const interaction = new OSInteraction({
 		interaction: d,
 		rawInteraction: chatInputItx,
 		client: globalClient,
 		user
 	});
+	(interaction as any)._deferred = true;
+	interaction.defer = async () => {};
+	interaction.reply = async (msg: any) => {
+		(interaction as any).__response__ = msg;
+		return null;
+	};
+	interaction.replyWithResponse = async (msg: any) => {
+		(interaction as any).__response__ = msg;
+		return { message_id: id };
+	};
+	return interaction;
 }
 
 export async function queueTrip({
@@ -314,16 +329,17 @@ export async function processNextQueuedTrip(userID: string, channelId: string): 
 			});
 
 			const desc = describeActivity({ type: nextTrip.activity_type, data: nextTrip.data });
+			const effectiveResponse = (interaction as any).__response__ ?? response;
 			let messageContent = '';
-			if (typeof response === 'string') {
-				messageContent = response;
+			if (typeof effectiveResponse === 'string') {
+				messageContent = effectiveResponse;
 			} else if (
-				typeof response === 'object' &&
-				response !== null &&
-				'content' in response &&
-				typeof (response as any).content === 'string'
+				typeof effectiveResponse === 'object' &&
+				effectiveResponse !== null &&
+				'content' in effectiveResponse &&
+				typeof (effectiveResponse as any).content === 'string'
 			) {
-				messageContent = (response as any).content;
+				messageContent = (effectiveResponse as any).content;
 			} else {
 				messageContent = `${user.minionName} has started a queued trip: ${desc}!`;
 			}
@@ -333,16 +349,17 @@ export async function processNextQueuedTrip(userID: string, channelId: string): 
 			});
 		} else {
 			const desc = describeActivity({ type: nextTrip.activity_type, data: nextTrip.data });
+			const effectiveResponse = (interaction as any).__response__ ?? response;
 			let failReason = 'Insufficient supplies or requirements.';
-			if (typeof response === 'string') {
-				failReason = response;
+			if (typeof effectiveResponse === 'string') {
+				failReason = effectiveResponse;
 			} else if (
-				typeof response === 'object' &&
-				response !== null &&
-				'content' in response &&
-				typeof (response as any).content === 'string'
+				typeof effectiveResponse === 'object' &&
+				effectiveResponse !== null &&
+				'content' in effectiveResponse &&
+				typeof (effectiveResponse as any).content === 'string'
 			) {
-				failReason = (response as any).content;
+				failReason = (effectiveResponse as any).content;
 			}
 			await globalClient.sendMessageOrWebhook(targetChannel, {
 				content: `<@${userID}>, your queued trip (**${desc}**) could not be started: ${failReason}\nIt has been removed from your queue. Your daily queued trip allowance was not consumed.`
