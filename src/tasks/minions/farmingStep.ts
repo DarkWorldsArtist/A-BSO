@@ -1,4 +1,5 @@
 import { clAdjustedDroprate } from '@/lib/bso/bsoUtil.js';
+import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
 import { mutations } from '@/lib/bso/skills/farming/mutations.js';
 import { InventionID, inventionBoosts, inventionItemBoost } from '@/lib/bso/skills/invention/inventions.js';
@@ -67,6 +68,7 @@ interface ExecuteFarmingStepOptions {
 	channelID: string;
 	data: FarmingActivityTaskOptions;
 	rng?: RNGProvider;
+	tripDuration?: number;
 }
 
 type FarmingPlant = (typeof Farming.Plants)[number];
@@ -78,6 +80,7 @@ interface PlantingOnlyOptions {
 	upgradeType: CropUpgradeType | null;
 	payment: FarmingActivityTaskOptions['payment'];
 	duration: number;
+	tripDuration: number;
 	compostXp: number;
 	bonusXpMultiplier: number;
 	ensurePid: () => Promise<void>;
@@ -256,6 +259,7 @@ async function handlePlantingOnlyStep(options: PlantingOnlyOptions): Promise<Far
 		upgradeType,
 		payment,
 		duration,
+		tripDuration,
 		compostXp,
 		bonusXpMultiplier,
 		ensurePid,
@@ -300,10 +304,17 @@ async function handlePlantingOnlyStep(options: PlantingOnlyOptions): Promise<Far
 		loot,
 		boosts: lootBoosts
 	});
+	if (isDoubleLootActive(tripDuration)) {
+		loot.multiply(2);
+		lootBoosts.push('**Double loot activated!**');
+	}
 	if (loot.has('Plopper')) {
 		loot.set('Plopper', 1);
 	}
 
+	if (lootBoosts.length > 0) {
+		message += formatFarmingBoosts(lootBoosts, { prefix: '\n\n' });
+	}
 	if (loot.length > 0) {
 		message += `\n\nYou received: ${loot}.`;
 	}
@@ -647,6 +658,7 @@ async function applySpecialFarmingLoot(options: {
 	user: MUser;
 	channelID: string;
 	data: FarmingActivityTaskOptions;
+	tripDuration: number;
 	rng: RNGProvider;
 	loot: Bank;
 	infoStr: string[];
@@ -655,8 +667,18 @@ async function applySpecialFarmingLoot(options: {
 	alivePlants: number;
 	currentFarmingLevel: number;
 }): Promise<Bank> {
-	const { user, channelID, data, rng, infoStr, plantToHarvest, patchType, alivePlants, currentFarmingLevel } =
-		options;
+	const {
+		user,
+		channelID,
+		data,
+		tripDuration,
+		rng,
+		infoStr,
+		plantToHarvest,
+		patchType,
+		alivePlants,
+		currentFarmingLevel
+	} = options;
 	let { loot } = options;
 
 	const { petDropRate } = skillingPetDropRate(user, 'farming', plantToHarvest.petChance);
@@ -714,7 +736,7 @@ async function applySpecialFarmingLoot(options: {
 		}
 	}
 
-	if (plantToHarvest.seedType !== 'hespori' && data.duration > Time.Minute * 20 && rng.roll(10)) {
+	if (plantToHarvest.seedType !== 'hespori' && tripDuration > Time.Minute * 20 && rng.roll(10)) {
 		loot.multiply(2);
 		loot.add(MysteryBoxes.roll());
 	}
@@ -872,9 +894,11 @@ export async function executeFarmingStep({
 	user,
 	channelID,
 	data,
-	rng = MathRNG
+	rng = MathRNG,
+	tripDuration
 }: ExecuteFarmingStepOptions): Promise<FarmingStepResult | null> {
 	const { plantsName, patchType, quantity, upgradeType, payment, planting, currentDate } = data;
+	const effectiveTripDuration = tripDuration ?? data.duration;
 
 	if (!patchType) {
 		throw new Error('Missing patch data for farming step');
@@ -914,6 +938,7 @@ export async function executeFarmingStep({
 			upgradeType: upgradeType ?? null,
 			payment,
 			duration: data.duration,
+			tripDuration: effectiveTripDuration,
 			compostXp,
 			bonusXpMultiplier,
 			ensurePid,
@@ -1024,6 +1049,7 @@ export async function executeFarmingStep({
 		user,
 		channelID,
 		data,
+		tripDuration: effectiveTripDuration,
 		rng,
 		loot,
 		infoStr,
@@ -1083,6 +1109,15 @@ export async function executeFarmingStep({
 		quantity,
 		alivePlants
 	});
+
+	if (isDoubleLootActive(effectiveTripDuration)) {
+		loot.multiply(2);
+		if (loot.has('Plopper')) {
+			loot.set('Plopper', 1);
+		}
+		boosts.push('**Double loot activated!**');
+		infoStr.push('**Double loot activated!**');
+	}
 
 	const hasFiveSpiritTrees = Farming.getFarmingInfoFromUser(user).patches.spirit.lastQuantity >= 5;
 	if (hasFiveSpiritTrees && !user.bitfield.includes(BitField.GrewFiveSpiritTrees)) {

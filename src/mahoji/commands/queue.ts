@@ -30,6 +30,12 @@ const staticActivities: { name: string; value: string; aliases: string[] }[] = [
 	{ name: 'Minigame: Wintertodt', value: 'mg_wintertodt', aliases: ['wintertodt', 'wt'] },
 	{ name: 'Minigame: Tempoross', value: 'mg_tempoross', aliases: ['tempoross', 'tempo'] },
 	{ name: 'Minigame: Zalcano', value: 'mg_zalcano', aliases: ['zalcano', 'zalc'] },
+	{ name: 'Minigame: Tithe Farm', value: 'mg_tithe_farm', aliases: ['tithe farm', 'tithe', 'tf', 'tithe_farm'] },
+	{
+		name: 'Mining: Motherlode Mine',
+		value: 'mine_motherlode_mine',
+		aliases: ['motherlode mine', 'mlm', 'motherlode', 'pay-dirt']
+	},
 	{ name: 'Activity: Questing', value: 'activity_questing', aliases: ['quest', 'questing'] },
 	{ name: 'Clue: Beginner', value: 'clue_beginner', aliases: ['beginner', 'beginner clue'] },
 	{ name: 'Clue: Easy', value: 'clue_easy', aliases: ['easy', 'easy clue'] },
@@ -332,6 +338,25 @@ export const queueCommand = defineCommand({
 				}
 				if (sel.startsWith('mine_')) {
 					const oreName = sel.replace('mine_', '');
+					if (
+						oreName.toLowerCase() === 'motherlode_mine' ||
+						oreName.toLowerCase() === 'motherlode mine' ||
+						oreName.toLowerCase() === 'mlm'
+					) {
+						return {
+							id: 0,
+							user_id: BigInt(user.id),
+							start_date: new Date(),
+							finish_date: new Date(),
+							duration: 0,
+							completed: true,
+							group_activity: false,
+							type: activity_type_enum.MotherlodeMining,
+							channel_id: BigInt(channelId),
+							data: { iQty: undefined },
+							all_user_ids: [BigInt(user.id)]
+						};
+					}
 					return {
 						id: 0,
 						user_id: BigInt(user.id),
@@ -524,6 +549,21 @@ export const queueCommand = defineCommand({
 						type: activity_type_enum.Zalcano,
 						channel_id: BigInt(channelId),
 						data: {},
+						all_user_ids: [BigInt(user.id)]
+					};
+				}
+				if (sel === 'mg_tithe_farm') {
+					return {
+						id: 0,
+						user_id: BigInt(user.id),
+						start_date: new Date(),
+						finish_date: new Date(),
+						duration: 0,
+						completed: true,
+						group_activity: false,
+						type: activity_type_enum.TitheFarm,
+						channel_id: BigInt(channelId),
+						data: { minigameID: 'tithe_farm', quantity: 1 },
 						all_user_ids: [BigInt(user.id)]
 					};
 				}

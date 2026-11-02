@@ -9,6 +9,34 @@ import { PrismaClient as RobochimpPrismaClient } from '@/prisma/clients/robochim
 import { PrismaClient } from '@/prisma/main.js';
 import { BOT_TYPE, globalConfig } from '@/lib/constants.js';
 
+async function syncMissingPgLiteColumns(pgLiteClient: PGlite, createDbSQL: string) {
+	const existingColsRes = await pgLiteClient.query<{ table_name: string; column_name: string }>(
+		"SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = 'public';"
+	);
+	const existingSet = new Set(existingColsRes.rows.map(r => `${r.table_name}.${r.column_name}`));
+	const tableRegex = /CREATE\s+TABLE\s+"([^"]+)"\s*\(([\s\S]*?)\);\s*/gi;
+	const alterStatements: string[] = [];
+
+	for (const match of createDbSQL.matchAll(tableRegex)) {
+		const tableName = match[1]!;
+		const body = match[2]!;
+		for (const rawLine of body.split('\n')) {
+			const line = rawLine.trim().replace(/,$/, '');
+			if (!line.startsWith('"')) continue;
+			const colMatch = line.match(/^"([^"]+)"\s+(.+)$/);
+			if (!colMatch) continue;
+			const colName = colMatch[1]!;
+			if (!existingSet.has(`${tableName}.${colName}`)) {
+				alterStatements.push(`ALTER TABLE "${tableName}" ADD COLUMN IF NOT EXISTS ${line};`);
+			}
+		}
+	}
+
+	if (alterStatements.length > 0) {
+		await pgLiteClient.exec(alterStatements.join('\n'));
+	}
+}
+
 async function getAdapter(
 	type: typeof BOT_TYPE | 'robochimp'
 ): Promise<{ adapter: PrismaPg; pgLiteClient: PGlite | null }> {
@@ -59,6 +87,7 @@ async function getAdapter(
 		}
 	);
 	await pgLiteClient.exec(rewriteSqlToIdempotent(createDbSQL));
+	await syncMissingPgLiteColumns(pgLiteClient, createDbSQL);
 	const adapter = new PrismaPGlite(pgLiteClient) as any as PrismaPg;
 	return { adapter, pgLiteClient };
 }

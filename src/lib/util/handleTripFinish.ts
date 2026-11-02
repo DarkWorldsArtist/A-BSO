@@ -24,10 +24,12 @@ import { BitField, CONSTANTS, PerkTier } from '@/lib/constants.js';
 import { handleGrowablePetGrowth } from '@/lib/growablePets.js';
 import { handlePassiveImplings } from '@/lib/implings.js';
 import { triggerRandomEvent } from '@/lib/randomEvents.js';
+import { canShowAutoFarmButton } from '@/lib/skilling/skills/farming/utils/farmingHelpers.js';
 import type { ActivityTaskData } from '@/lib/types/minions.js';
 import { MUserClass } from '@/lib/user/MUser.js';
 import {
 	makeAutoContractButton,
+	makeAutoFarmButton,
 	makeAutoRummageToggleButton,
 	makeAutoSlayButton,
 	makeBirdHouseTripButton,
@@ -40,7 +42,6 @@ import {
 	makeTearsOfGuthixButton
 } from '@/lib/util/interactions.js';
 import { hasSkillReqs, perHourChance } from '@/lib/util/smallUtils.js';
-import { handleHalloweenTripFinish } from '@/mahoji/commands/halloween.js';
 import { readState } from '@/mahoji/commands/islandupgrade.js';
 import { alching } from '@/mahoji/commands/laps.js';
 import { handleTriggerArchon } from '@/mahoji/lib/abstracted_commands/archonCommand.js';
@@ -190,7 +191,10 @@ const tripFinishEffects: TripFinishEffect[] = [
 		name: 'Custom Pet Perk',
 		fn: async ({ data, messages, user }) => {
 			const pet = user.user.minion_equippedPet;
-			const minutes = Math.floor(data.duration / Time.Minute);
+			const minutes =
+				data.type === 'Farming'
+					? Math.max(5, Math.ceil(data.duration / Time.Minute))
+					: Math.floor(data.duration / Time.Minute);
 			if (minutes < 5) return;
 
 			const bonusLoot = new Bank();
@@ -202,10 +206,15 @@ const tripFinishEffects: TripFinishEffect[] = [
 							bonusLoot.add(PekyTable.roll());
 						}
 					}
-					await user.statsBankUpdate('peky_loot_bank', bonusLoot);
-					messages.push(
-						`<:peky:1560880908729581588> Peky flew off and got you some seeds during this trip: ${bonusLoot}.`
-					);
+					if (bonusLoot.length === 0 && data.type === 'Farming') {
+						bonusLoot.add(PekyTable.roll());
+					}
+					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('peky_loot_bank', bonusLoot);
+						messages.push(
+							`<:peky:1560880908729581588> Peky flew off and got you some seeds during this trip: ${bonusLoot}.`
+						);
+					}
 					break;
 				}
 				case itemID('Obis'): {
@@ -550,6 +559,16 @@ const tripFinishEffects: TripFinishEffect[] = [
 		}
 	},
 	{
+		name: 'Autofarm Button',
+		requiredPerkTier: PerkTier.Two,
+		fn: async ({ user, components }) => {
+			if (user.bitfield.includes(BitField.DisableAutoFarmButton)) return;
+			const canShow = await canShowAutoFarmButton(user);
+			if (!canShow) return;
+			components.push(makeAutoFarmButton());
+		}
+	},
+	{
 		name: 'Claim Daily Button',
 		fn: async ({ user, components }) => {
 			if (user.bitfield.includes(BitField.DisableDailyButton)) return;
@@ -698,10 +717,6 @@ const tripFinishEffects: TripFinishEffect[] = [
 				};
 			}
 		}
-	},
-	{
-		name: 'Halloween 2026 Cursed Pumpkin',
-		fn: handleHalloweenTripFinish
 	}
 ];
 

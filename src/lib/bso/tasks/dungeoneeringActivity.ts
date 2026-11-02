@@ -73,7 +73,7 @@ export function calculateDungeoneeringResult({
 		loot.add('Gorajan shards', qty);
 	}
 	if (floor === 7 && roll(Math.floor(20_000 / minutes))) {
-		loot.add('Gorajan bonecrusher (u)');
+		loot.add('Gorajan bonecrusher (u)', isDoubleLootActive(duration) ? 2 : 1);
 	}
 
 	const portentXP = Math.ceil(tokens * 16.646);

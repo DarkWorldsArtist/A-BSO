@@ -2,8 +2,10 @@ import {
 	addToLotteryBank,
 	addToLotteryPrizePool,
 	getLotteryBank,
+	handleLotteryAdminCommand,
 	isLotteryActive,
-	LOTTERY_TICKET_ITEM
+	LOTTERY_TICKET_ITEM,
+	lotteryAdminSubcommandGroup
 } from '@/lib/bso/commands/lottery.js';
 import { addDoubleTime } from '@/lib/bso/doubleLoot.js';
 import {
@@ -865,6 +867,7 @@ ORDER BY slots_used DESC;
 export const adminCommand = defineCommand({
 	name: 'admin',
 	description: 'Allows you to trade items with other players.',
+	defaultMemberPermissions: '0',
 	options: [
 		{
 			type: 'Subcommand',
@@ -939,7 +942,8 @@ export const adminCommand = defineCommand({
 					name: 'add',
 					description: 'The badge to add',
 					required: false,
-					autocomplete: async () => {
+					autocomplete: async ({ user }: StringAutoComplete) => {
+						if (!user.isModOrAdmin) return [];
 						return Object.keys(BadgesEnum).map(i => ({ name: i, value: i }));
 					}
 				},
@@ -948,7 +952,8 @@ export const adminCommand = defineCommand({
 					name: 'remove',
 					description: 'The badge to remove',
 					required: false,
-					autocomplete: async () => {
+					autocomplete: async ({ user }: StringAutoComplete) => {
+						if (!user.isModOrAdmin) return [];
 						return Object.keys(BadgesEnum).map(i => ({ name: i, value: i }));
 					}
 				}
@@ -964,7 +969,8 @@ export const adminCommand = defineCommand({
 					name: 'disable',
 					description: 'The command to disable',
 					required: false,
-					autocomplete: async ({ value }: StringAutoComplete) => {
+					autocomplete: async ({ value, user }: StringAutoComplete) => {
+						if (!user.isModOrAdmin) return [];
 						const disabledCommands = await Cache.getDisabledCommands();
 						return globalClient.allCommands
 							.filter(i => !disabledCommands.includes(i.name))
@@ -977,7 +983,8 @@ export const adminCommand = defineCommand({
 					name: 'enable',
 					description: 'The command to enable',
 					required: false,
-					autocomplete: async () => {
+					autocomplete: async ({ user }: StringAutoComplete) => {
+						if (!user.isModOrAdmin) return [];
 						const disabledCommands = await Cache.getDisabledCommands();
 						return globalClient.allCommands
 							.filter(i => disabledCommands.includes(i.name))
@@ -1018,6 +1025,7 @@ export const adminCommand = defineCommand({
 					description: 'The bitfield to add',
 					required: false,
 					autocomplete: async ({ value, user }: StringAutoComplete) => {
+						if (!user.isModOrAdmin) return [];
 						return Object.entries(BitFieldData)
 							.filter(bf => {
 								if (bf[1].protected && !user.isAdmin) return false;
@@ -1032,7 +1040,8 @@ export const adminCommand = defineCommand({
 					name: 'remove',
 					description: 'The bitfield to remove',
 					required: false,
-					autocomplete: async ({ value }: StringAutoComplete) => {
+					autocomplete: async ({ value, user }: StringAutoComplete) => {
+						if (!user.isModOrAdmin) return [];
 						return Object.entries(BitFieldData)
 							.filter(bf => (!value ? true : bf[1].name.toLowerCase().includes(value.toLowerCase())))
 							.map(i => ({ name: i[1].name, value: i[0] }));
@@ -1063,7 +1072,8 @@ export const adminCommand = defineCommand({
 					name: 'thing',
 					description: 'The thing',
 					required: true,
-					autocomplete: async ({ value }: StringAutoComplete) => {
+					autocomplete: async ({ value, user }: StringAutoComplete) => {
+						if (!user.isAdmin && !user.isGameHacker) return [];
 						return viewableThings
 							.filter(thing => (!value ? true : thing.name.toLowerCase().includes(value.toLowerCase())))
 							.slice(0, 25)
@@ -1089,7 +1099,8 @@ export const adminCommand = defineCommand({
 					name: 'command',
 					description: 'The command to run',
 					required: true,
-					autocomplete: async ({ value }: StringAutoComplete) => {
+					autocomplete: async ({ value, user }: StringAutoComplete) => {
+						if (!user.isAdmin && !user.isGameHacker) return [];
 						return adminRunnableCommands
 							.filter(command =>
 								!value ? true : command.name.toLowerCase().includes(value.toLowerCase())
@@ -1277,7 +1288,8 @@ export const adminCommand = defineCommand({
 					]
 				}
 			]
-		}
+		},
+		lotteryAdminSubcommandGroup
 	],
 	run: async ({ options, userId, interaction, rng }) => {
 		await interaction.defer();
@@ -1843,6 +1855,18 @@ ${META_CONSTANTS.RENDERED_STR}`
 			}
 
 			return `Ironmen are now ${ironmanStatus} for giveaway message ${updatedGiveaway.message_id}.`;
+		}
+
+		if (options.lottery) {
+			if (!isAdmin && !globalConfig.adminUserIDs.includes(userId)) {
+				return rng.pick(gifs);
+			}
+			return handleLotteryAdminCommand({
+				user: adminUser,
+				options: options.lottery,
+				interaction,
+				channelId: interaction.channelId
+			});
 		}
 
 		if (options.item_stats) {

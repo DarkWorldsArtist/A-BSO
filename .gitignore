@@ -6,6 +6,7 @@ icon_cache/
 .env
 /logs
 data/bso/cursed-pumpkin.json
+data/bso/lotteries.json
 
 .yarn
 

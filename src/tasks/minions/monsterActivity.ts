@@ -1,4 +1,3 @@
-import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
 import { EBSOMonster } from '@/lib/bso/EBSOMonster.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
 import {
@@ -230,7 +229,7 @@ export function doMonsterTrip(data: newOptions) {
 
 		// Return remaining anti-pk supplies
 		if (antiPKSupplies.amount('Saradomin brew(4)') > 0) {
-			updateBank.itemLootBank.add(antiPKSupplies);
+			updateBank.itemLootBankNoCL.add(antiPKSupplies);
 		}
 	}
 

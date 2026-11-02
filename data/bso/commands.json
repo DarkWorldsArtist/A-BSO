@@ -251,11 +251,6 @@
 			"subOptions": []
 		},
 		{
-			"name": "halloween",
-			"desc": "Halloween event commands.",
-			"subOptions": ["admin", "pumpkin", "steal", "use"]
-		},
-		{
 			"name": "help",
 			"desc": "Get information and help with the bot.",
 			"subOptions": []
