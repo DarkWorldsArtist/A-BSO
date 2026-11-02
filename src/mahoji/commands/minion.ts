@@ -210,16 +210,32 @@ export const minionCommand = defineCommand({
 							bankImageTask.backgroundImages.length > 0
 								? bankImageTask.backgroundImages
 								: backgroundImages;
-						const owned = bankImages
-							.filter(
-								bg =>
-									(bg.storeBitField && user.user.store_bitfield.includes(bg.storeBitField)) ||
-									bg.owners?.some(i => allAccounts.includes(i))
-							)
-							.map(bg => bg.id);
+						const owned = new Set(
+							bankImages
+								.filter(
+									bg =>
+										(bg.storeBitField && user.user.store_bitfield.includes(bg.storeBitField)) ||
+										bg.owners?.some(i => allAccounts.includes(i))
+								)
+								.map(bg => bg.id)
+						);
+						const val = value ? value.trim().toLowerCase() : '';
 						return bankImages
-							.filter(bg => user.isModOrAdmin || bg.available || owned.includes(bg.id))
-							.filter(bg => (!value ? true : bg.name.toLowerCase().includes(value.toLowerCase())))
+							.filter(bg => user.isModOrAdmin || bg.available || owned.has(bg.id))
+							.filter(bg => {
+								if (!val) return true;
+								return (
+									bg.name.toLowerCase().includes(val) ||
+									bg.aliases?.some(a => a.toLowerCase().includes(val))
+								);
+							})
+							.sort((a, b) => {
+								const aOwned = owned.has(a.id);
+								const bOwned = owned.has(b.id);
+								if (aOwned && !bOwned) return -1;
+								if (!aOwned && bOwned) return 1;
+								return 0;
+							})
 							.map(i => {
 								return { name: i.name, value: i.name };
 							});

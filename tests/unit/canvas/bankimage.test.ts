@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Bank, EItem, Monsters } from 'oldschooljs';
-import { describe, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { bankImageTask } from '@/lib/canvas/bankImage.js';
 import { IconPackID } from '@/lib/canvas/iconPacks.js';
@@ -101,6 +101,34 @@ describe('Bank Images', async () => {
 			bankBackgroundId: 5
 		});
 		await writeFile(path.join(baseSnapshotPath, 'bank-bg-5.png'), result.image);
+	});
+
+	test('Custom Background 1021 (Drunkenbeer)', async () => {
+		const bank = new Bank();
+		for (const item of testItems.slice(0, 10)) {
+			bank.add(item);
+		}
+		const result = await bankImageTask.generateBankImage({
+			bank,
+			title: 'Drunkenbeer BG',
+			bankBackgroundId: 1021
+		});
+		expect(result.image).toBeDefined();
+		expect(result.image.length).toBeGreaterThan(1000);
+	});
+
+	test('Custom Background 1022 (Alabastor)', async () => {
+		const bank = new Bank();
+		for (const item of testItems.slice(0, 10)) {
+			bank.add(item);
+		}
+		const result = await bankImageTask.generateBankImage({
+			bank,
+			title: 'Alabastor BG',
+			bankBackgroundId: 1022
+		});
+		expect(result.image).toBeDefined();
+		expect(result.image.length).toBeGreaterThan(1000);
 	});
 
 	test('Transparent Background with Hex Color', async () => {

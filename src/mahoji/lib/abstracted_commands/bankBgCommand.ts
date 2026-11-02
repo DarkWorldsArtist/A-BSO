@@ -13,7 +13,9 @@ export async function bankBgCommand(interaction: MInteraction, user: MUser, name
 		bankImageTask.ready = true;
 	}
 	const bankImages = bankImageTask.backgroundImages.length > 0 ? bankImageTask.backgroundImages : backgroundImages;
-	const selectedImage = bankImages.find(img => stringMatches(img.name, name));
+	const selectedImage = bankImages.find(
+		img => stringMatches(img.name, name) || img.aliases?.some(a => stringMatches(a, name))
+	);
 
 	if (!selectedImage) {
 		return `The following bank images exist: ${bankImages.map(img => img.name).join(', ')}`;
