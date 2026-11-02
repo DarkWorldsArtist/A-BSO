@@ -180,20 +180,6 @@ export function calculateMiningResult({
 			loot.add(ore.id, quantity);
 		}
 
-		const hasKlik = gearBank.usingPet('Klik');
-
-		if (hasKlik && !hasAdze) {
-			const smeltedOre = Smithing.Bars.find(o => o.inputOres.has(ore.id) && o.inputOres.length === 1);
-			if (smeltedOre) {
-				barsFromKlikBank.add(smeltedOre.id, quantity);
-				loot.remove(ore.id, loot.amount(ore.id));
-				loot.add(barsFromKlikBank);
-				messages.push(
-					'<:klik:1560880874923360267> Klik breathes an incredibly hot fire breath, and smelts all your ores!'
-				);
-			}
-		}
-
 		if (spiritOre && amountOfSpiritsToUse > 0) {
 			const spiritCost = new Bank().add(spiritOre.spirit.id, amountOfSpiritsToUse);
 			totalCost.add(spiritCost);
@@ -202,6 +188,21 @@ export function calculateMiningResult({
 			loot.add(spiritBank);
 			oresFromSpiritsBank.add(ore.id, amountOfSpiritsToUse);
 			messages.push(`You received ${spiritBank} from your ${spiritCost}.`);
+		}
+
+		const hasKlik = gearBank.usingPet('Klik');
+
+		if (hasKlik && !hasAdze) {
+			const smeltedOre = Smithing.Bars.find(o => o.inputOres.has(ore.id) && o.inputOres.length === 1);
+			if (smeltedOre) {
+				const oreQty = loot.amount(ore.id);
+				barsFromKlikBank.add(smeltedOre.id, oreQty);
+				loot.remove(ore.id, oreQty);
+				loot.add(barsFromKlikBank);
+				messages.push(
+					'<:klik:1560880874923360267> Klik breathes an incredibly hot fire breath, and smelts all your ores!'
+				);
+			}
 		}
 	}
 

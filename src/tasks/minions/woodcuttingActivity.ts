@@ -37,6 +37,7 @@ async function handleForestry({
 
 	let strForestry = '';
 	const userWcLevel = user.skillsAsLevels.woodcutting;
+	const pekyBoost = user.usingPet('Peky') ? 5 : 1;
 
 	perTimeUnitChance(rng, duration, 8, Time.Minute, async () => {
 		const eventIndex = rng.randInt(0, ForestryEvents.length - 1);
@@ -96,7 +97,7 @@ async function handleForestry({
 				break;
 			case 7: // Poachers
 				eventInteraction = rng.randInt(12, 15); // traps disarmed
-				if (rng.roll(30)) {
+				if (rng.roll(30 / pekyBoost)) {
 					loot.add('Fox whistle');
 				}
 				eventCounts[event.id]++;
@@ -105,7 +106,7 @@ async function handleForestry({
 				break;
 			case 8: // Enchantment Ritual
 				eventInteraction = rng.randInt(6, 8); // ritual circles
-				if (rng.roll(30)) {
+				if (rng.roll(30 / pekyBoost)) {
 					loot.add('Petal garland');
 				}
 				eventCounts[event.id]++;
@@ -117,7 +118,7 @@ async function handleForestry({
 					if (rng.percentChance(50)) {
 						loot.add('Pheasant tail feathers');
 					}
-					if (rng.roll(900)) {
+					if (rng.roll(900 / pekyBoost)) {
 						loot.add('Golden pheasant egg');
 					}
 				}

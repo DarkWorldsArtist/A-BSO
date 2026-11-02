@@ -683,8 +683,24 @@ const backgroundImages: BankBackground[] = [
 		name: 'Salty CustomBG',
 		image: null,
 		available: false,
-		owners: ['603327620234608661'],
+		owners: ['603327620234608661']
 	},
+	{
+		id: 1021,
+		name: 'Drunkenbeer CustomBG',
+		image: null,
+		available: false,
+		owners: ['497738919803355161']
+	},
+	{
+		id: 1022,
+		name: 'Alabastor CustomBG',
+		image: null,
+		available: false,
+		owners: ['559881359582298123'],
+		purpleImage: null,
+		hasPurple: true
+	}
 ];
 
 export function getBankBgById(bgId: number) {

@@ -1,5 +1,6 @@
 import { ORI_DISABLED_MONSTERS } from '@/lib/bso/bsoConstants.js';
 import { clAdjustedDroprate } from '@/lib/bso/bsoUtil.js';
+import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
 import { bonecrusherEffect } from '@/lib/bso/skills/invention/effects/bonecrusherEffect.js';
 import { clueUpgraderEffect } from '@/lib/bso/skills/invention/effects/clueUpgraderEffect.js';
 import { portableTannerEffect } from '@/lib/bso/skills/invention/effects/portableTannerEffect.js';
@@ -65,10 +66,7 @@ export function oriEffect({
 }
 
 export function rollForBSOThings(args: MidPVMEffectArgs) {
-	const { monster, duration, cl, updateBank, messages } = args;
-	bonecrusherEffect(args);
-	portableTannerEffect(args);
-	clueUpgraderEffect({ ...args, type: 'pvm' });
+	const { monster, duration, cl, updateBank, messages, quantity } = args;
 	slayerMasksHelms(args);
 
 	if (monster.id === Monsters.Vorkath.id && roll(6000)) {
@@ -112,6 +110,15 @@ export function rollForBSOThings(args: MidPVMEffectArgs) {
 	if (updateBank.itemLootBank.has('Klik')) {
 		messages.push('<:klik:1560880874923360267> A small fairy dragon appears! Klik joins you on your adventures.');
 	}
+
+	if (quantity > 0 && isDoubleLootActive(duration)) {
+		updateBank.itemLootBank.multiply(2);
+		messages.push('**Double loot activated!**');
+	}
+
+	bonecrusherEffect(args);
+	portableTannerEffect(args);
+	clueUpgraderEffect({ ...args, type: 'pvm' });
 }
 
 export function slayerMasksHelms({

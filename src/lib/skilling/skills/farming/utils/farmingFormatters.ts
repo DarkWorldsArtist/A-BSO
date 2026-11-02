@@ -106,6 +106,12 @@ export function pushFarmingCropYieldBoosts(user: MUser, boosts: string[]): void 
 	if (user.hasEquippedOrInBank(['Farming cape'])) {
 		boosts.push(farmingBoostMessages.farmingCapeYield);
 	}
+	if (user.allItemsOwned.has('Plopper')) {
+		boosts.push('100% for Plopper');
+	}
+	if (user.hasEquippedOrInBank(['Farming master cape'])) {
+		boosts.push('100% for Farming master cape');
+	}
 }
 
 export function formatAutoFarmSummarySteps(summary: AutoFarmSummary): string[] {
