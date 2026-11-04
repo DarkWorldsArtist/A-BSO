@@ -80,6 +80,7 @@ export async function minionKillCommand(
 		return burningDominionCommand(interaction, user, channelId, name, inputQuantity);
 	}
 
+	let attackStyles = user.getAttackStyles();
 	let monster = findMonster(name);
 
 	const matchedRevenantMonster = revenantMonsters.find(monster =>
@@ -92,9 +93,18 @@ export async function minionKillCommand(
 	if (!monster) return invalidMonsterMsg;
 	if (monster.id === Monsters.MaggotKing.id) {
 		takeEggs = takeEggs || isMaggotKingTakeEggs(name);
-		const method = resolveMaggotKingMethod(user.gearBank);
+		const method = resolveMaggotKingMethod(user.gearBank, attackStyles);
 		if (typeof method === 'string') return method;
 		monster = method;
+		const meleeStyles = attackStyles.filter(
+			style => style === 'attack' || style === 'strength' || style === 'defence'
+		);
+		const secondaryStyle = method.defaultAttackStyles?.includes('magic') ? 'magic' : 'ranged';
+
+		attackStyles = [
+			...(meleeStyles.length > 0 ? meleeStyles : ['attack' as const]),
+			secondaryStyle
+		];
 	}
 
 	const [hasReqs, reason] = await user.hasMonsterRequirements(monster);
@@ -119,7 +129,7 @@ export async function minionKillCommand(
 
 	const result = newMinionKillCommand({
 		gearBank: user.gearBank,
-		attackStyles: user.getAttackStyles(),
+		attackStyles,
 		currentSlayerTask: slayerInfo,
 		monster,
 		isTryingToUseWildy: wilderness ?? false,

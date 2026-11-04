@@ -79,7 +79,6 @@ export const maggotKingKillable: KillableMonster = {
 	],
 	projectileUsage: { required: true, calculateQuantity: ({ quantity }) => quantity * 20 },
 	defaultAttackStyles: ['attack', 'ranged'],
-	disallowedAttackStyles: ['magic'],
 	attackStyleToUse: GearStat.AttackCrush,
 	attackStylesUsed: [GearStat.AttackCrush, GearStat.AttackMagic, GearStat.AttackRanged],
 	healAmountNeeded: 400,
@@ -131,11 +130,17 @@ const mageKillable: KillableMonster = {
 	]
 };
 
-// Select the ranged route first; fall back to fire magic if ranged gear is absent.
-// Exact gear floors are bot policy. A melee weapon and a suitable distance weapon
-// must actually be equipped; owning one in the bank is insufficient.
-export function resolveMaggotKingMethod(gearBank: GearBank): KillableMonster | string {
+export function resolveMaggotKingMethod(
+	gearBank: GearBank,
+	attackStyles: ReturnType<MUser['getAttackStyles']> = []
+): KillableMonster | string {
 	const { melee, range, mage } = gearBank.gear;
+	const trainingMagic = attackStyles.includes('magic');
+	const trainingRanged = attackStyles.includes('ranged');
+
+	if (trainingMagic && trainingRanged) {
+		return 'For Maggot King, select either Magic or Ranged training, rather than both.';
+	}
 	if (!melee.equippedWeapon()) return 'Equip a melee weapon in your melee setup for Maggot King.';
 	const rangeWeapon = range.equippedWeapon();
 	const mageWeapon = mage.equippedWeapon();
@@ -155,6 +160,7 @@ export function resolveMaggotKingMethod(gearBank: GearBank): KillableMonster | s
 		'Purging staff'
 	];
 	if (
+		!trainingMagic &&
 		rangeWeapon &&
 		crossbows.includes(rangeWeapon.name) &&
 		gearBank.skillsAsLevels.ranged >= 85 &&
@@ -163,6 +169,7 @@ export function resolveMaggotKingMethod(gearBank: GearBank): KillableMonster | s
 		return maggotKingKillable;
 	}
 	if (
+		!trainingRanged &&
 		mageWeapon &&
 		fireStaves.includes(mageWeapon.name) &&
 		gearBank.skillsAsLevels.magic >= 75 &&
