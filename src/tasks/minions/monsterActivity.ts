@@ -1,4 +1,3 @@
-import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
 import { EBSOMonster } from '@/lib/bso/EBSOMonster.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
 import {
@@ -397,10 +396,6 @@ export function doMonsterTrip(data: newOptions) {
 		loot.add(milestoneLoot);
 	}
 
-	if (isDoubleLootActive(duration)) {
-		loot.multiply(2);
-		messages.push('**Double loot activated!**');
-	}
 	if (!wiped) {
 		if (monster.specialLoot) {
 			monster.specialLoot({ loot, ownedItems: gearBank.bank, quantity: finalQuantity, cl: data.cl });
