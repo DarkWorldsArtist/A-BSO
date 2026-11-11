@@ -3,7 +3,7 @@ import type { CustomMonster } from '@/lib/bso/monsters/CustomMonster.js';
 
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
-import { itemID, LootTable, Monsters, RareSeedTable, resolveItems } from 'oldschooljs';
+import { Bank, LootTable, Monsters, RareSeedTable, resolveItems } from 'oldschooljs';
 
 const clueTable = new LootTable()
 	.add('Clue scroll (master)', [1, 3], 1)
@@ -81,23 +81,28 @@ export const Nihiliz: CustomMonster = {
 		}
 	},
 	itemInBankBoosts: [
-		{
-			[itemID('Zaryte crossbow')]: 15,
-			[itemID('Zaryte bow')]: 10
-		},
-		{
-			[itemID('Drygore rapier')]: 15
-		},
-		{
-			[itemID('Offhand spidergore rapier')]: 14,
-			[itemID('Offhand drygore rapier')]: 10
-		},
-		{
-			[itemID('Dragon warhammer')]: 5
-		},
-		{
-			[itemID('Zaryte vambraces')]: 5
-		}
+		new Bank({
+			'Zaryte crossbow': 15,
+			'Twisted bow': 12,
+			'Zaryte bow': 10,
+			'Bow of faerdhinen (c)': 8
+		}).toJSON(),
+		new Bank({
+			'Drygore rapier': 15,
+			"Osmumten's fang": 10
+		}).toJSON(),
+		new Bank({
+			'Offhand spidergore rapier': 14,
+			'Offhand drygore rapier': 10
+		}).toJSON(),
+		new Bank({
+			'Dragon warhammer': 5,
+			'Bandos godsword': 4
+		}).toJSON(),
+		new Bank({
+			'Zaryte vambraces': 5,
+			'Barrows gloves': 3
+		}).toJSON()
 	],
 	groupKillable: false,
 	hp: 800,

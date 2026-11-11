@@ -32,13 +32,23 @@ export async function kgCommand(
 			['Axe of the high sungod', 20],
 			['Drygore longsword', 10],
 			['Offhand drygore longsword', 5],
+			['Scythe of vitur', 12],
+			['Soulreaper axe', 12],
+			['Blade of saeldor', 10],
+			['Abyssal tentacle', 5],
 			['Empyrean greathelm', 2],
 			['Empyrean greatplate', 4],
 			['Empyrean greatgreaves', 2],
 			['Empyrean greatgauntlets', 1],
 			['Empyrean greatsabaton', 1],
+			['Bandos chestplate', 2],
+			['Bandos tassets', 1],
 			["Brawler's hook necklace", 4],
-			['TzKal cape', 6]
+			['Amulet of torture', 2],
+			['Amulet of fury', 1],
+			['TzKal cape', 6],
+			['Infernal cape', 4],
+			['Fire cape', 2]
 		],
 		customDenier: async () => {
 			return [false];

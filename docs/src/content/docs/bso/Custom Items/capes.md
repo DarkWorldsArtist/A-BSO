@@ -34,7 +34,7 @@ Additionally, master capes have a perk that is related to the skill they corresp
 | Firemaking    | 2x Wintertodt loot                                                                                                                                                                                                                                                      |
 | Woodcutting   | 2x woodcutting loot                                                                                                                                                                                                                                                     |
 | Farming       | 15% seeds saved when equipped (50% with scroll of life), 1/10 chance per planted seed to receive a mystery box                                                                                                                                                          |
-| Dungeoneering | 10% speed boost to dg with a scroll of teleportation, 50% more common Gorajan shards                                                                                                                                                                                    |
+| Dungeoneering | 10% speed boost to dg with a scroll of teleportation                                                                                                                                                                                    |
 | Divination    | 5% boost                                                                                                                                                                                                                                                                |
 
 ## Expert Capes

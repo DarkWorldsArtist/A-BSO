@@ -21,7 +21,8 @@ const alreadyAnnouncedPetIDs = resolveItems([
 	'Octo',
 	'Takon',
 	'Steve',
-	'Ishi'
+	'Ishi',
+	'Alyra'
 ]);
 
 export const perkPetsToAnnounce = customPetsCL.filter(id => !alreadyAnnouncedPetIDs.includes(id));

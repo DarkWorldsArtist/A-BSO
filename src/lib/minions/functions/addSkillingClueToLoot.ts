@@ -1,3 +1,5 @@
+import { applyClueCodexToLoot } from '@/lib/bso/skills/invention/effects/clueCodexEffect.js';
+
 import { sumArr } from '@oldschoolgg/toolkit';
 import { type Bank, itemID } from 'oldschooljs';
 
@@ -95,5 +97,8 @@ export default function addSkillingClueToLoot(
 	if (skill === 'woodcutting') {
 		loot.add(birdsNestID, nests);
 	}
+
+	applyClueCodexToLoot({ user, loot, rng });
+
 	return loot;
 }

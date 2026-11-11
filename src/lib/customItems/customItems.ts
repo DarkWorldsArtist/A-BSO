@@ -15,6 +15,8 @@ import './leagues.js';
 import './paintCans.js';
 import './summoning.js';
 
+import { BSOItem } from '@/lib/bso/BSOItem.js';
+
 import { EquipmentSlot } from '@oldschoolgg/gear';
 import { type ItemRequirements, Items, resolveItems } from 'oldschooljs';
 
@@ -15200,6 +15202,204 @@ setCustomItem(
 		}
 	},
 	5_000_000_000
+);
+
+setCustomItem(
+	BSOItem.RING_OF_KINSHIP,
+	'Ring of kinship (tier 1)',
+	'Berserker ring',
+	{
+		equipment: {
+			attack_stab: 3,
+			attack_slash: 3,
+			attack_crush: 3,
+			attack_magic: 3,
+			attack_ranged: 3,
+			defence_stab: 3,
+			defence_slash: 3,
+			defence_crush: 3,
+			defence_magic: 3,
+			defence_ranged: 3,
+			melee_strength: 1,
+			ranged_strength: 1,
+			magic_damage: 1,
+			prayer: 1,
+			slot: EquipmentSlot.Ring,
+			requirements: null
+		},
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	10_000
+);
+
+setCustomItem(
+	BSOItem.RING_OF_KINSHIP_TIER_2,
+	'Ring of kinship (tier 2)',
+	'Berserker ring',
+	{
+		equipment: {
+			attack_stab: 5,
+			attack_slash: 5,
+			attack_crush: 5,
+			attack_magic: 5,
+			attack_ranged: 5,
+			defence_stab: 5,
+			defence_slash: 5,
+			defence_crush: 5,
+			defence_magic: 5,
+			defence_ranged: 5,
+			melee_strength: 2,
+			ranged_strength: 2,
+			magic_damage: 1,
+			prayer: 1,
+			slot: EquipmentSlot.Ring,
+			requirements: null
+		},
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	50_000
+);
+
+setCustomItem(
+	BSOItem.RING_OF_KINSHIP_TIER_3,
+	'Ring of kinship (tier 3)',
+	'Berserker ring',
+	{
+		equipment: {
+			attack_stab: 7,
+			attack_slash: 7,
+			attack_crush: 7,
+			attack_magic: 7,
+			attack_ranged: 7,
+			defence_stab: 7,
+			defence_slash: 7,
+			defence_crush: 7,
+			defence_magic: 7,
+			defence_ranged: 7,
+			melee_strength: 3,
+			ranged_strength: 3,
+			magic_damage: 2,
+			prayer: 1,
+			slot: EquipmentSlot.Ring,
+			requirements: null
+		},
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	100_000
+);
+
+setCustomItem(
+	BSOItem.RING_OF_KINSHIP_TIER_4,
+	'Ring of kinship (tier 4)',
+	'Berserker ring',
+	{
+		equipment: {
+			attack_stab: 9,
+			attack_slash: 9,
+			attack_crush: 9,
+			attack_magic: 9,
+			attack_ranged: 9,
+			defence_stab: 9,
+			defence_slash: 9,
+			defence_crush: 9,
+			defence_magic: 9,
+			defence_ranged: 9,
+			melee_strength: 4,
+			ranged_strength: 4,
+			magic_damage: 2,
+			prayer: 2,
+			slot: EquipmentSlot.Ring,
+			requirements: null
+		},
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	200_000
+);
+
+setCustomItem(
+	BSOItem.OVERCHARGED_RING_OF_KINSHIP,
+	'Overcharged ring of kinship',
+	'Berserker ring',
+	{
+		equipment: {
+			attack_stab: 12,
+			attack_slash: 12,
+			attack_crush: 12,
+			attack_magic: 12,
+			attack_ranged: 12,
+			defence_stab: 12,
+			defence_slash: 12,
+			defence_crush: 12,
+			defence_magic: 12,
+			defence_ranged: 12,
+			melee_strength: 6,
+			ranged_strength: 6,
+			magic_damage: 3,
+			prayer: 2,
+			slot: EquipmentSlot.Ring,
+			requirements: null
+		},
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	500_000
+);
+
+setCustomItem(
+	BSOItem.KINSHIP_OVERCHARGER,
+	'Kinship overcharger',
+	'Coal',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	500_000
+);
+
+setCustomItem(
+	BSOItem.SMUGGLERS_LOCKPICK,
+	"Smuggler's lockpick",
+	'Lockpick',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	500_000
+);
+
+setCustomItem(
+	BSOItem.SCROLL_OF_THE_SALVAGER,
+	'Scroll of the salvager',
+	'Scroll of life',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	400_000
+);
+
+setCustomItem(
+	BSOItem.DAEMONHEIM_RESOURCE_CACHE,
+	'Daemonheim resource cache',
+	'Casket',
+	{
+		customItemData: {
+			cantDropFromMysteryBoxes: true
+		}
+	},
+	50_000
 );
 
 export const discontinuedItems = resolveItems([

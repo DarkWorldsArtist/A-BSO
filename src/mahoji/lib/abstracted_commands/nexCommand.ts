@@ -3,7 +3,7 @@ import { gorajanArcherOutfit, pernixOutfit } from '@/lib/bso/collection-log/main
 import { NexMonster } from '@/lib/bso/monsters/nex.js';
 import { getNexGearStats } from '@/lib/bso/util/getNexGearStats.js';
 
-import { formatDuration, increaseNumByPercent, isWeekend, reduceNumByPercent, round, Time } from '@oldschoolgg/toolkit';
+import { formatDuration, increaseNumByPercent, isWeekend, reduceNumByPercent, Time } from '@oldschoolgg/toolkit';
 import { Bank } from 'oldschooljs';
 
 import { trackLoot } from '@/lib/lootTrack.js';
@@ -125,6 +125,7 @@ export async function nexCommand(
 		effectiveTime = reduceNumByPercent(effectiveTime, 20);
 	}
 
+	let totalTeamBoost = 0;
 	for (const user of users) {
 		const [data] = await getNexGearStats(
 			user,
@@ -132,99 +133,96 @@ export async function nexCommand(
 		);
 		debugStr += `**${user.usernameOrMention}**: `;
 		const msgs = [];
+		let userBoost = 0;
 
 		const rangeGear = user.gear.range;
 		if (rangeGear.hasEquipped(pernixOutfit, true, true)) {
-			const percent = isSolo ? 20 : 8;
-			effectiveTime = reduceNumByPercent(effectiveTime, percent);
-			msgs.push(`${percent}% boost for full pernix`);
+			userBoost += 20;
+			msgs.push('20% boost for full pernix');
 		} else {
 			let i = 0;
 			for (const inqItem of pernixOutfit) {
 				if (rangeGear.hasEquipped([inqItem], true, true)) {
-					const percent = isSolo ? 2.4 : 1;
-					i += percent;
+					i += 2.4;
 				}
 			}
 			if (i > 0) {
-				msgs.push(`${i.toFixed(2)}% boost for pernix items`);
-				effectiveTime = reduceNumByPercent(effectiveTime, i);
+				userBoost += i;
+				msgs.push(`${i.toFixed(1)}% boost for pernix items`);
 			}
 		}
 
 		if (rangeGear.hasEquipped(gorajanArcherOutfit, true, true)) {
-			const perUserPercent = round(15 / users.length, 2);
-			effectiveTime = reduceNumByPercent(effectiveTime, perUserPercent);
-			msgs.push(`${perUserPercent}% for Gorajan archer`);
+			userBoost += 15;
+			msgs.push('15% for Gorajan archer');
 		}
 
-		if (data.gearStats.attack_ranged < 200) {
-			const percent = isSolo ? 20 : 10;
-			effectiveTime = increaseNumByPercent(effectiveTime, percent);
-			msgs.push(`-${percent}% penalty for <200 ranged attack`);
+		const hasPernixOrGorajan =
+			rangeGear.hasEquipped(pernixOutfit, false, true) || rangeGear.hasEquipped(gorajanArcherOutfit, false, true);
+		if (!hasPernixOrGorajan) {
+			const hasMasori =
+				rangeGear.hasEquipped(['Masori body (f)', 'Masori chaps (f)', 'Masori mask (f)'], true, true) ||
+				rangeGear.hasEquipped(['Masori body', 'Masori chaps', 'Masori mask'], true, true);
+			if (hasMasori) {
+				userBoost += 10;
+				msgs.push('10% boost for full Masori');
+			} else if (
+				rangeGear.hasEquipped(['Armadyl chestplate', 'Armadyl chainskirt', 'Armadyl helmet'], true, true)
+			) {
+				userBoost += 5;
+				msgs.push('5% boost for full Armadyl');
+			}
 		}
+
 		if (rangeGear.hasEquipped('Zaryte bow', true, true)) {
-			const percent = isSolo ? 20 : 14;
-			effectiveTime = reduceNumByPercent(effectiveTime, percent);
-			msgs.push(`${percent}% boost for Zaryte bow`);
+			userBoost += 20;
+			msgs.push('20% boost for Zaryte bow');
+		} else if (rangeGear.hasEquipped('Zaryte crossbow', true, true)) {
+			userBoost += 15;
+			msgs.push('15% boost for Zaryte crossbow');
 		} else if (rangeGear.hasEquipped('Twisted bow', true, true)) {
-			const percent = isSolo ? 15 : 9;
-			effectiveTime = reduceNumByPercent(effectiveTime, percent);
-			msgs.push(`${percent}% boost for Twisted bow`);
-		}
-
-		// Increase duration for lower melee-strength gear.
-		let rangeStrBonus = 0;
-		if (data.percentRangeStrength < 40) {
-			rangeStrBonus = 6;
-		} else if (data.percentRangeStrength < 50) {
-			rangeStrBonus = 3;
-		} else if (data.percentRangeStrength < 60) {
-			rangeStrBonus = 2;
-		}
-		if (rangeStrBonus !== 0) {
-			effectiveTime = increaseNumByPercent(effectiveTime, rangeStrBonus);
-			msgs.push(`-${rangeStrBonus}% penalty for ${data.percentRangeStrength}% range strength`);
-		}
-
-		// Increase duration for lower KC.
-		let kcBonus = -4;
-		if (data.kc < 10) {
-			kcBonus = 15;
-		} else if (data.kc < 25) {
-			kcBonus = 5;
-		} else if (data.kc < 50) {
-			kcBonus = 2;
-		} else if (data.kc < 100) {
-			kcBonus = -2;
-		}
-
-		if (kcBonus < 0) {
-			effectiveTime = reduceNumByPercent(effectiveTime, Math.abs(kcBonus));
-			msgs.push(`${Math.abs(kcBonus)}% boost for KC`);
-		} else {
-			effectiveTime = increaseNumByPercent(effectiveTime, kcBonus);
-			msgs.push(`-${kcBonus}% penalty for KC`);
+			userBoost += 15;
+			msgs.push('15% boost for Twisted bow');
+		} else if (rangeGear.hasEquipped('Bow of faerdhinen (c)', true, true)) {
+			userBoost += 12;
+			msgs.push('12% boost for Bow of faerdhinen (c)');
+		} else if (rangeGear.hasEquipped(['Armadyl crossbow', 'Dragon hunter crossbow'], false, true)) {
+			userBoost += 10;
+			msgs.push('10% boost for Crossbow');
+		} else if (rangeGear.hasEquipped('Dragon crossbow', true, true)) {
+			userBoost += 5;
+			msgs.push('5% boost for Dragon crossbow');
 		}
 
 		if (data.kc > 500) {
-			effectiveTime = reduceNumByPercent(effectiveTime, 15);
-			msgs.push(`15% for ${user.usernameOrMention} over 500 kc`);
+			userBoost += 15;
+			msgs.push('15% for over 500 kc');
 		} else if (data.kc > 300) {
-			effectiveTime = reduceNumByPercent(effectiveTime, 13);
-			msgs.push(`13% for ${user.usernameOrMention} over 300 kc`);
+			userBoost += 13;
+			msgs.push('13% for over 300 kc');
 		} else if (data.kc > 200) {
-			effectiveTime = reduceNumByPercent(effectiveTime, 10);
-			msgs.push(`10% for ${user.usernameOrMention} over 200 kc`);
+			userBoost += 10;
+			msgs.push('10% for over 200 kc');
 		} else if (data.kc > 100) {
-			effectiveTime = reduceNumByPercent(effectiveTime, 7);
-			msgs.push(`7% for ${user.usernameOrMention} over 100 kc`);
+			userBoost += 7;
+			msgs.push('7% for over 100 kc');
 		} else if (data.kc > 50) {
-			effectiveTime = reduceNumByPercent(effectiveTime, 5);
-			msgs.push(`5% for ${user.usernameOrMention} over 50 kc`);
+			userBoost += 5;
+			msgs.push('5% for over 50 kc');
 		}
 
+		totalTeamBoost += userBoost;
+		if (msgs.length === 0) {
+			msgs.push('no gear boosts');
+		}
 		debugStr += `${msgs.join(', ')}. `;
+	}
+
+	if (isSolo) {
+		effectiveTime = reduceNumByPercent(effectiveTime, Math.min(75, totalTeamBoost));
+	} else {
+		const avgTeamBoost = totalTeamBoost / users.length;
+		effectiveTime = reduceNumByPercent(effectiveTime, Math.min(75, avgTeamBoost));
 	}
 
 	let minDuration = 2;

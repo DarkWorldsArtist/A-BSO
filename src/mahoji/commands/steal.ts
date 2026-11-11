@@ -72,7 +72,10 @@ export const stealCommand = defineCommand({
 			if (user.skillLevel('magic') < 47) {
 				return 'You need 47 Magic to use Shadow Veil.';
 			}
-			if (!user.user.finished_quest_ids.includes(QuestID.AKingdomDivided)) {
+			const hasQuest =
+				user.user.finished_quest_ids.includes(QuestID.AKingdomDivided) ||
+				user.hasEquippedOrInBank(['Quest point cape', 'Quest point cape(t)']);
+			if (!hasQuest) {
 				return 'You need to complete A Kingdom Divided to use Shadow Veil.';
 			}
 		}

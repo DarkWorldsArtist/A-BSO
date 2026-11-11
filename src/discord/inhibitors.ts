@@ -73,10 +73,11 @@ const inhibitors: Inhibitor[] = [
 	},
 	{
 		name: 'commandRoleLimit',
-		run: async ({ interaction, user }) => {
+		run: async ({ interaction, user, command }) => {
 			if (!interaction.guildId || interaction.guildId !== globalConfig.supportServerID || !interaction.channelId)
 				return false;
-			if (interaction.channelId !== Channel.ServerGeneral) return false;
+			if (![Channel.ServerGeneral, Channel.GeneralChannel].includes(interaction.channelId)) return false;
+			if (command.name === 'trade') return false;
 			const perkTier = await user.fetchPerkTier();
 			if (interaction.member && perkTier >= PerkTier.Two) {
 				return false;

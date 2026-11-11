@@ -1,7 +1,8 @@
 import { checkElderClueRequirements } from '@/lib/bso/elderClueRequirements.js';
+import { applyClueCodexToLoot } from '@/lib/bso/skills/invention/effects/clueCodexEffect.js';
 
 import type { ButtonBuilder } from '@oldschoolgg/discord';
-import { Emoji, notEmpty, stringMatches, uniqueArr } from '@oldschoolgg/toolkit';
+import { Emoji, notEmpty, stringMatches, sumArr, uniqueArr } from '@oldschoolgg/toolkit';
 import { percentChance } from 'node-rng';
 import { cryptoRng } from 'node-rng/crypto';
 import { Bank, Items, itemID, resolveItems } from 'oldschooljs';
@@ -95,6 +96,7 @@ export async function abstractedOpenUntilCommand(
 
 	const cost = new Bank();
 	const loot = new Bank();
+	const codexUpgradedBank = new Bank();
 	let amountOpened = 0;
 	let targetCount = 0;
 	const maxOpenLimit = maxOpenQuantity ?? amountOfThisOpenableOwned;
@@ -103,6 +105,10 @@ export async function abstractedOpenUntilCommand(
 	for (let i = 0; i < max; i++) {
 		cost.add(openable.openedItem.id);
 		const thisLoot = await getOpenableLoot({ openable, quantity: 1, user, rng, totalLeaguesPoints });
+		const upgradeRes = applyClueCodexToLoot({ user, loot: thisLoot.bank, rng });
+		if (upgradeRes) {
+			codexUpgradedBank.add(upgradeRes.upgradedClues);
+		}
 		loot.add(thisLoot.bank);
 		amountOpened++;
 		targetCount = loot.amount(openUntil.id);
@@ -129,7 +135,8 @@ export async function abstractedOpenUntilCommand(
 		],
 		openables: [openable],
 		kcBank: new Bank().add(openable.openedItem.id, amountOpened),
-		disable_pets: Boolean(disable_pets)
+		disable_pets: Boolean(disable_pets),
+		alreadyUpgradedCodexBank: codexUpgradedBank
 	});
 }
 
@@ -158,7 +165,8 @@ async function finalizeOpening({
 	messages,
 	openables,
 	kcBank,
-	disable_pets
+	disable_pets,
+	alreadyUpgradedCodexBank
 }: {
 	kcBank: Bank;
 	user: MUser;
@@ -167,6 +175,7 @@ async function finalizeOpening({
 	messages: string[];
 	openables: UnifiedOpenable[];
 	disable_pets: boolean;
+	alreadyUpgradedCodexBank?: Bank;
 }) {
 	const { bank } = user;
 	if (!bank.has(cost)) return new MessageBuilder().setContent(`You don't have ${cost}.`);
@@ -193,17 +202,22 @@ async function finalizeOpening({
 				hasSmokey ? 'smokey_loot_bank' : 'octo_loot_bank',
 				new Bank().add(openable.openedItem.id, smokeyBonus)
 			);
-			loot.add(
-				(
-					await getOpenableLoot({
-						rng: cryptoRng,
-						user,
-						openable,
-						quantity: smokeyBonus,
-						totalLeaguesPoints
-					})
-				).bank
-			);
+			const bonusLoot = (
+				await getOpenableLoot({
+					rng: cryptoRng,
+					user,
+					openable,
+					quantity: smokeyBonus,
+					totalLeaguesPoints
+				})
+			).bank;
+			if (alreadyUpgradedCodexBank) {
+				const bonusUpgrade = applyClueCodexToLoot({ user, loot: bonusLoot, rng: cryptoRng });
+				if (bonusUpgrade) {
+					alreadyUpgradedCodexBank.add(bonusUpgrade.upgradedClues);
+				}
+			}
+			loot.add(bonusLoot);
 			bonuses.push(`${smokeyBonus}x ${openable.name}`);
 		}
 		smokeyMsg =
@@ -212,6 +226,22 @@ async function finalizeOpening({
 				: null;
 	}
 	if (smokeyMsg) messages.push(smokeyMsg);
+
+	if (alreadyUpgradedCodexBank) {
+		if (alreadyUpgradedCodexBank.length > 0) {
+			await ClientSettings.updateBankSetting('clue_upgrader_loot', alreadyUpgradedCodexBank);
+			await user.statsBankUpdate('clue_upgrader_bank', alreadyUpgradedCodexBank);
+			const totalCluesUpgraded = sumArr(alreadyUpgradedCodexBank.items().map(i => i[1]));
+			messages.push(`Upgraded ${totalCluesUpgraded} clues via Clue codex`);
+		}
+	} else {
+		const codexRes = applyClueCodexToLoot({ user, loot, rng: cryptoRng });
+		if (codexRes) {
+			await ClientSettings.updateBankSetting('clue_upgrader_loot', codexRes.upgradedClues);
+			await user.statsBankUpdate('clue_upgrader_bank', codexRes.upgradedClues);
+			messages.push(codexRes.message);
+		}
+	}
 
 	const { previousCL } = await user.transactItems({
 		itemsToRemove: cost,

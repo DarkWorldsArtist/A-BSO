@@ -117,7 +117,10 @@ function calcMinnowQuantityRange(gearBank: GearBank): [number, number] {
 }
 
 function calcAnglerBoostPercent(gearBank: GearBank) {
-	const equippedPieces = anglerItemsArr.filter(item => gearBank.gear.skilling.hasEquipped(item.id));
+	const hasWardrobe = gearBank.hasEquippedOrInBank('Ancient wardrobe');
+	const equippedPieces = anglerItemsArr.filter(
+		item => gearBank.gear.skilling.hasEquipped(item.id) || (hasWardrobe && gearBank.hasEquippedOrInBank(item.id))
+	);
 	if (equippedPieces.length === anglerItemsArr.length) {
 		return 2.5;
 	}

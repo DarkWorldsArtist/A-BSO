@@ -65,6 +65,7 @@ import {
 	type StaffGrants,
 	ZStaffGrants
 } from '@/lib/staffBestow.js';
+import { resetDailyQueueAllowance } from '@/lib/tripQueue.js';
 import { dmCyrAudit, makeArgAuditFiles, sendCyrCriticalBotLog } from '@/lib/util/cyrAudit.js';
 import { generateGiveawayContent } from '@/lib/util/giveaway.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
@@ -897,6 +898,12 @@ export const adminCommand = defineCommand({
 					name: 'user',
 					description: 'The user',
 					required: true
+				},
+				{
+					type: 'Boolean',
+					name: 'reset_queue_allowance',
+					description: "Also reset this user's daily queued trip allowance",
+					required: false
 				}
 			]
 		},
@@ -909,6 +916,19 @@ export const adminCommand = defineCommand({
 					type: 'User',
 					name: 'user',
 					description: 'The user',
+					required: true
+				}
+			]
+		},
+		{
+			type: 'Subcommand',
+			name: 'reset_queue_allowance',
+			description: "Reset a user's daily queued trip allowance",
+			options: [
+				{
+					type: 'User',
+					name: 'user',
+					description: 'The user to reset queue allowance for',
 					required: true
 				}
 			]
@@ -1310,6 +1330,10 @@ export const adminCommand = defineCommand({
 		if (options.cancel_task) {
 			const { user } = options.cancel_task.user;
 			await ActivityManager.cancelActivity(user.id);
+			if (options.cancel_task.reset_queue_allowance) {
+				await resetDailyQueueAllowance(user.id);
+				return `Cancelled task and reset daily queue allowance for ${user.username}.`;
+			}
 			return 'Done.';
 		}
 		if (options.clear_busy) {
@@ -1318,6 +1342,11 @@ export const adminCommand = defineCommand({
 			if (!isBusy) return `${user.username} isn't busy.`;
 			await Cache.setUserLockStatus(user.id, 'unlocked');
 			return `Cleared busy for ${user.username}.`;
+		}
+		if (options.reset_queue_allowance) {
+			const { user } = options.reset_queue_allowance.user;
+			await resetDailyQueueAllowance(user.id);
+			return `Reset daily queue allowance for ${user.username}.`;
 		}
 
 		if (options.badges) {

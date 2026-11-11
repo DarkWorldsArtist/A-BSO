@@ -45,50 +45,59 @@ const bisMeleeGear = new Gear({
 	ring: 'Searcrown band'
 });
 
-const itemBoosts: {
-	item: Item;
-	boost: number;
+const itemBoostGroups: {
 	setup: 'mage' | 'melee';
+	items: { item: Item; boost: number }[];
 }[] = [
 	{
-		item: Items.getOrThrow('Void staff'),
-		boost: 10,
-		setup: 'mage'
+		setup: 'mage',
+		items: [
+			{ item: Items.getOrThrow('Void staff'), boost: 10 },
+			{ item: Items.getOrThrow("Tumeken's shadow"), boost: 6 },
+			{ item: Items.getOrThrow('Sanguinesti staff'), boost: 4 },
+			{ item: Items.getOrThrow('Trident of the swamp'), boost: 3 }
+		]
 	},
 	{
-		item: Items.getOrThrow('Abyssal tome'),
-		boost: 7.5,
-		setup: 'mage'
+		setup: 'mage',
+		items: [
+			{ item: Items.getOrThrow('Abyssal tome'), boost: 7.5 },
+			{ item: Items.getOrThrow("Elidinis' ward (f)"), boost: 3 },
+			{ item: Items.getOrThrow('Arcane spirit shield'), boost: 3 }
+		]
 	},
 	{
-		item: Items.getOrThrow('Tzkal cape'),
-		boost: 5,
-		setup: 'melee'
+		setup: 'melee',
+		items: [
+			{ item: Items.getOrThrow('Tzkal cape'), boost: 5 },
+			{ item: Items.getOrThrow('Infernal cape'), boost: 3 },
+			{ item: Items.getOrThrow('Fire cape'), boost: 1.5 }
+		]
 	},
 	{
-		item: Items.getOrThrow('Vasa cloak'),
-		boost: 5,
-		setup: 'mage'
+		setup: 'mage',
+		items: [
+			{ item: Items.getOrThrow('Vasa cloak'), boost: 5 },
+			{ item: Items.getOrThrow('Imbued guthix cape'), boost: 2.5 }
+		]
 	},
 	{
-		item: Items.getOrThrow('Searcrown band'),
-		boost: 4,
-		setup: 'melee'
+		setup: 'melee',
+		items: [
+			{ item: Items.getOrThrow('Searcrown band'), boost: 4 },
+			{ item: Items.getOrThrow('Ignis ring(i)'), boost: 2.5 },
+			{ item: Items.getOrThrow('Ultor ring'), boost: 2},
+			{ item: Items.getOrThrow('Berserker ring (i)'), boost: 1 }
+		]
 	},
 	{
-		item: Items.getOrThrow('Ignis ring(i)'),
-		boost: 2.5,
-		setup: 'melee'
-	},
-	{
-		item: Items.getOrThrow('Spellbound ring(i)'),
-		boost: 2.5,
-		setup: 'mage'
-	},
-	{
-		item: Items.getOrThrow('Spellbound ring'),
-		boost: 2,
-		setup: 'mage'
+		setup: 'mage',
+		items: [
+			{ item: Items.getOrThrow('Spellbound ring(i)'), boost: 2.5 },
+			{ item: Items.getOrThrow('Spellbound ring'), boost: 2 },
+			{ item: Items.getOrThrow('Magus ring'), boost: 2 },
+			{ item: Items.getOrThrow('Seers ring (i)'), boost: 1 }
+		]
 	}
 ];
 
@@ -180,10 +189,13 @@ export async function naxxusCommand(user: MUser, channelId: string, quantity: nu
 		)}% of max melee, ${Math.ceil(mage)}% of max mage]`
 	);
 
-	for (const itemBoost of itemBoosts) {
-		if (user.gear[itemBoost.setup].hasEquipped(itemBoost.item.id)) {
-			effectiveTime = reduceNumByPercent(effectiveTime, itemBoost.boost);
-			boosts.push(`${itemBoost.boost}% ${itemBoost.item.name}`);
+	for (const group of itemBoostGroups) {
+		for (const boostEntry of group.items) {
+			if (user.gear[group.setup].hasEquipped(boostEntry.item.id)) {
+				effectiveTime = reduceNumByPercent(effectiveTime, boostEntry.boost);
+				boosts.push(`${boostEntry.boost}% ${boostEntry.item.name}`);
+				break;
+			}
 		}
 	}
 

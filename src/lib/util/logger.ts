@@ -150,16 +150,18 @@ function logError(args: string | Error | RichErrorLogArgs, ctx?: LogContext): vo
 	if (Object.keys(context).length > 0) {
 		rawObj.info = context;
 	}
-	prisma.systemLogs
-		.create({
-			data: {
-				type,
-				msg: message,
-				stack,
-				data: rawObj as any
-			}
-		})
-		.catch(console.error);
+	if (typeof prisma !== 'undefined' && prisma?.systemLogs) {
+		prisma.systemLogs
+			.create({
+				data: {
+					type,
+					msg: message,
+					stack,
+					data: rawObj as any
+				}
+			})
+			.catch(console.error);
+	}
 
 	console.error(JSON.stringify(rawObj));
 

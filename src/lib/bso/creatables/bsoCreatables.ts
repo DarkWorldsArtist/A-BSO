@@ -8,6 +8,10 @@ import { sunMoonCreatables } from '@/lib/bso/creatables/sunMoonCreatables.js';
 import { dyedItems } from '@/lib/bso/dyedItems.js';
 import { expertCapesSource } from '@/lib/bso/expertCapes.js';
 import { nexBrokenArmorDetails } from '@/lib/bso/monsters/nex.js';
+import {
+	checkKinshipFloorSpread,
+	getDungeoneeringFloorCompletions
+} from '@/lib/bso/skills/dungoneering/dungDbFunctions.js';
 import { MaterialBank } from '@/lib/bso/skills/invention/MaterialBank.js';
 import { tameCreatables } from '@/lib/bso/tames/tameCreatables.js';
 import { seaMonkeyStaves } from '@/lib/bso/tames/tames.js';
@@ -142,7 +146,7 @@ const componentRevertables: Createable[] = [
 		forceAddToCl: true
 	},
 	{
-		name: 'Revert armadyl helmet (components)',
+		name: 'Revert armadyl helmet',
 		inputItems: {
 			[itemID('Armadyl helmet')]: 1
 		},
@@ -152,22 +156,22 @@ const componentRevertables: Createable[] = [
 		forceAddToCl: true
 	},
 	{
-		name: 'Revert armadyl chestplate (components)',
+		name: 'Revert armadyl chestplate',
 		inputItems: {
 			[itemID('Armadyl chestplate')]: 1
 		},
 		outputItems: {
-			[itemID('Armadylean components')]: 3
+			[itemID('Armadylean components')]: 4
 		},
 		forceAddToCl: true
 	},
 	{
-		name: 'Revert armadyl chainskirt (components)',
+		name: 'Revert armadyl chainskirt',
 		inputItems: {
 			[itemID('Armadyl chainskirt')]: 1
 		},
 		outputItems: {
-			[itemID('Armadylean components')]: 2
+			[itemID('Armadylean components')]: 3
 		},
 		forceAddToCl: true
 	},
@@ -1767,3 +1771,124 @@ for (const cape of Skillcapes) {
 		noCl: true
 	});
 }
+
+bsoCreatables.push({
+	name: 'Ring of kinship (tier 2)',
+	inputItems: new Bank().add('Ring of kinship (tier 1)', 1),
+	outputItems: new Bank().add('Ring of kinship (tier 2)', 1),
+	requiredSkills: {
+		dungeoneering: 50
+	},
+	customReq: async user => {
+		const floorCounts = await getDungeoneeringFloorCompletions(user);
+		const totalCount = Object.values(floorCounts).reduce((a, b) => a + b, 0);
+		if (totalCount < 50) {
+			return `You need at least 50 Dungeoneering floor completions to create this ring (you have ${totalCount}).`;
+		}
+		const spreadCheck = checkKinshipFloorSpread(floorCounts, { minCompletions: 10, maxFloor: 4 });
+		if (!spreadCheck.hasSpread) {
+			const missingStr = spreadCheck.missing.map(m => `Floor ${m.floor}: ${m.current}/${m.required}`).join(', ');
+			return `You need at least 10 completions on Floors 1-4 to upgrade this ring. Incomplete: ${missingStr}.`;
+		}
+		if (user.user.dungeoneering_tokens < 50_000) {
+			return `You need 50,000 Dungeoneering tokens to create this ring (you have ${user.user.dungeoneering_tokens.toLocaleString()}).`;
+		}
+		return null;
+	},
+	onCreate: async (qty, user) => {
+		await user.update({
+			dungeoneering_tokens: {
+				decrement: 50_000 * qty
+			}
+		});
+		return { result: true, message: `Used ${(50_000 * qty).toLocaleString()} Dungeoneering tokens.` };
+	}
+});
+
+bsoCreatables.push({
+	name: 'Ring of kinship (tier 3)',
+	inputItems: new Bank().add('Ring of kinship (tier 2)', 1),
+	outputItems: new Bank().add('Ring of kinship (tier 3)', 1),
+	requiredSkills: {
+		dungeoneering: 80
+	},
+	customReq: async user => {
+		const floorCounts = await getDungeoneeringFloorCompletions(user);
+		const totalCount = Object.values(floorCounts).reduce((a, b) => a + b, 0);
+		if (totalCount < 150) {
+			return `You need at least 150 Dungeoneering floor completions to create this ring (you have ${totalCount}).`;
+		}
+		const spreadCheck = checkKinshipFloorSpread(floorCounts, { minCompletions: 20, maxFloor: 6 });
+		if (!spreadCheck.hasSpread) {
+			const missingStr = spreadCheck.missing.map(m => `Floor ${m.floor}: ${m.current}/${m.required}`).join(', ');
+			return `You need at least 20 completions on Floors 1-6 to upgrade this ring. Incomplete: ${missingStr}.`;
+		}
+		if (user.user.dungeoneering_tokens < 100_000) {
+			return `You need 100,000 Dungeoneering tokens to create this ring (you have ${user.user.dungeoneering_tokens.toLocaleString()}).`;
+		}
+		return null;
+	},
+	onCreate: async (qty, user) => {
+		await user.update({
+			dungeoneering_tokens: {
+				decrement: 100_000 * qty
+			}
+		});
+		return { result: true, message: `Used ${(100_000 * qty).toLocaleString()} Dungeoneering tokens.` };
+	}
+});
+
+bsoCreatables.push({
+	name: 'Ring of kinship (tier 4)',
+	inputItems: new Bank().add('Ring of kinship (tier 3)', 1),
+	outputItems: new Bank().add('Ring of kinship (tier 4)', 1),
+	requiredSkills: {
+		dungeoneering: 100
+	},
+	customReq: async user => {
+		const floorCounts = await getDungeoneeringFloorCompletions(user);
+		const totalCount = Object.values(floorCounts).reduce((a, b) => a + b, 0);
+		if (totalCount < 300) {
+			return `You need at least 300 Dungeoneering floor completions to create this ring (you have ${totalCount}).`;
+		}
+		const spreadCheck = checkKinshipFloorSpread(floorCounts, { minCompletions: 30, maxFloor: 8 });
+		if (!spreadCheck.hasSpread) {
+			const missingStr = spreadCheck.missing.map(m => `Floor ${m.floor}: ${m.current}/${m.required}`).join(', ');
+			return `You need at least 30 completions on Floors 1-8 to upgrade this ring. Incomplete: ${missingStr}.`;
+		}
+		if (user.user.dungeoneering_tokens < 200_000) {
+			return `You need 200,000 Dungeoneering tokens to create this ring (you have ${user.user.dungeoneering_tokens.toLocaleString()}).`;
+		}
+		return null;
+	},
+	onCreate: async (qty, user) => {
+		await user.update({
+			dungeoneering_tokens: {
+				decrement: 200_000 * qty
+			}
+		});
+		return { result: true, message: `Used ${(200_000 * qty).toLocaleString()} Dungeoneering tokens.` };
+	}
+});
+
+bsoCreatables.push({
+	name: 'Overcharged ring of kinship',
+	inputItems: new Bank().add('Ring of kinship (tier 4)', 1).add('Kinship overcharger', 1),
+	outputItems: new Bank().add('Overcharged ring of kinship', 1),
+	requiredSkills: {
+		dungeoneering: 118
+	},
+	customReq: async user => {
+		const floorCounts = await getDungeoneeringFloorCompletions(user);
+		const totalCount = Object.values(floorCounts).reduce((a, b) => a + b, 0);
+		if (totalCount < 500) {
+			return `You need at least 500 Dungeoneering floor completions to create this ring (you have ${totalCount}).`;
+		}
+		const spreadCheck = checkKinshipFloorSpread(floorCounts, { minCompletions: 40, maxFloor: 10 });
+		if (!spreadCheck.hasSpread) {
+			const missingStr = spreadCheck.missing.map(m => `Floor ${m.floor}: ${m.current}/${m.required}`).join(', ');
+			return `You need at least 40 completions on Floors 1-10 to upgrade this ring. Incomplete: ${missingStr}.`;
+		}
+		return null;
+	}
+});

@@ -66,13 +66,17 @@ export function calculateMiningResult({
 		totalMiningXPToAdd = taintedQty * ore.xp;
 	}
 
-	// Prospector outfit
-	if (
+	const hasProspector =
 		gearBank.gear.skilling.hasEquipped(
 			Object.keys(Mining.prospectorItems).map(i => Number.parseInt(i)),
 			true
-		)
-	) {
+		) ||
+		(gearBank.hasEquippedOrInBank('Ancient wardrobe') &&
+			gearBank.hasEquippedOrInBank(
+				Object.keys(Mining.prospectorItems).map(i => Number.parseInt(i)),
+				'every'
+			));
+	if (hasProspector) {
 		const amountToAdd = Math.floor(totalMiningXPToAdd * (2.5 / 100));
 		totalMiningXPToAdd += amountToAdd;
 		messages.push(`2.5% (${amountToAdd.toLocaleString()}) bonus XP for full prospector outfit.`);
@@ -80,7 +84,7 @@ export function calculateMiningResult({
 
 	// Add clue scrolls
 	if (ore.clueScrollChance) {
-		addSkillingClueToLoot(rng, gearBank.skillsAsLevels.mining, 'mining', quantity, ore.clueScrollChance, loot);
+		addSkillingClueToLoot(rng, gearBank, 'mining', quantity, ore.clueScrollChance, loot);
 	}
 
 	// Roll for pet

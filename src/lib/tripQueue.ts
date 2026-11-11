@@ -408,3 +408,13 @@ export async function removeQueuedTrip(user: MUser, index: number): Promise<Queu
 	await prisma.queuedTrip.delete({ where: { id: target.id } });
 	return target;
 }
+
+export async function resetDailyQueueAllowance(user: MUser | string): Promise<void> {
+	const userId = typeof user === 'string' ? user : user.id;
+	await prisma.user.update({
+		where: { id: userId },
+		data: {
+			queued_trips_daily_count: 0
+		}
+	});
+}

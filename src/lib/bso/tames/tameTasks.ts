@@ -1,3 +1,4 @@
+import { applyClueCodexToLoot } from '@/lib/bso/skills/invention/effects/clueCodexEffect.js';
 import type { MTame } from '@/lib/bso/structures/MTame.js';
 import {
 	type ArbitraryTameActivity,
@@ -157,6 +158,14 @@ async function handleImplingLocator(user: MUser, tame: MTame, duration: number, 
 								).bank
 							: openable.output.roll(qty)
 					);
+				}
+			}
+			if (!keepJars) {
+				const codexRes = applyClueCodexToLoot({ user, loot: actualImplingLoot, rng: cryptoRng });
+				if (codexRes) {
+					await ClientSettings.updateBankSetting('clue_upgrader_loot', codexRes.upgradedClues);
+					await user.statsBankUpdate('clue_upgrader_bank', codexRes.upgradedClues);
+					messages.push(codexRes.message);
 				}
 			}
 			loot.add(actualImplingLoot);
@@ -333,6 +342,13 @@ export async function runTameTask(activity: TameActivity, tame: MTame) {
 					loot.add(thirdAgeJwLoot);
 					messages.push(`You received ${thirdAgeJwLoot} from your 3rd age jibwings.`);
 					await tame.addToStatsBank('third_age_jibwings_loot', thirdAgeJwLoot);
+				}
+
+				const codexRes = applyClueCodexToLoot({ user, loot: openingLoot, rng: cryptoRng });
+				if (codexRes) {
+					await ClientSettings.updateBankSetting('clue_upgrader_loot', codexRes.upgradedClues);
+					await user.statsBankUpdate('clue_upgrader_bank', codexRes.upgradedClues);
+					messages.push(codexRes.message);
 				}
 
 				loot.add(openingLoot);

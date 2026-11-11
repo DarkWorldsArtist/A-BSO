@@ -3,7 +3,7 @@ import type { CustomMonster } from '@/lib/bso/monsters/CustomMonster.js';
 
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
-import { GemTable, HerbDropTable, LootTable, Monsters, UncommonSeedDropTable } from 'oldschooljs';
+import { Bank, GemTable, HerbDropTable, LootTable, Monsters, UncommonSeedDropTable } from 'oldschooljs';
 
 import { BitField } from '@/lib/constants.js';
 
@@ -70,5 +70,17 @@ export const Yeti: CustomMonster = {
 		steepness: 0.99,
 		hardness: 0.4
 	},
+	itemInBankBoosts: [
+		new Bank({
+			"Osmumten's fang": 10,
+			'Dragon hunter lance': 8,
+			'Abyssal tentacle': 5
+		}).toJSON(),
+		new Bank({
+			'Infernal cape': 5,
+			'Fire cape': 4,
+			'Tome of fire': 4
+		}).toJSON()
+	],
 	requiredBitfield: BitField.HasUnlockedYeti
 };

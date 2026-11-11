@@ -26,13 +26,48 @@ export async function moktangCommand(user: MUser, channelId: string, inputQuanti
 
 	const miningLevelBoost = miningLevel - 84;
 	timeToKill.add(true, 0 - miningLevelBoost, 'Mining level');
-	timeToKill.add(user.hasEquipped('Volcanic pickaxe'), -5, 'Volcanic pickaxe');
+
+	if (user.hasEquipped('Volcanic pickaxe')) {
+		timeToKill.add(true, -5, 'Volcanic pickaxe');
+	} else if (user.hasEquipped('Crystal pickaxe')) {
+		timeToKill.add(true, -3, 'Crystal pickaxe');
+	} else if (user.hasEquipped('Dragon pickaxe')) {
+		timeToKill.add(true, -2, 'Dragon pickaxe');
+	}
+
 	timeToKill.add(
 		user.hasEquipped('Offhand volcanic pickaxe') && user.skillLevel('strength') >= 100,
 		-3,
 		'Offhand volcanic pickaxe'
 	);
-	timeToKill.add(user.hasEquipped('Mining master cape'), -5, 'Mining mastery');
+
+	if (user.hasEquipped('Mining master cape')) {
+		timeToKill.add(true, -5, 'Mining mastery');
+	} else if (user.hasEquipped(['Mining cape', 'Mining cape(t)'])) {
+		timeToKill.add(true, -2, 'Mining cape');
+	}
+
+	const hasVarrock4 = user.hasEquipped('Varrock armour 4');
+	const hasProspector =
+		user.hasEquipped(['Prospector helmet', 'Prospector jacket', 'Prospector legs', 'Prospector boots'], true) ||
+		user.hasEquipped(
+			[
+				'Golden prospector helmet',
+				'Golden prospector jacket',
+				'Golden prospector legs',
+				'Golden prospector boots'
+			],
+			true
+		);
+	if (hasVarrock4 || hasProspector) {
+		timeToKill.add(true, -2, hasVarrock4 ? 'Varrock armour 4' : 'Prospector outfit');
+	} else if (user.hasEquipped('Varrock armour 3')) {
+		timeToKill.add(true, -1, 'Varrock armour 3');
+	}
+
+	if (user.hasEquipped(['Celestial ring', 'Celestial signet'])) {
+		timeToKill.add(true, -1, 'Celestial ring');
+	}
 
 	const { upgrades, maintenance, assignment } = readState(user);
 	const conduitBonus = getGlobalBossSpeedBonus(upgrades, maintenance, assignment);

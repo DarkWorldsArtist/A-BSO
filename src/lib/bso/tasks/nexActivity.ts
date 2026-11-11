@@ -1,10 +1,10 @@
 import { nexCL, nexUniqueDrops } from '@/lib/bso/collection-log/main.js';
 import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
-import { NEX_UNIQUE_DROPRATE, NexMonster } from '@/lib/bso/monsters/nex.js';
+import { NexMonster } from '@/lib/bso/monsters/nex.js';
 import { getNexGearStats } from '@/lib/bso/util/getNexGearStats.js';
 
-import { calcWhatPercent, Emoji, noOp } from '@oldschoolgg/toolkit';
-import { Bank, SimpleTable } from 'oldschooljs';
+import { calcWhatPercent, noOp } from '@oldschoolgg/toolkit';
+import { Bank } from 'oldschooljs';
 
 import { trackLoot } from '@/lib/lootTrack.js';
 import announceLoot from '@/lib/minions/functions/announceLoot.js';
@@ -15,6 +15,7 @@ interface NexUser {
 	id: string;
 	chanceOfDeath: number;
 	damageDone: number;
+	dps: number;
 	user: MUser;
 }
 
@@ -27,57 +28,79 @@ export const nexTask: MinionTask = {
 
 		const parsedUsers: NexUser[] = [];
 
-		// For each user in the party, calculate their damage and death chance.
 		for (const id of users) {
 			const user = await mUserFetch(id).catch(noOp);
 			if (!user) continue;
-			const [data] = await getNexGearStats(user, users);
-			parsedUsers.push({ ...data, id: user.id, user });
+			const [gearStats] = await getNexGearStats(user, users);
+			parsedUsers.push({ ...gearStats, id: user.id, user });
 		}
 
-		// Store total amount of deaths
+		const totalPartyDps = parsedUsers.reduce((sum, u) => sum + u.dps, 0);
+		for (const u of parsedUsers) {
+			u.damageDone = Math.max(1, Math.round(6000 * (u.dps / totalPartyDps)));
+			if (totalPartyDps < users.length * 80) {
+				const dpsRatio = Math.max(0.5, totalPartyDps / (users.length * 100));
+				if (dpsRatio < 1) {
+					u.chanceOfDeath = Math.min(95, Math.round(u.chanceOfDeath / dpsRatio));
+				}
+			}
+		}
+
 		const deaths: Record<string, number> = {};
 
 		for (let i = 0; i < quantity; i++) {
-			const teamTable = new SimpleTable<string>();
-
-			// Track deaths per kill so you don't stay dead the entire trip.
 			const deathsThisKill: Record<string, number> = {};
 
 			let teamFailed = false;
-			for (const user of parsedUsers.sort((a, b) => b.chanceOfDeath - a.chanceOfDeath)) {
+			for (const user of [...parsedUsers].sort((a, b) => b.chanceOfDeath - a.chanceOfDeath)) {
 				const currentDeaths = Object.keys(deathsThisKill).length;
-				if (calcWhatPercent(currentDeaths, users.length) >= 50) {
-					// If over 50% of the team died, the entire team dies.
+				if (calcWhatPercent(currentDeaths, users.length) > 75) {
 					teamFailed = true;
 				}
 
 				if (teamFailed || rng.percentChance(user.chanceOfDeath)) {
-					deaths[user.id] = deaths[user.id] ? deaths[user.id] + 1 : 1;
-					// Mark user as dead this kill:
+					deaths[user.id] = (deaths[user.id] ?? 0) + 1;
 					deathsThisKill[user.id] = 1;
-				} else {
-					// weight on damagedone
-					teamTable.add(user.id, user.damageDone);
 				}
 			}
 
-			const loot = new Bank();
-			loot.add(NexMonster.table.kill(1, {}));
-			if (rng.roll(NEX_UNIQUE_DROPRATE(users.length))) {
-				loot.add(rng.pick(nexUniqueDrops), 1);
-			}
-			if (isDoubleLootActive(duration)) {
-				loot.multiply(2);
-			}
-			const winner = teamTable.roll();
-			if (!winner) continue;
-			teamsLoot.add(winner, loot);
+			if (teamFailed) continue;
 
-			kcAmounts[winner] = kcAmounts[winner] ? ++kcAmounts[winner] : 1;
+			const survivors = parsedUsers.filter(u => !deathsThisKill[u.id]);
+			if (survivors.length === 0) continue;
+
+			let mvpUser = survivors[0];
+			for (const s of survivors) {
+				if (s.damageDone > mvpUser.damageDone) {
+					mvpUser = s;
+				}
+			}
+
+			for (const survivor of survivors) {
+				kcAmounts[survivor.id] = (kcAmounts[survivor.id] ?? 0) + 1;
+
+				const userLoot = new Bank();
+				const regularLoot = NexMonster.table.kill(1, {});
+				for (const [item, qty] of regularLoot.items()) {
+					const finalQty = survivor.id === mvpUser.id ? Math.max(1, Math.round(qty * 1.1)) : qty;
+					userLoot.add(item.id, finalQty);
+				}
+
+				const rollChance = Math.max(1, Math.round(80 * (6000 / survivor.damageDone)));
+				if (rng.roll(rollChance)) {
+					userLoot.add(rng.pick(nexUniqueDrops), 1);
+				}
+
+				if (isDoubleLootActive(duration)) {
+					userLoot.multiply(2);
+				}
+
+				teamsLoot.add(survivor.id, userLoot);
+			}
 		}
 
-		const leaderUser = parsedUsers.find(p => p.id === userID)?.user ?? parsedUsers[0].user;
+		const leaderUser =
+			parsedUsers.find(p => p.id === userID)?.user ?? parsedUsers[0]?.user ?? (await mUserFetch(userID));
 		let resultStr = `${leaderUser}, your party finished killing ${quantity}x ${NexMonster.name}!\n\n`;
 		const totalLoot = new Bank();
 
@@ -85,14 +108,15 @@ export const nexTask: MinionTask = {
 		let soloPrevCl = new Bank();
 		let soloItemsAdded: Bank = new Bank();
 
-		for (const [userID, loot] of teamsLoot.entries()) {
-			const { user } = parsedUsers.find(p => p.id === userID)!;
-			if (!user) continue;
+		for (const [lootRecipientId, loot] of teamsLoot.entries()) {
+			const parsedUser = parsedUsers.find(p => p.id === lootRecipientId);
+			if (!parsedUser) continue;
+			const { user } = parsedUser;
 			let xpStr = '';
 			if (kcAmounts[user.id]) {
 				xpStr = await user.addMonsterXP({
 					monsterID: NexMonster.id,
-					quantity: Math.ceil(quantity / users.length),
+					quantity: kcAmounts[user.id],
 					duration,
 					isOnTask: false,
 					taskQuantity: null
@@ -111,7 +135,7 @@ export const nexTask: MinionTask = {
 			if (kcToAdd) await user.incrementKC(NexMonster.id, kcToAdd);
 			const purple = loot.itemIDs.some(id => nexCL.includes(id));
 
-			resultStr += `${purple ? Emoji.Purple : ''} **${user} received:** ||${new Bank(loot)}||\n`;
+			resultStr += `${purple ? '**[UNIQUE]** ' : ''}**${user} received:** ||${new Bank(loot)}||\n`;
 
 			announceLoot({
 				user: leaderUser,
@@ -144,12 +168,13 @@ export const nexTask: MinionTask = {
 		// Show deaths in the result
 		const deathEntries = Object.entries(deaths);
 		if (deathEntries.length > 0) {
-			const deaths = [];
+			const deathStrs = [];
 			for (const [id, qty] of deathEntries) {
-				const { user } = parsedUsers.find(p => p.id === id)!;
-				deaths.push(`**${user.usernameOrMention}**: ${qty}x`);
+				const parsed = parsedUsers.find(p => p.id === id);
+				if (!parsed) continue;
+				deathStrs.push(`**${parsed.user.usernameOrMention}**: ${qty}x`);
 			}
-			resultStr += `\n**Deaths**: ${deaths.join(', ')}.`;
+			resultStr += `\n**Deaths**: ${deathStrs.join(', ')}.`;
 		}
 
 		if (users.length > 1) {

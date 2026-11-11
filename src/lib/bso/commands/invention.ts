@@ -181,12 +181,16 @@ export const inventionCommand = defineCommand({
 		if (options.details) {
 			const invention = Inventions.find(i => stringMatches(i.name, options.details!.invention!));
 			if (!invention) return 'No invention found.';
+			const hasOngoingCost = invention.usageCostMultiplier !== null && invention.usageCostMultiplier > 0;
+			const ongoingCostStr = hasOngoingCost
+				? invention.materialTypeBank
+						.values()
+						.map(i => `${i.type} (${i.quantity})`)
+						.join(', ')
+				: 'None';
 			let str = `**${invention.name}** - *${invention.description}*
 - Requires level ${invention.inventionLevelNeeded} Invention
-- The materials used for this invention: ${invention.materialTypeBank
-				.values()
-				.map(i => `${i.type} (${i.quantity})`)
-				.join(', ')}
+- Ongoing material cost: ${ongoingCostStr}
 - Required cost to make: ${inventingCost(invention)} and ${invention.itemCost ? `${invention.itemCost}` : 'No items'}
 - ${invention.flags.includes('equipped') ? 'Must be equipped' : 'Works in bank'}`;
 			if (invention.extraDescription) str += `\n${invention.extraDescription()}`;

@@ -30,6 +30,8 @@ addInvention(63_322, 'Mecha rod');
 addInvention(63_324, 'Master hammer and chisel');
 addInvention(63_325, 'Abyssal amulet', 'Amulet of fury');
 addInvention(63_326, 'RoboFlappy');
+addInvention(63_328, 'Ancient wardrobe');
+addInvention(63_330, 'Clue codex', 'Book of knowledge');
 addInvention(73_039, 'Wisp-buster', 'Bronze dagger');
 addInvention(73_042, 'Divine hand', 'Bronze dagger');
 addInvention(73_055, 'Drygore axe', 'Bronze dagger');

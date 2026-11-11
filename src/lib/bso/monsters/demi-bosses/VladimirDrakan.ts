@@ -72,7 +72,15 @@ export const VladimirDrakan: CustomMonster = {
 	},
 	itemInBankBoosts: [
 		new Bank({
-			'Axe of the high sungod': 10
+			'Axe of the high sungod': 10,
+			'Twisted bow': 10,
+			'Blisterwood flail': 10,
+			'Ivandis flail': 8,
+			'Bow of faerdhinen (c)': 8,
+			'Toxic blowpipe': 6
+		}).toJSON(),
+		new Bank({
+			"Ava's assembler": 3
 		}).toJSON()
 	],
 	itemCost: {

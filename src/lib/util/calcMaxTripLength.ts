@@ -65,6 +65,20 @@ export async function calcMaxTripLength(user: MUser, activity?: activity_type_en
 		case 'Dungeoneering': {
 			masterHPCapeBoost = 10;
 			regularHPBoost = true;
+			if (
+				user.hasEquippedOrInBank(
+					[
+						'Ring of kinship (tier 1)',
+						'Ring of kinship (tier 2)',
+						'Ring of kinship (tier 3)',
+						'Ring of kinship (tier 4)',
+						'Overcharged ring of kinship'
+					],
+					'one'
+				)
+			) {
+				max += Time.Minute * 10;
+			}
 			break;
 		}
 		case 'Alching': {

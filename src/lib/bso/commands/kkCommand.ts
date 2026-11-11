@@ -160,6 +160,16 @@ export async function kkCommand(
 			msgs.push(`${perUserPercent}% for Empyrean great armor`);
 		}
 
+		const hasHighTierArmour =
+			meleeGear.hasEquipped(torvaOutfit, false, true) ||
+			meleeGear.hasEquipped(gorajanWarriorOutfit, false, true) ||
+			meleeGear.hasEquipped(empyreanOutfit, false, true);
+		if (!hasHighTierArmour && meleeGear.hasEquipped(['Bandos chestplate', 'Bandos tassets'], true, true)) {
+			const percent = 4;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Bandos armour`);
+		}
+
 		if (data.gearStats.attack_crush < 200) {
 			const percent = 10;
 			effectiveTime = increaseNumByPercent(effectiveTime, percent);
@@ -176,6 +186,22 @@ export async function kkCommand(
 			const percent = 14;
 			effectiveTime = reduceNumByPercent(effectiveTime, percent);
 			msgs.push(`${percent}% boost for Drygore mace`);
+		} else if (meleeGear.hasEquipped('Keris partisan of breaching', true, true)) {
+			const percent = 10;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Keris partisan of breaching`);
+		} else if (meleeGear.hasEquipped("Inquisitor's mace", true, true)) {
+			const percent = 8;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Inquisitor's mace`);
+		} else if (meleeGear.hasEquipped('Elder maul', true, true)) {
+			const percent = 6;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Elder maul`);
+		} else if (meleeGear.hasEquipped('Keris partisan', true, true)) {
+			const percent = 5;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Keris partisan`);
 		}
 
 		if (meleeGear.hasEquipped('Offhand drygore mace', true, true)) {
@@ -188,12 +214,28 @@ export async function kkCommand(
 			const percent = 4;
 			effectiveTime = reduceNumByPercent(effectiveTime, percent);
 			msgs.push(`${percent}% boost for TzKal cape`);
+		} else if (meleeGear.hasEquipped('Infernal cape', true, true)) {
+			const percent = 2;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Infernal cape`);
+		} else if (meleeGear.hasEquipped('Fire cape', true, true)) {
+			const percent = 1;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Fire cape`);
 		}
 
 		if (user.owns('Axe of the high sungod')) {
 			const percent = 10;
 			effectiveTime = reduceNumByPercent(effectiveTime, percent);
 			msgs.push(`${percent}% boost for Axe of the high sungod`);
+		} else if (meleeGear.hasEquipped('Dragon warhammer', true, true)) {
+			const percent = 5;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Dragon warhammer`);
+		} else if (meleeGear.hasEquipped('Bandos godsword', true, true)) {
+			const percent = 4;
+			effectiveTime = reduceNumByPercent(effectiveTime, percent);
+			msgs.push(`${percent}% boost for Bandos godsword`);
 		}
 
 		// Increase duration for lower melee-strength gear.

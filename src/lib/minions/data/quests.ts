@@ -458,6 +458,28 @@ export const quests: Quest[] = [
 		}
 	},
 	{
+		id: QuestID.AKingdomDivided,
+		qp: 2,
+		name: 'A Kingdom Divided',
+		skillReqs: {
+			agility: 54,
+			thieving: 52,
+			woodcutting: 52,
+			herblore: 50,
+			mining: 42,
+			crafting: 38,
+			magic: 35
+		},
+		rewards: new Bank().add('Book of the dead').freeze(),
+		calcTime: (user: MUser) => {
+			let duration = Time.Minute * 45;
+			if (user.skillsAsLevels.magic >= 70) {
+				duration -= Time.Minute * 5;
+			}
+			return duration;
+		}
+	},
+	{
 		id: QuestID.TheIdesOfMilk,
 		qp: 1,
 		name: 'The Ides of Milk',

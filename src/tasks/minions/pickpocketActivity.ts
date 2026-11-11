@@ -1,5 +1,6 @@
 import { MIN_LENGTH_FOR_PET } from '@/lib/bso/bsoConstants.js';
 import { chargePortentIfHasCharges, PortentID } from '@/lib/bso/skills/divination.js';
+import { clueCodexEffect } from '@/lib/bso/skills/invention/effects/clueCodexEffect.js';
 import { clueUpgraderEffect } from '@/lib/bso/skills/invention/effects/clueUpgraderEffect.js';
 import { forcefullyUnequipItem } from '@/lib/bso/util/forcefullyUnequipItem.js';
 
@@ -155,6 +156,12 @@ export const pickpocketTask: MinionTask = {
 			updateBank,
 			type: 'pickpocketing',
 			bitfield: user.bitfield
+		});
+		clueCodexEffect({
+			gearBank: user.gearBank,
+			messages: boosts,
+			disabledInventions: user.user.disabled_inventions,
+			updateBank
 		});
 
 		let gotWil = false;

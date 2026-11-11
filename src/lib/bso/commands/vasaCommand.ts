@@ -32,15 +32,27 @@ export async function vasaCommand(interaction: MInteraction, user: MUser, channe
 		},
 		itemBoosts: [
 			['Virtus wand', 10],
+			["Tumeken's shadow", 10],
+			['Sanguinesti staff', 6],
+			['Harmonised nightmare staff', 6],
+			['Trident of the swamp', 4],
 			['Virtus book', 5],
+			["Elidinis' ward (f)", 3],
+			['Arcane spirit shield', 3],
 			['Gorajan occult helmet', 2],
 			['Gorajan occult top', 3],
 			['Gorajan occult legs', 2],
 			['Gorajan occult gloves', 1],
 			['Gorajan occult boots', 1],
+			['Ancestral hat', 1],
+			['Ancestral robe top', 2],
+			['Ancestral robe bottom', 2],
 			['Arcane blast necklace', 3],
-			['Vasa cloak', 7]
+			['Occult necklace', 2],
+			['Vasa cloak', 7],
+			['Imbued guthix cape', 3]
 		],
+		boostMax: 34,
 		customDenier: async () => {
 			return [false];
 		},

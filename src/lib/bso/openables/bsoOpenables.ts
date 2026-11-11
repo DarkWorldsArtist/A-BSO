@@ -5,6 +5,7 @@ import {
 	MysteryImpling,
 	ShrimplingImpling
 } from '@/lib/bso/customImplings.js';
+import { daemonheimCacheOpenable } from '@/lib/bso/openables/daemonheimCache.js';
 import { holidayOpenables } from '@/lib/bso/openables/holidayOpenables.js';
 import { mysteryBoxOpenables } from '@/lib/bso/openables/mysteryBoxes.js';
 import {
@@ -39,6 +40,7 @@ const VenatrixEggTable = new LootTable().tertiary(1000, 'Baby venatrix');
 export const bsoOpenables: UnifiedOpenable[] = [
 	...mysteryBoxOpenables,
 	...holidayOpenables,
+	daemonheimCacheOpenable,
 	{
 		name: 'Tester Gift box',
 		id: itemID('Tester gift box'),

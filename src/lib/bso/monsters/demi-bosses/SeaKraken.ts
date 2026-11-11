@@ -3,7 +3,7 @@ import type { CustomMonster } from '@/lib/bso/monsters/CustomMonster.js';
 
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
-import { LootTable, Monsters, resolveItems } from 'oldschooljs';
+import { Bank, LootTable, Monsters, resolveItems } from 'oldschooljs';
 
 const FishTable = new LootTable()
 	.add('Raw sea turtle', [1, 10])
@@ -68,5 +68,17 @@ export const SeaKraken: CustomMonster = {
 			'Ancient rejuvenation pool': 10
 		}
 	},
+	itemInBankBoosts: [
+		new Bank({
+			'Twisted bow': 12,
+			'Bow of faerdhinen (c)': 10,
+			'Toxic blowpipe': 8,
+			'Armadyl crossbow': 6
+		}).toJSON(),
+		new Bank({
+			'Fish sack': 5,
+			'Angler top': 3
+		}).toJSON()
+	],
 	baseMonster: Monsters.CommanderZilyana
 };

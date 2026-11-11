@@ -69,7 +69,7 @@ export const toaCreatables: Createable[] = [
 	{
 		name: 'Masori mask (f)',
 		inputItems: new Bank({
-			'Armadylean plate': 1,
+			'Armadylean components': 1,
 			'Masori mask': 1
 		}),
 		outputItems: new Bank({ 'Masori mask (f)': 1 })
@@ -77,7 +77,7 @@ export const toaCreatables: Createable[] = [
 	{
 		name: 'Masori body (f)',
 		inputItems: new Bank({
-			'Armadylean plate': 4,
+			'Armadylean components': 4,
 			'Masori body': 1
 		}),
 		outputItems: new Bank({ 'Masori body (f)': 1 })
@@ -85,34 +85,18 @@ export const toaCreatables: Createable[] = [
 	{
 		name: 'Masori chaps (f)',
 		inputItems: new Bank({
-			'Armadylean plate': 3,
+			'Armadylean components': 3,
 			'Masori chaps': 1
 		}),
 		outputItems: new Bank({ 'Masori chaps (f)': 1 })
 	},
 	{
-		name: 'Revert Armadyl helmet (to plates)',
+		name: 'Armadylean components (from plates)',
 		inputItems: new Bank({
-			'Armadyl helmet': 1
+			'Armadylean plate': 1
 		}),
-		outputItems: new Bank({ 'Armadylean plate': 1 }),
-		forceAddToCl: true
-	},
-	{
-		name: 'Revert Armadyl chestplate',
-		inputItems: new Bank({
-			'Armadyl chestplate': 1
-		}),
-		outputItems: new Bank({ 'Armadylean plate': 4 }),
-		forceAddToCl: true
-	},
-	{
-		name: 'Revert Armadyl chainskirt (to plates)',
-		inputItems: new Bank({
-			'Armadyl chainskirt': 1
-		}),
-		outputItems: new Bank({ 'Armadylean plate': 3 }),
-		forceAddToCl: true
+		outputItems: new Bank({ 'Armadylean components': 1 }),
+		noCl: true
 	},
 	{
 		name: 'Keris partisan of breaching',

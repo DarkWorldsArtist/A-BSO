@@ -112,7 +112,15 @@ export const Treebeard: CustomMonster = {
 	baseMonster: Monsters.Hespori,
 	itemInBankBoosts: [
 		new Bank({
-			'Axe of the high sungod': 10
+			'Axe of the high sungod': 10,
+			"Tumeken's shadow": 10,
+			'Harmonised nightmare staff': 10,
+			'Sanguinesti staff': 7,
+			'Trident of the swamp': 5
+		}).toJSON(),
+		new Bank({
+			'Tome of fire': 5,
+			'Lumberjack top': 3
 		}).toJSON()
 	],
 	notifyDrops: resolveItems([

@@ -1,5 +1,6 @@
 import { execSync } from 'node:child_process';
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { PGlite } from '@electric-sql/pglite';
 import { rewriteSqlToIdempotent } from '@oldschoolgg/toolkit';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -37,6 +38,98 @@ async function syncMissingPgLiteColumns(pgLiteClient: PGlite, createDbSQL: strin
 	}
 }
 
+function recoverPgLiteWal(dataDir: string) {
+	const ctrlPath = path.join(dataDir, 'global', 'pg_control');
+	if (!existsSync(ctrlPath)) return;
+	const ctrlBuf = readFileSync(ctrlPath);
+	const sysId = ctrlBuf.readBigUInt64LE(0);
+	const checkPointCopy = Buffer.from(ctrlBuf.subarray(40, 128));
+
+	const table = new Uint32Array(256);
+	for (let i = 0; i < 256; i++) {
+		let c = i;
+		for (let j = 0; j < 8; j++) c = c & 1 ? 0x82f63b78 ^ (c >>> 1) : c >>> 1;
+		table[i] = c;
+	}
+	function crc32c(b: Buffer, start: number, len: number, init = 0xffffffff) {
+		let crc = init;
+		for (let i = start; i < start + len; i++) {
+			crc = table[(crc ^ b[i]) & 0xff] ^ (crc >>> 8);
+		}
+		return crc;
+	}
+
+	const walDir = path.join(dataDir, 'pg_wal');
+	let maxSeg = 0x90n;
+	if (existsSync(walDir)) {
+		for (const f of readdirSync(walDir)) {
+			if (f.match(/^[0-9A-F]{24}$/i)) {
+				const seg = BigInt(`0x${f.slice(16)}`);
+				if (seg > maxSeg) maxSeg = seg;
+			}
+		}
+	}
+	const newSegNo = maxSeg + 1n;
+	const segSize = 0x100000n;
+	const segStartLSN = newSegNo * segSize;
+	const redoLSN = segStartLSN + 0x28n;
+
+	checkPointCopy.writeBigUInt64LE(redoLSN, 0);
+	checkPointCopy.writeUInt32LE(1, 8);
+	checkPointCopy.writeUInt32LE(1, 12);
+
+	const walBuf = Buffer.alloc(Number(segSize));
+	walBuf.writeUInt16LE(0xd116, 0);
+	walBuf.writeUInt16LE(0x0002, 2);
+	walBuf.writeUInt32LE(1, 4);
+	walBuf.writeBigUInt64LE(segStartLSN, 8);
+	walBuf.writeUInt32LE(0, 16);
+	walBuf.writeUInt32LE(0, 20);
+	walBuf.writeBigUInt64LE(sysId, 24);
+	walBuf.writeUInt32LE(Number(segSize), 32);
+	walBuf.writeUInt32LE(8192, 36);
+
+	const recOff = 40;
+	walBuf.writeUInt32LE(114, recOff + 0);
+	walBuf.writeUInt32LE(0, recOff + 4);
+	walBuf.writeBigUInt64LE(0n, recOff + 8);
+	walBuf.writeUInt8(0, recOff + 16);
+	walBuf.writeUInt8(0, recOff + 17);
+	walBuf.writeUInt16LE(0, recOff + 18);
+	walBuf.writeUInt8(0xff, recOff + 24);
+	walBuf.writeUInt8(0x58, recOff + 25);
+	checkPointCopy.copy(walBuf, recOff + 26, 0, 88);
+
+	const c1 = crc32c(walBuf, recOff + 24, 114 - 24);
+	const c2 = crc32c(walBuf, recOff, 20, c1);
+	const recCrc = (c2 ^ 0xffffffff) >>> 0;
+	walBuf.writeUInt32LE(recCrc, recOff + 20);
+
+	if (existsSync(walDir)) {
+		for (const f of readdirSync(walDir)) {
+			if (f.match(/^[0-9A-F]{24}$/i)) {
+				try {
+					unlinkSync(path.join(walDir, f));
+				} catch {}
+			}
+		}
+	}
+	const walFileName = `0000000100000000000000${newSegNo.toString(16).toUpperCase()}`;
+	writeFileSync(path.join(walDir, walFileName), walBuf);
+
+	ctrlBuf.writeUInt32LE(1, 16);
+	ctrlBuf.writeBigUInt64LE(redoLSN, 32);
+	checkPointCopy.copy(ctrlBuf, 40, 0, 88);
+	ctrlBuf.writeBigUInt64LE(0n, 112);
+	ctrlBuf.writeBigUInt64LE(0n, 120);
+	ctrlBuf.writeBigUInt64LE(0n, 136);
+	ctrlBuf.writeUInt32LE(0, 144);
+
+	const ctrlCrc = (crc32c(ctrlBuf, 0, 288) ^ 0xffffffff) >>> 0;
+	ctrlBuf.writeUInt32LE(ctrlCrc, 288);
+	writeFileSync(ctrlPath, ctrlBuf);
+}
+
 async function getAdapter(
 	type: typeof BOT_TYPE | 'robochimp'
 ): Promise<{ adapter: PrismaPg; pgLiteClient: PGlite | null }> {
@@ -63,7 +156,24 @@ async function getAdapter(
 		mkdirSync('./.db');
 	}
 	const dataDir = `./.db/${type.toLowerCase()}${process.env.TEST ? '-test' : ''}`;
-	const pgLiteClient = new PGlite({ dataDir });
+	for (const f of ['postmaster.pid', '.s.PGSQL.5432.lock.out']) {
+		const lockPath = path.join(dataDir, f);
+		if (existsSync(lockPath)) {
+			try {
+				unlinkSync(lockPath);
+			} catch {}
+		}
+	}
+	let pgLiteClient: PGlite;
+	try {
+		pgLiteClient = new PGlite({ dataDir });
+		await pgLiteClient.query('SELECT 1;');
+	} catch (err: any) {
+		Logging.logError(err);
+		Logging.logDebug(`Attempting WAL recovery for PGlite ${type} database...`);
+		recoverPgLiteWal(dataDir);
+		pgLiteClient = new PGlite({ dataDir });
+	}
 	const originalPgLiteQuery = pgLiteClient.query.bind(pgLiteClient);
 	pgLiteClient.query = ((...args: Parameters<typeof pgLiteClient.query>) => {
 		const [sql, params, options] = args;
@@ -88,6 +198,17 @@ async function getAdapter(
 	);
 	await pgLiteClient.exec(rewriteSqlToIdempotent(createDbSQL));
 	await syncMissingPgLiteColumns(pgLiteClient, createDbSQL);
+	if (type !== 'robochimp') {
+		const functionsPath = path.join(process.cwd(), './prisma/sql/functions.sql');
+		if (existsSync(functionsPath)) {
+			try {
+				const functionsSQL = readFileSync(functionsPath, 'utf8');
+				await pgLiteClient.exec(functionsSQL);
+			} catch (err: any) {
+				Logging.logError(err);
+			}
+		}
+	}
 	const adapter = new PrismaPGlite(pgLiteClient) as any as PrismaPg;
 	return { adapter, pgLiteClient };
 }

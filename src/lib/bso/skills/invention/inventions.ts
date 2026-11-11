@@ -34,7 +34,9 @@ export enum InventionID {
 	DivineHand = 18,
 	DrygoreAxe = 19,
 	MoonlightMutator = 20,
-	Webshooter = 21
+	Webshooter = 21,
+	AncientWardrobe = 22,
+	ClueCodex = 23
 }
 
 export type Invention = Readonly<{
@@ -481,6 +483,45 @@ export const Inventions: readonly Invention[] = [
 		flags: ['bank'],
 		inventionLevelNeeded: 100,
 		usageCostMultiplier: 0.4
+	},
+	{
+		id: InventionID.AncientWardrobe,
+		name: 'Ancient wardrobe',
+		description: 'Allows all skilling outfit effects to work passively from the bank without equipping.',
+		item: Items.getOrThrow('Ancient wardrobe'),
+		materialTypeBank: new MaterialBank({
+			wooden: 10,
+			magic: 5,
+			mysterious: 3,
+			precious: 5
+		}),
+		itemCost: new Bank().add('Ancient emblem', 1).add('Mahogany plank', 50).add('Magic stone', 5),
+		flags: ['bank'],
+		inventionLevelNeeded: 105,
+		usageCostMultiplier: null
+	},
+	{
+		id: InventionID.ClueCodex,
+		name: 'Clue codex',
+		description:
+			'Passively upgrades clue scrolls from anywhere to the next tier up (Beginner: 40%, Easy: 35%, Medium: 30%, Hard: 25%, Elite: 20%, Master: 10% into GM).',
+		item: Items.getOrThrow('Clue codex'),
+		materialTypeBank: new MaterialBank(),
+		itemCost: null,
+		flags: ['bank'],
+		inventionLevelNeeded: 120,
+		usageCostMultiplier: null,
+		extraDescription: () => {
+			let str = 'Obtained by upgrading the Clue upgrader in the Dungeoneering shop (/dg buy item: Clue codex).\n';
+			str += '**Upgrade chances (works anywhere, no material cost):**\n';
+			str += '- **Beginner:** 40% chance to upgrade into Easy\n';
+			str += '- **Easy:** 35% chance to upgrade into Medium\n';
+			str += '- **Medium:** 30% chance to upgrade into Hard\n';
+			str += '- **Hard:** 25% chance to upgrade into Elite\n';
+			str += '- **Elite:** 20% chance to upgrade into Master\n';
+			str += '- **Master:** 10% chance to upgrade into Grandmaster';
+			return str;
+		}
 	}
 ] as const;
 
@@ -577,6 +618,9 @@ export async function inventCommand(user: MUser, inventionName: string): Command
 	if (await user.minionIsBusy()) return 'Your minion is busy.';
 	const invention = Inventions.find(i => stringMatches(i.name, inventionName));
 	if (!invention) return "That's not a valid invention.";
+	if (invention.id === InventionID.ClueCodex) {
+		return 'The Clue codex cannot be invented. It is purchased as an upgrade to the Clue upgrader from the Dungeoneering shop (/dg buy item: Clue codex).';
+	}
 	if (!user.user.unlocked_blueprints.includes(invention.id)) {
 		return `You don't have the blueprint for this Invention unlocked, your minion doesn't know how to make it! To unlock the blueprint, you can do research with one of these materials: ${invention.materialTypeBank
 			.values()

@@ -69,10 +69,17 @@ export const SuperiorTormentedDemon: CustomMonster = {
 	hp: 657,
 	itemInBankBoosts: [
 		new Bank({
-			'TzKal cape': 5
+			Emberlight: 15,
+			Arclight: 15,
+			'Axe of the high sungod': 10,
+			Darklight: 5,
+			'Bandos godsword': 5,
+			'Dragon warhammer': 5
 		}).toJSON(),
 		new Bank({
-			'Axe of the high sungod': 10
+			'TzKal cape': 5,
+			'Infernal cape': 4,
+			'Fire cape': 2
 		}).toJSON()
 	]
 };

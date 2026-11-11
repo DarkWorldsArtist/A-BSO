@@ -7,6 +7,7 @@ import {
 	isDoubleLootActive,
 	isDoubleXPActive
 } from '@/lib/bso/doubleLoot.js';
+import { getUsersFishingContestDetails } from '@/lib/bso/minigames/fishingContest.js';
 import { getGuthixianCacheInterval, userHasDoneCurrentGuthixianCache } from '@/lib/bso/minigames/guthixianCache.js';
 import { allIronmanMbTables, allMbTables } from '@/lib/bso/openables/mysteryBoxes.js';
 
@@ -276,6 +277,16 @@ const mentionCommands: MentionCommand[] = [
 				content += `Guthixian Cache: ${time(currentGuthixCacheInterval.end)}`;
 			} else {
 				content += bold(`Guthixian Cache: Ready ${mentionCommand('bsominigames', 'guthixian_cache', 'join')}`);
+			}
+
+			const fishingDetails = await getUsersFishingContestDetails(user);
+			content += '\n';
+			if (fishingDetails.catchesFromToday.length > 0) {
+				const nextReset = new Date();
+				nextReset.setUTCHours(24, 0, 0, 0);
+				content += `Fishing Contest: ${dateFm(nextReset)}`;
+			} else {
+				content += bold(`Fishing Contest: Ready ${mentionCommand('bsominigames', 'fishing_contest', 'fish')}`);
 			}
 
 			if (isDoubleLootActive()) {

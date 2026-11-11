@@ -1,9 +1,9 @@
+import { gorajanArcherOutfit, pernixOutfit } from '@/lib/bso/collection-log/main.js';
 import { NexMonster } from '@/lib/bso/monsters/nex.js';
 
 import type { GearStats } from '@oldschoolgg/gear';
 import { calcWhatPercent } from '@oldschoolgg/toolkit';
 import { randInt } from 'node-rng';
-import { itemID } from 'oldschooljs';
 
 import { maxOffenceStats } from '@/lib/structures/Gear.js';
 
@@ -15,6 +15,7 @@ export async function getNexGearStats(
 		{
 			chanceOfDeath: number;
 			damageDone: number;
+			dps: number;
 			percentRangeStrength: number;
 			totalGearPercent: number;
 			percentWeaponAttackRanged: number;
@@ -37,33 +38,41 @@ export async function getNexGearStats(
 	const percentWeaponAttackRanged = Math.min(calcWhatPercent(attackRangedStat, 95), 100);
 	const totalGearPercent = Math.min((percentRangeStrength + percentWeaponAttackRanged) / 2, 100);
 
-	let percentChanceOfDeath = Math.floor(100 - (Math.log(kc) / Math.log(Math.sqrt(15))) * 50);
-
-	// If they have 50% best gear, -25% chance of death.
-	percentChanceOfDeath = Math.floor(percentChanceOfDeath - totalGearPercent / 2);
-
-	// Chance of death cannot be over 90% or <2%.
-	percentChanceOfDeath = Math.max(Math.min(percentChanceOfDeath, 100), 5);
-
-	// Damage done starts off as being HP divided by user size.
-	let damageDone = 6000 / team.length;
-
-	// Half it, to use a low damage amount as the base.
-	damageDone /= 1.5;
-
-	// If they have the BIS weapon, their damage is doubled.
-	// e.g. 75% of of the best = 1.5x damage done.
-	damageDone *= percentWeaponAttackRanged / 80;
-
-	if (weapon?.id === itemID('Twisted bow')) {
-		damageDone *= 1.1;
-	}
-
-	// Heavily punish them for having a weaker crush weapon than a zammy hasta.
+	let dps = 100 * (totalGearPercent / 100);
 	if (attackRangedStat < 69) {
-		damageDone /= 1.5;
+		dps /= 1.5;
 	}
+	if (gear.hasEquipped('Zaryte bow', true, true)) {
+		dps *= 1.2;
+	} else if (gear.hasEquipped('Twisted bow', true, true)) {
+		dps *= 1.15;
+	}
+	if (gear.hasEquipped(pernixOutfit, true, true)) {
+		dps *= 1.2;
+	} else {
+		for (const inqItem of pernixOutfit) {
+			if (gear.hasEquipped([inqItem], true, true)) {
+				dps *= 1.024;
+			}
+		}
+	}
+	if (gear.hasEquipped(gorajanArcherOutfit, true, true)) {
+		dps *= 1.15;
+	}
+	if (kc > 500) {
+		dps *= 1.15;
+	} else if (kc > 300) {
+		dps *= 1.13;
+	} else if (kc > 200) {
+		dps *= 1.1;
+	} else if (kc > 100) {
+		dps *= 1.07;
+	} else if (kc > 50) {
+		dps *= 1.05;
+	}
+	dps = Math.max(10, dps);
 
+	let percentChanceOfDeath = 5;
 	if (kc < 2) {
 		percentChanceOfDeath = randInt(50, 70);
 	} else if (kc < 5) {
@@ -76,16 +85,23 @@ export async function getNexGearStats(
 		percentChanceOfDeath = randInt(1, 4);
 	}
 
-	const debugString = `\n**${user.usernameOrMention}:** DamageDone[${Math.floor(
-		damageDone
-	)}HP] DeathChance[${Math.floor(percentChanceOfDeath)}%] WeaponStrength[${Math.floor(
-		percentWeaponAttackRanged
-	)}%] GearStrength[${Math.floor(percentRangeStrength)}%] TotalGear[${totalGearPercent}%]\n`;
+	if (totalGearPercent > 80) {
+		percentChanceOfDeath = Math.max(1, percentChanceOfDeath - 2);
+	}
+
+	const damageDone = Math.round(6000 / team.length);
+
+	const debugString = `\n**${user.usernameOrMention}:** DPS[${Math.floor(dps)}] DeathChance[${Math.floor(
+		percentChanceOfDeath
+	)}%] WeaponStrength[${Math.floor(percentWeaponAttackRanged)}%] GearStrength[${Math.floor(
+		percentRangeStrength
+	)}%] TotalGear[${totalGearPercent}%]\n`;
 
 	return [
 		{
 			chanceOfDeath: percentChanceOfDeath,
 			damageDone,
+			dps,
 			percentRangeStrength,
 			totalGearPercent,
 			percentWeaponAttackRanged,

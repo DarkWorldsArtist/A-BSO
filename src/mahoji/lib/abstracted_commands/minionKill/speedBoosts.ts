@@ -522,7 +522,7 @@ export const mainBoostEffects: (Boost | Boost[])[] = [
 		run: ({ isInWilderness, gearBank, monster, attackStyles, bitfield }) => {
 			const results: BoostResult[] = [];
 			if (
-				gearBank.hasEquipped('Gregoyle') &&
+				gearBank.usingPet('Gregoyle') &&
 				[Monsters.Gargoyle.id, Monsters.GrotesqueGuardians.id].includes(monster.id)
 			) {
 				results.push({

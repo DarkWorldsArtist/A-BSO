@@ -1,3 +1,5 @@
+import { BSOItem } from '@/lib/bso/BSOItem.js';
+
 import { setCustomItem } from '@/lib/customItems/util.js';
 
 setCustomItem(
@@ -668,6 +670,21 @@ setCustomItem(
 		customItemData: {
 			cantDropFromMysteryBoxes: true,
 			isSuperUntradeable: true
+		}
+	},
+	1_000_000
+);
+
+setCustomItem(
+	BSOItem.ALYRA,
+	'Alyra',
+	'Herbi',
+	{
+		tradeable_on_ge: true,
+		tradeable: true,
+		customItemData: {
+			cantDropFromMysteryBoxes: true,
+			isPet: true
 		}
 	},
 	1_000_000

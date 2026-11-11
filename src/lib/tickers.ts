@@ -306,8 +306,37 @@ LIMIT 10;`);
 		startupWait: Time.Minute * 20,
 		interval: Time.Hour * 13.55,
 		cb: async () => {
-			await prisma.$executeRaw`INSERT INTO economy_item_banks (bank)
+			try {
+				await prisma.$executeRaw`INSERT INTO economy_item_banks (bank)
 VALUES (get_economy_bank());`;
+			} catch (err: any) {
+				if (
+					err?.message?.includes('get_economy_bank') ||
+					err?.meta?.driverAdapterError?.message?.includes('get_economy_bank')
+				) {
+					await prisma.$executeRawUnsafe(`CREATE OR REPLACE FUNCTION get_economy_bank()
+RETURNS jsonb AS
+$$
+BEGIN
+  RETURN COALESCE(
+    (
+      SELECT json_object_agg(item_id, qty)::jsonb
+      FROM (
+        SELECT key::int AS item_id, SUM(value::bigint) AS qty
+        FROM users, json_each_text(bank)
+        GROUP BY key::int
+      ) AS sums
+    ),
+    '{}'::jsonb
+  );
+END;
+$$ LANGUAGE plpgsql PARALLEL SAFE;`);
+					await prisma.$executeRaw`INSERT INTO economy_item_banks (bank)
+VALUES (get_economy_bank());`;
+					return;
+				}
+				throw err;
+			}
 		}
 	},
 	{

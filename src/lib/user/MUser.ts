@@ -790,6 +790,22 @@ Charge your items using ${globalClient.mentionCommand('minion', 'charge')}.`
 	}
 
 	hasGracefulEquipped(): boolean {
+		if (
+			this.owns('Ancient wardrobe') &&
+			this.hasEquippedOrInBank(
+				[
+					'Graceful hood',
+					'Graceful top',
+					'Graceful legs',
+					'Graceful boots',
+					'Graceful gloves',
+					'Graceful cape'
+				],
+				'every'
+			)
+		) {
+			return true;
+		}
 		for (const gear of Object.values(this.gear)) {
 			if (
 				gear.hasEquipped('Agility master cape') ||

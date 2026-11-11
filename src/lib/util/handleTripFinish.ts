@@ -1,5 +1,6 @@
 import { ASSIGNMENT_TRIP_COSTS, ASSIGNMENT_TRIP_ITEM, getActiveAssignment } from '@/lib/bso/commands/islandUpgrades.js';
 import { tearsOfGuthixIronmanReqs, tearsOfGuthixSkillReqs } from '@/lib/bso/commands/tearsOfGuthixCommand.js';
+import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
 import { gods } from '@/lib/bso/minigames/divineDominion.js';
 import { mysteriousStepData } from '@/lib/bso/mysteryTrail.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
@@ -115,6 +116,54 @@ const tripFinishEffects: TripFinishEffect[] = [
 		name: 'Growable Pets',
 		fn: async args => {
 			await handleGrowablePetGrowth(args);
+		}
+	},
+	{
+		name: 'Skilling Double Loot',
+		fn: async ({ data, loot, messages, user }) => {
+			if (!loot || loot.length === 0) return;
+			if (!isDoubleLootActive(data.duration)) return;
+			const skillingActivities: activity_type_enum[] = [
+				'Mining',
+				'Woodcutting',
+				'Fishing',
+				'Hunter',
+				'Smithing',
+				'Smelting',
+				'Crafting',
+				'Fletching',
+				'Runecraft',
+				'TiaraRunecraft',
+				'Cooking',
+				'Pickpocket',
+				'Herblore',
+				'Birdhouse',
+				'ArchaicMining',
+				'AncientMycology',
+				'MotherlodeMining',
+				'VolcanicMine',
+				'CamdozaalMining',
+				'CamdozaalFishing',
+				'CamdozaalSmithing',
+				'Sawmill',
+				'UnderwaterAgilityThieving',
+				'ShootingStars',
+				'AerialFishing',
+				'DriftNet',
+				'GemstoneFishing',
+				'OuraniaAltar',
+				'Collecting',
+				'Plunder',
+				'PuroPuro'
+			];
+			if (!skillingActivities.includes(data.type)) return;
+
+			await user.statsBankUpdate('doubled_loot_bank', loot);
+			messages.push('**Double loot activated!**');
+
+			return {
+				itemsToAddWithCL: loot
+			};
 		}
 	},
 	{

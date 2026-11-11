@@ -11,7 +11,16 @@ export async function calcBossFood(user: MUser, monster: KillableMonster, teamSi
 	else if (kc > 15) healAmountNeeded *= 0.7;
 	else if (kc > 10) healAmountNeeded *= 0.8;
 	else if (kc > 5) healAmountNeeded *= 0.9;
-	healAmountNeeded /= (teamSize + 1) / 1.5;
+	if (monster.name === 'Nex') {
+		let scale = 1;
+		if (teamSize >= 8) scale = 0.35;
+		else if (teamSize >= 6) scale = 0.45;
+		else if (teamSize >= 4) scale = 0.55;
+		else if (teamSize >= 2) scale = 0.75;
+		healAmountNeeded *= scale;
+	} else {
+		healAmountNeeded /= (teamSize + 1) / 1.5;
+	}
 	let brewsNeeded = Math.ceil((healAmountNeeded * quantity) / 16);
 	if (teamSize === 1) brewsNeeded += 2;
 	const restoresNeeded = Math.ceil(brewsNeeded / 3);

@@ -19,6 +19,24 @@ export const disassemblingTask: MinionTask = {
 			materialLoot.mutIncreaseAllValuesByPercent(inventionBoosts.inventionMasterCape.extraMaterialsPercent);
 			messages.push(`${inventionBoosts.inventionMasterCape.extraMaterialsPercent}% bonus materials for mastery`);
 		}
+		if (user.hasEquippedOrInBank('Scroll of the salvager')) {
+			let duplicatedCount = 0;
+			for (const { type, quantity } of materialLoot.values()) {
+				let bonus = 0;
+				for (let i = 0; i < quantity; i++) {
+					if (rng.percentChance(15)) {
+						bonus++;
+					}
+				}
+				if (bonus > 0) {
+					materialLoot.add(type, bonus);
+					duplicatedCount += bonus;
+				}
+			}
+			if (duplicatedCount > 0) {
+				messages.push(`Scroll of the salvager duplicated ${duplicatedCount}x materials`);
+			}
+		}
 
 		await transactMaterialsFromUser({
 			user,

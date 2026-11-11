@@ -10,6 +10,7 @@ import { elderRequiredClueCLItems, elderSherlockItems } from '@/lib/bso/elderClu
 import { type Nursery, TameSpeciesID, tameFeedableItems } from '@/lib/bso/tames/tames.js';
 
 import { EmbedBuilder, userMention } from '@oldschoolgg/discord';
+import { defaultGearSetup, GearSetupTypes } from '@oldschoolgg/gear';
 import { noOp, stringMatches, Time, uniqueArr } from '@oldschoolgg/toolkit';
 import {
 	Bank,
@@ -432,15 +433,72 @@ const thingsToReset = [
 	{
 		name: 'Everything/All',
 		run: async (user: MUser) => {
+			await prisma.bingo.deleteMany({ where: { creator_id: user.id } }).catch(noOp);
+			await prisma.bingoParticipant.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.historicalData.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.botItemSell.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.pinnedTrip.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.farmedCrop.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.portent.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.minigame.deleteMany({ where: { user_id: user.id } }).catch(noOp);
 			await prisma.slayerTask.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.playerOwnedHouse.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.xPGain.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
 			await prisma.activity.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
+			await prisma.stashUnit.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
+			await prisma.userEvent.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.userStats.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
+			await prisma.tameActivity.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.tame.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+			await prisma.fishingContestCatch.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
+			await prisma.buyCommandTransaction.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
+			await prisma.userCounter.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
+			await prisma.jsonBank.deleteMany({ where: { user_id: user.id } }).catch(noOp);
 			await prisma.commandUsage.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
 			await prisma.gearPreset.deleteMany({ where: { user_id: user.id } }).catch(noOp);
 			await prisma.giveaway.deleteMany({ where: { user_id: user.id } }).catch(noOp);
 			await prisma.lastManStandingGame.deleteMany({ where: { user_id: BigInt(user.id) } }).catch(noOp);
-			await prisma.minigame.deleteMany({ where: { user_id: user.id } }).catch(noOp);
-			await prisma.playerOwnedHouse.deleteMany({ where: { user_id: user.id } }).catch(noOp);
-			await prisma.user.deleteMany({ where: { id: user.id } }).catch(noOp);
+			await prisma.queuedTrip.deleteMany({ where: { user_id: user.id } }).catch(noOp);
+
+			const deleted = await prisma.user.deleteMany({ where: { id: user.id } }).catch(noOp);
+			if (deleted && deleted.count > 0) {
+				await prisma.user.create({ data: { id: user.id, bitfield: [...user.bitfield] } }).catch(noOp);
+			} else {
+				await prisma.user.update({
+					where: { id: user.id },
+					data: {
+						QP: 0,
+						GP: 0,
+						bank: {},
+						collectionLogBank: {},
+						finished_quest_ids: [],
+						skills_agility: 0,
+						skills_cooking: 0,
+						skills_fishing: 0,
+						skills_mining: 0,
+						skills_smithing: 0,
+						skills_woodcutting: 0,
+						skills_firemaking: 0,
+						skills_runecraft: 0,
+						skills_crafting: 0,
+						skills_prayer: 0,
+						skills_fletching: 0,
+						skills_thieving: 0,
+						skills_farming: 0,
+						skills_herblore: 0,
+						skills_hunter: 0,
+						skills_construction: 0,
+						skills_magic: 0,
+						skills_ranged: 0,
+						skills_attack: 0,
+						skills_strength: 0,
+						skills_defence: 0,
+						skills_slayer: 0,
+						skills_hitpoints: 1154
+					}
+				});
+				await user.updateGear(GearSetupTypes.map(setup => ({ setup, gear: defaultGearSetup })));
+			}
 			return 'Reset all your data.';
 		}
 	},
@@ -1265,7 +1323,7 @@ export const testPotatoCommand = globalConfig.isProduction
 							},
 							data: {
 								finished_quest_ids: [],
-								collectionLogBank: {}
+								QP: 0
 							}
 						});
 						return `Your QP, and completed quests, have been reset. You can set your QP to a certain number using ${globalClient.mentionCommand(

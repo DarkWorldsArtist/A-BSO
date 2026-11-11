@@ -2,6 +2,7 @@ import { ORI_DISABLED_MONSTERS } from '@/lib/bso/bsoConstants.js';
 import { clAdjustedDroprate } from '@/lib/bso/bsoUtil.js';
 import { isDoubleLootActive } from '@/lib/bso/doubleLoot.js';
 import { bonecrusherEffect } from '@/lib/bso/skills/invention/effects/bonecrusherEffect.js';
+import { clueCodexEffect } from '@/lib/bso/skills/invention/effects/clueCodexEffect.js';
 import { clueUpgraderEffect } from '@/lib/bso/skills/invention/effects/clueUpgraderEffect.js';
 import { portableTannerEffect } from '@/lib/bso/skills/invention/effects/portableTannerEffect.js';
 import { slayerMaskHelms } from '@/lib/bso/skills/slayer/slayerMaskHelms.js';
@@ -119,6 +120,7 @@ export function rollForBSOThings(args: MidPVMEffectArgs) {
 	bonecrusherEffect(args);
 	portableTannerEffect(args);
 	clueUpgraderEffect({ ...args, type: 'pvm' });
+	clueCodexEffect(args);
 }
 
 export function slayerMasksHelms({

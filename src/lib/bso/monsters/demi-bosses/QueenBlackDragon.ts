@@ -4,8 +4,8 @@ import type { CustomMonster } from '@/lib/bso/monsters/CustomMonster.js';
 import { GearStat } from '@oldschoolgg/gear';
 import { Time } from '@oldschoolgg/toolkit';
 import {
+	Bank,
 	deepResolveItems,
-	itemID,
 	LootTable,
 	MonsterAttribute,
 	Monsters,
@@ -85,8 +85,16 @@ export const QueenBlackDragon: CustomMonster = {
 	notifyDrops: resolveItems(['Queen black dragonling', 'Royal dragon kiteshield', 'Draconic visage']),
 	baseMonster: Monsters.Vorkath,
 	itemInBankBoosts: [
-		{
-			[itemID('Royal crossbow')]: 8
-		}
+		new Bank({
+			'Dragon hunter crossbow': 12,
+			'Dragon hunter lance': 10,
+			'Twisted bow': 10,
+			'Bow of faerdhinen (c)': 8,
+			'Royal crossbow': 8
+		}).toJSON(),
+		new Bank({
+			"Ava's assembler": 3,
+			"Ava's accumulator": 1
+		}).toJSON()
 	]
 };

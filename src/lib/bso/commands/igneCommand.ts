@@ -28,9 +28,20 @@ export async function igneCommand(
 		},
 		itemBoosts: [
 			['Drygore longsword', 25],
+			['Dragon hunter lance', 15],
+			["Inquisitor's mace", 12],
+			['Elder maul', 10],
+			['Abyssal bludgeon', 6],
+			['Dragon warhammer', 5],
 			['TzKal cape', 6],
-			["Brawler's hook necklace", 4]
+			['Infernal cape', 4],
+			['Mythical cape', 3],
+			['Fire cape', 2],
+			["Brawler's hook necklace", 4],
+			['Amulet of torture', 2],
+			['Amulet of fury', 1]
 		],
+		boostMax: 35,
 		additionalItemBoosts: [
 			['Ignis ring', 6],
 			['Ignis ring(i)', 10],

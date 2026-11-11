@@ -125,8 +125,12 @@ export const Malygos: CustomMonster = {
 	},
 	itemInBankBoosts: [
 		{
-			[itemID('Axe of the high sungod')]: 10,
-			[itemID('Saradomin godsword')]: 5,
+			[itemID('Axe of the high sungod')]: 10
+		},
+		{
+			[itemID('Saradomin godsword')]: 5
+		},
+		{
 			[itemID('Dragon warhammer')]: 5,
 			[itemID('Bandos godsword')]: 5
 		}
