@@ -38,9 +38,8 @@ export function resolveAvailableItemBoosts(gearBank: GearBank, monster: Killable
 				if (!gearBank.hasEquippedOrInBank(parsedId)) {
 					continue;
 				}
-				const ownsExactItem = isInWilderness
-					? gearBank.gear.wildy.hasEquipped(parsedId, false, false)
-					: gearBank.bank.has(parsedId) ||
+				const ownsExactItem =
+					gearBank.bank.has(parsedId) ||
 					Object.values(gearBank.gear).some(gear => gear.hasEquipped(parsedId, false, false));
 
 				if (
