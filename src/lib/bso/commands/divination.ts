@@ -14,6 +14,7 @@ import { formatDuration, increaseNumByPercent, removeFromArr, Time } from '@olds
 import { Bank } from 'oldschooljs';
 
 import { assert } from '@/lib/util/logError.js';
+import { calcDurationAndQuantity, tripDurationOption } from '@/lib/util/minionUtils.js';
 
 export const divinationCommand = defineCommand({
 	name: 'divination',
@@ -55,7 +56,8 @@ export const divinationCommand = defineCommand({
 					type: 'Boolean',
 					name: 'no_potion',
 					description: 'Dont use divination potions'
-				}
+				},
+				tripDurationOption
 			]
 		},
 		{
@@ -244,6 +246,15 @@ You have ${portentCharges[portent.id]} charges left, and you receive ${
 				boosts.push('7mins extra trip length for Jar of memories');
 			}
 
+			const singleRoundDuration = totalTimePerRound * Time.Second;
+			const res = calcDurationAndQuantity({
+				durationInput: options.harvest_memories.duration,
+				singleTime: singleRoundDuration,
+				maxTripLength
+			});
+			if (typeof res === 'string') return res;
+			const { quantity: rounds, duration } = res;
+
 			let hasWispBuster = false;
 			let hasDivineHand = false;
 
@@ -256,7 +267,7 @@ You have ${portentCharges[portent.id]} charges left, and you receive ${
 				const boostResult = await inventionItemBoost({
 					user,
 					inventionID: InventionID.WispBuster,
-					duration: maxTripLength
+					duration
 				});
 				if (boostResult.success) {
 					boosts.push(
@@ -268,7 +279,7 @@ You have ${portentCharges[portent.id]} charges left, and you receive ${
 				const boostResult = await inventionItemBoost({
 					user,
 					inventionID: InventionID.DivineHand,
-					duration: maxTripLength
+					duration
 				});
 				if (boostResult.success) {
 					boosts.push(
@@ -283,10 +294,6 @@ You have ${portentCharges[portent.id]} charges left, and you receive ${
 			if (hasGuthixianBoost) {
 				boosts.push('20% extra XP for Guthixian Cache boost');
 			}
-
-			const totalSeconds = Math.round(maxTripLength / Time.Second);
-			const rounds = Math.floor(totalSeconds / totalTimePerRound);
-			const duration = rounds * totalTimePerRound * Time.Second;
 
 			const preEmptiveResult = memoryHarvestResult({
 				duration,

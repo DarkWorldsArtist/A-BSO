@@ -3,7 +3,7 @@ import { Bank, Items } from 'oldschooljs';
 
 import { Plank } from '@/lib/skilling/skills/construction/constructables.js';
 import type { MahoganyHomesActivityTaskOptions } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
 interface IContract {
 	name: string;
@@ -61,14 +61,21 @@ function calcTrip(
 	tier: IContract,
 	kc: number,
 	maxLen: number,
-	hasSack: boolean
-): [number, Bank, number, number, number] {
+	hasSack: boolean,
+	durationInput?: string
+): [number, Bank, number, number, number] | string {
 	const percentSkill = Math.min(100, calcWhatPercent(kc, 300));
 	const qtyPerHour = 31 + Math.ceil(calcPercentOfNum(percentSkill, 5)) + (hasSack ? 6 : 0);
 	const qtyPerMaxLen = (qtyPerHour / Time.Hour) * maxLen;
 	const lenPerQty = maxLen / qtyPerMaxLen;
 
-	const qty = Math.floor(maxLen / lenPerQty);
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: lenPerQty,
+		maxTripLength: maxLen
+	});
+	if (typeof res === 'string') return res;
+	const qty = res.quantity;
 	const itemsNeeded = new Bank();
 	let xp = 0;
 
@@ -146,7 +153,8 @@ export async function mahoganyHomesBuildCommand(
 	rng: RNGProvider,
 	user: MUser,
 	channelId: string,
-	tier?: string
+	tier?: string,
+	durationInput?: string
 ): CommandResponse {
 	if (await user.minionIsBusy()) return `${user.minionName} is currently busy.`;
 
@@ -165,13 +173,16 @@ export async function mahoganyHomesBuildCommand(
 	}
 
 	const hasSack = user.hasEquippedOrInBank('Plank sack');
-	const [quantity, itemsNeeded, xp, duration, points] = calcTrip(
+	const tripResult = calcTrip(
 		rng,
 		tierData,
 		kc,
 		await user.calcMaxTripLength('MahoganyHomes'),
-		hasSack
+		hasSack,
+		durationInput
 	);
+	if (typeof tripResult === 'string') return tripResult;
+	const [quantity, itemsNeeded, xp, duration, points] = tripResult;
 
 	if (!user.owns(itemsNeeded)) {
 		return `You don't have enough items for this trip. You need: ${itemsNeeded}.`;

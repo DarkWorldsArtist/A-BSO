@@ -1,9 +1,49 @@
-import { formatDurationWithTimestamp, Time } from '@oldschoolgg/toolkit';
+import { formatDuration, formatDurationWithTimestamp, parseDuration, Time } from '@oldschoolgg/toolkit';
 import type { Bank } from 'oldschooljs';
 
 import { BitField } from '@/lib/constants.js';
 import { QuestID } from '@/lib/minions/data/quests.js';
 import type { MoonKeyHalfCatchRate } from '@/lib/skilling/types.js';
+
+export const tripDurationOption = {
+	type: 'String',
+	name: 'duration',
+	description: 'The duration of the trip (e.g. 30m, 1h), rounded to the nearest completion.',
+	required: false
+} as const;
+
+export function calcDurationAndQuantity({
+	durationInput,
+	singleTime,
+	maxTripLength
+}: {
+	durationInput?: string;
+	singleTime: number;
+	maxTripLength: number;
+}): { quantity: number; duration: number } | string {
+	const maxQuantity = Math.max(1, Math.floor(maxTripLength / singleTime));
+	if (!durationInput) {
+		return {
+			quantity: maxQuantity,
+			duration: maxQuantity * singleTime
+		};
+	}
+
+	const parsedDuration = parseDuration(durationInput);
+	if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
+		return 'Invalid duration provided. Example: 30m, 1h, 1h30m.';
+	}
+
+	if (parsedDuration > maxTripLength) {
+		return `Your minion can't go on trips longer than ${formatDuration(maxTripLength)}, try a lower duration.`;
+	}
+
+	const quantity = Math.max(1, Math.min(Math.round(parsedDuration / singleTime), maxQuantity));
+	return {
+		quantity,
+		duration: quantity * singleTime
+	};
+}
 
 export function formatTripDuration(user: MUser, durationMs: number): string {
 	const showTimestamp = user.bitfield.includes(BitField.DisableDynamicTimestamp);

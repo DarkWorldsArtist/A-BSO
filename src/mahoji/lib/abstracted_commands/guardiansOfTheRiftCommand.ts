@@ -8,13 +8,14 @@ import { pickaxes, varrockArmours } from '@/lib/skilling/functions/miningBoosts.
 import Runecraft from '@/lib/skilling/skills/runecraft.js';
 import type { GuardiansOfTheRiftActivityTaskOptions } from '@/lib/types/minions.js';
 import { determineRunes } from '@/lib/util/determineRunes.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
 export async function guardiansOfTheRiftStartCommand(
 	rng: RNGProvider,
 	user: MUser,
 	channelId: string,
-	combinationRunes: boolean | undefined
+	combinationRunes: boolean | undefined,
+	durationInput?: string
 ) {
 	const rcLevel = user.skillLevel('runecraft');
 	if (rcLevel < 27) {
@@ -36,8 +37,13 @@ export async function guardiansOfTheRiftStartCommand(
 	}
 
 	const maxTripLength = await user.calcMaxTripLength('GuardiansOfTheRift');
-	const quantity = Math.floor(maxTripLength / timePerGame);
-	const duration = quantity * timePerGame;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: timePerGame,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 	// Being reduced with ticks
 	let minedFragments = 309;
 	let barrierAndGuardian = 4;

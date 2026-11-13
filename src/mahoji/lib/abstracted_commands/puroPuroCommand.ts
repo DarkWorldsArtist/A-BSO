@@ -3,7 +3,7 @@ import { type Item, Items, itemID } from 'oldschooljs';
 
 import type { Skills } from '@/lib/types/index.js';
 import type { PuroPuroActivityTaskOptions } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 import { hasSkillReqs } from '@/lib/util/smallUtils.js';
 
 interface PuroImpling {
@@ -50,12 +50,18 @@ export async function puroPuroStartCommand(
 	user: MUser,
 	channelId: string,
 	impling: string | undefined,
-	darkLure: boolean | undefined
+	darkLure: boolean | undefined,
+	durationInput?: string
 ) {
 	const timePerGame = Time.Minute * 10;
 	const maxTripLength = await user.calcMaxTripLength('PuroPuro');
-	const quantity = Math.floor(maxTripLength / timePerGame);
-	const duration = quantity * timePerGame;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: timePerGame,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 	const skills = user.skillsAsLevels;
 	const hunterLevel = skills.hunter;
 	const [hasReqs, reason] = hasSkillReqs(user, puroPuroSkillRequirements);

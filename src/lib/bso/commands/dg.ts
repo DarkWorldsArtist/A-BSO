@@ -25,6 +25,7 @@ import { formatDuration, formatOrdinal, reduceNumByPercent, stringMatches, Time 
 import { Bank } from 'oldschooljs';
 
 import type { MakePartyOptions } from '@/lib/types/index.js';
+import { calcDurationAndQuantity, tripDurationOption } from '@/lib/util/minionUtils.js';
 import { formatSkillRequirements } from '@/lib/util/smallUtils.js';
 
 // Max people in a party:
@@ -35,7 +36,8 @@ async function startCommand(
 	channelId: string,
 	user: MUser,
 	floor: string | undefined,
-	solo: boolean | undefined
+	solo: boolean | undefined,
+	durationInput?: string
 ) {
 	const isSolo = Boolean(solo);
 
@@ -49,9 +51,15 @@ async function startCommand(
 		return `You need level ${determineDgLevelForFloor(floorToDo)} to do Floor ${floorToDo}.`;
 	}
 
+	const maxTripLength = await user.calcMaxTripLength('Dungeoneering');
 	const dungeonLength = Time.Minute * 5 * (floorToDo / 2);
-	let quantity = Math.floor((await user.calcMaxTripLength('Dungeoneering')) / dungeonLength);
-	let duration = quantity * dungeonLength;
+	const initialRes = calcDurationAndQuantity({
+		durationInput,
+		singleTime: dungeonLength,
+		maxTripLength
+	});
+	if (typeof initialRes === 'string') return initialRes;
+	let { quantity, duration } = initialRes;
 
 	const message = `${user.usernameOrMention} has created a Dungeoneering party! Use the buttons below to join/leave.
 **Floor:** ${floorToDo}
@@ -189,8 +197,14 @@ async function startCommand(
 	}
 
 	const perFloor = duration / quantity;
-	quantity = Math.max(1, Math.floor((await user.calcMaxTripLength('Dungeoneering')) / perFloor));
-	duration = quantity * perFloor;
+	const finalRes = calcDurationAndQuantity({
+		durationInput,
+		singleTime: perFloor,
+		maxTripLength
+	});
+	if (typeof finalRes === 'string') return finalRes;
+	quantity = finalRes.quantity;
+	duration = finalRes.duration;
 
 	let str = `${partyOptions.leader.usernameOrMention}'s dungeoneering party (${users
 		.map(u => u.usernameOrMention)
@@ -409,7 +423,8 @@ export const dgCommand = defineCommand({
 					name: 'solo',
 					description: 'Do you want to solo? (Optional)',
 					required: false
-				}
+				},
+				tripDurationOption
 			]
 		},
 		{
@@ -450,7 +465,16 @@ export const dgCommand = defineCommand({
 	],
 	run: async ({ options, user, channelId, interaction }) => {
 		if (interaction) await interaction.defer();
-		if (options.start) return startCommand(interaction, channelId, user, options.start.floor, options.start.solo);
+		if (options.start) {
+			return startCommand(
+				interaction,
+				channelId,
+				user,
+				options.start.floor,
+				options.start.solo,
+				options.start.duration
+			);
+		}
 		if (options.buy) return buyCommand(user, options.buy.item, options.buy.quantity);
 		if (options.floors) return floorsCommand(user);
 		return statsCommand(user);

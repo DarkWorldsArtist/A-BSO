@@ -1,13 +1,18 @@
 import { Time } from '@oldschoolgg/toolkit';
 
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
-export async function troubleBrewingStartCommand(user: MUser, channelId: string) {
+export async function troubleBrewingStartCommand(user: MUser, channelId: string, durationInput?: string) {
 	const timePerGame = Time.Minute * 20;
 	const maxTripLength = await user.calcMaxTripLength('TroubleBrewing');
-	const quantity = Math.floor(maxTripLength / timePerGame);
-	const duration = quantity * timePerGame;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: timePerGame,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 
 	await ActivityManager.startTrip<MinigameActivityTaskOptionsWithNoChanges>({
 		quantity,

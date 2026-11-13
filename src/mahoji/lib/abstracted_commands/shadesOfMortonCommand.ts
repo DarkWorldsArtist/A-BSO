@@ -6,7 +6,7 @@ import type {
 	ShadesOfMortonPyreLogsOptions,
 	ShadesOfMortonSacredOilOptions
 } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
 type Remains = 'Loar' | 'Phrin' | 'Riyl' | 'Fiyr' | 'Asyn' | 'Urium';
 
@@ -311,7 +311,13 @@ function checkCremationRequirements(user: MUser, log: ShadesLog, shade: Shade): 
 	return null;
 }
 
-export async function shadesOfMortonStartCommand(user: MUser, channelId: string, logStr: string, shadeStr: string) {
+export async function shadesOfMortonStartCommand(
+	user: MUser,
+	channelId: string,
+	logStr: string,
+	shadeStr: string,
+	durationInput?: string
+) {
 	const messages: string[] = [];
 	let totalTime = await user.calcMaxTripLength('ShadesOfMorton');
 	for (let i = coffins.length - 1; i >= 0; i--) {
@@ -353,7 +359,13 @@ export async function shadesOfMortonStartCommand(user: MUser, channelId: string,
 		return `You can't use ${log.oiledLog.name} with ${shade.item.name}.`;
 	}
 
-	const quantity = Math.min(logsOwned, shadesOwned, Math.floor(totalTime / TIME_PER_CREMATION));
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: TIME_PER_CREMATION,
+		maxTripLength: totalTime
+	});
+	if (typeof res === 'string') return res;
+	const quantity = Math.min(logsOwned, shadesOwned, res.quantity);
 	const duration = quantity * TIME_PER_CREMATION;
 
 	if (quantity < 1) return 'You cannot do any cremations in that time.';
@@ -386,7 +398,7 @@ export async function shadesOfMortonStartCommand(user: MUser, channelId: string,
 	return str;
 }
 
-export async function shadesOfMortonSacredOilCommand(user: MUser, channelId: string) {
+export async function shadesOfMortonSacredOilCommand(user: MUser, channelId: string, durationInput?: string) {
 	const oliveOilItem = Items.getOrThrow('Olive oil(4)');
 	const sacredOilItem = Items.getOrThrow('Sacred oil(4)');
 
@@ -399,7 +411,13 @@ export async function shadesOfMortonSacredOilCommand(user: MUser, channelId: str
 	if (oliveOilOwned === 0) return `You don't have any ${oliveOilItem.name} to upgrade!`;
 
 	const totalTime = await user.calcMaxTripLength('ShadesOfMortonSacredOil');
-	const quantity = Math.min(oliveOilOwned, Math.floor(totalTime / TIME_PER_SACRED_OIL));
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: TIME_PER_SACRED_OIL,
+		maxTripLength: totalTime
+	});
+	if (typeof res === 'string') return res;
+	const quantity = Math.min(oliveOilOwned, res.quantity);
 	if (quantity < 1) return 'You do not have enough time to create any sacred oil.';
 
 	const duration = quantity * TIME_PER_SACRED_OIL;

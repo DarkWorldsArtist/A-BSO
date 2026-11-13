@@ -7,6 +7,7 @@ import birdhouses from '@/lib/skilling/skills/hunter/birdHouseTrapping.js';
 import { Castables } from '@/lib/skilling/skills/magic/castables.js';
 import { Enchantables } from '@/lib/skilling/skills/magic/enchantables.js';
 import Prayer from '@/lib/skilling/skills/prayer.js';
+import { tripDurationOption } from '@/lib/util/minionUtils.js';
 import { aerialFishingCommand } from '@/mahoji/lib/abstracted_commands/aerialFishingCommand.js';
 import { alchCommand } from '@/mahoji/lib/abstracted_commands/alchCommand.js';
 import { birdhouseCheckCommand, birdhouseHarvestCommand } from '@/mahoji/lib/abstracted_commands/birdhousesCommand.js';
@@ -92,13 +93,15 @@ export const activitiesCommand = defineCommand({
 					description: 'Start a Chompy hunting trip, or claim hats.',
 					choices: ['start', 'claim'].map(i => ({ name: i, value: i })),
 					required: true
-				}
+				},
+				tripDurationOption
 			]
 		},
 		{
 			type: 'Subcommand',
 			name: 'my_notes',
-			description: 'Send your minion to rummage skeletons for Ancient pages.'
+			description: 'Send your minion to rummage skeletons for Ancient pages.',
+			options: [tripDurationOption]
 		},
 		{
 			type: 'Subcommand',
@@ -411,7 +414,8 @@ export const activitiesCommand = defineCommand({
 		{
 			type: 'Subcommand',
 			name: 'aerial_fishing',
-			description: 'The Aerial Fishing activity.'
+			description: 'The Aerial Fishing activity.',
+			options: [tripDurationOption]
 		},
 		{
 			type: 'Subcommand',
@@ -505,7 +509,8 @@ export const activitiesCommand = defineCommand({
 					name: 'dark_lure',
 					description: 'Use Dark Lure spell?',
 					required: false
-				}
+				},
+				tripDurationOption
 			]
 		},
 		{
@@ -672,13 +677,13 @@ export const activitiesCommand = defineCommand({
 			return butlerCommand(user, options.plank_make.type, options.plank_make.quantity, channelId);
 		}
 		if (options.chompy_hunt?.action === 'start') {
-			return chompyHuntCommand(interaction);
+			return chompyHuntCommand(interaction, options.chompy_hunt.duration);
 		}
 		if (options.chompy_hunt?.action === 'claim') {
 			return chompyHuntClaimCommand(user);
 		}
 		if (options.my_notes) {
-			return myNotesCommand(user, channelId);
+			return myNotesCommand(user, channelId, options.my_notes.duration);
 		}
 		if (options.warriors_guild) {
 			return warriorsGuildCommand(
@@ -731,7 +736,7 @@ export const activitiesCommand = defineCommand({
 			return fightCavesCommand({ rng, user, channelId });
 		}
 		if (options.aerial_fishing) {
-			return aerialFishingCommand({ rng, user, channelId });
+			return aerialFishingCommand({ rng, user, channelId, durationInput: options.aerial_fishing.duration });
 		}
 		if (options.enchant) {
 			return enchantCommand(user, channelId, options.enchant.name, options.enchant.quantity);
@@ -753,7 +758,13 @@ export const activitiesCommand = defineCommand({
 			);
 		}
 		if (options.puro_puro) {
-			return puroPuroStartCommand(user, channelId, options.puro_puro.impling, options.puro_puro.dark_lure);
+			return puroPuroStartCommand(
+				user,
+				channelId,
+				options.puro_puro.impling,
+				options.puro_puro.dark_lure,
+				options.puro_puro.duration
+			);
 		}
 		if (options.cast) {
 			return castCommand(channelId, user, options.cast.spell, options.cast.quantity);

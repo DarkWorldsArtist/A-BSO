@@ -6,7 +6,7 @@ import { QuestID } from '@/lib/minions/data/quests.js';
 import { claimValeOfferings } from '@/lib/minions/data/valeTotems.js';
 import type { ValeTotemsActivityTaskOptions } from '@/lib/types/minions.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
 interface TotemDecoration {
 	log: Item;
@@ -23,7 +23,8 @@ export async function valeTotemsStartCommand(
 	user: MUser,
 	channelID: string,
 	itemToFletch: string | number | undefined,
-	staminaPot?: boolean | undefined
+	staminaPot?: boolean | undefined,
+	durationInput?: string
 ) {
 	if (await user.minionIsBusy()) {
 		return `${user.usernameOrMention} is busy`;
@@ -158,7 +159,13 @@ export async function valeTotemsStartCommand(
 		limits.push(Math.floor(userBank.amount(EItem.BOW_STRING) / STRINGS_PER_LAP));
 	}
 
-	const laps = Math.min(...limits);
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: timePerLap,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const laps = Math.min(...limits, res.quantity);
 	const duration = laps * timePerLap;
 	const logCost = laps * logCostLap;
 	const fletchingXp = laps * decoration.xpPerLap;

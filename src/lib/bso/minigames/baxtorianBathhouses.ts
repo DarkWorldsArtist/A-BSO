@@ -259,6 +259,8 @@ function calcHerbsNeeded(qty: number) {
 	return Math.ceil(qty * 5.5);
 }
 
+import { calcDurationAndQuantity } from '@/lib/util/minionUtils.js';
+
 export const durationPerBaxBath = Time.Minute * 4;
 
 export async function baxtorianBathhousesStartCommand({
@@ -266,13 +268,15 @@ export async function baxtorianBathhousesStartCommand({
 	tier,
 	ore,
 	mixture,
-	channelId
+	channelId,
+	durationInput
 }: {
 	user: MUser;
 	tier: string;
 	channelId: string;
 	ore?: string | number;
 	mixture?: string;
+	durationInput?: string;
 }) {
 	if (await user.minionIsBusy()) {
 		return 'Your minion is busy.';
@@ -289,8 +293,13 @@ export async function baxtorianBathhousesStartCommand({
 		effectiveDurationPerBath = reduceNumByPercent(effectiveDurationPerBath, globalMinigameBonus * 100);
 	}
 
-	const quantity = Math.floor(maxTripLength / effectiveDurationPerBath);
-	const duration = quantity * effectiveDurationPerBath;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: effectiveDurationPerBath,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 	const bathHouseTier = bathHouseTiers.find(i => stringMatches(i.name, tier)) ?? bathHouseTiers[0];
 	const warmthNeeded = bathHouseTier.warmthPerBath * quantity;
 	const herbsNeeded = calcHerbsNeeded(quantity);

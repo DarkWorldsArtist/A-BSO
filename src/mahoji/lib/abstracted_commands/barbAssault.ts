@@ -10,7 +10,7 @@ import { degradeItem } from '@/lib/degradeableItems.js';
 import { HighGambleTable, LowGambleTable, MediumGambleTable } from '@/lib/simulation/baGamble.js';
 import { maxOtherStats } from '@/lib/structures/Gear.js';
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
 export const BarbBuyables = [
 	{
@@ -187,7 +187,7 @@ export async function barbAssaultGambleCommand(interaction: MInteraction, user: 
 	return response;
 }
 
-export async function barbAssaultStartCommand({ user, channelId, rng }: OSInteraction) {
+export async function barbAssaultStartCommand({ user, channelId, rng }: OSInteraction, durationInput?: string) {
 	const boosts = [];
 
 	let waveTime = rng.randomVariation(Time.Minute * 4, 10);
@@ -212,7 +212,14 @@ export async function barbAssaultStartCommand({ user, channelId, rng }: OSIntera
 	boosts.push(`${kcPercentBoost.toFixed(2)}% for average KC`);
 	waveTime = reduceNumByPercent(waveTime, kcPercentBoost);
 
-	let quantity = Math.floor((await user.calcMaxTripLength('BarbarianAssault')) / waveTime);
+	const maxTripLength = await user.calcMaxTripLength('BarbarianAssault');
+	const preRes = calcDurationAndQuantity({
+		durationInput,
+		singleTime: waveTime,
+		maxTripLength
+	});
+	if (typeof preRes === 'string') return preRes;
+	let quantity = preRes.quantity;
 
 	// 10% speed boost for Venator bow
 	const venatorBowChargesPerWave = 50;
@@ -243,9 +250,15 @@ export async function barbAssaultStartCommand({ user, channelId, rng }: OSIntera
 		boosts.push(`${(globalMinigameBonus * 100).toFixed(0)}% faster from Grand Conduit (Settlement Infrastructure)`);
 	}
 
-	quantity = Math.floor((await user.calcMaxTripLength('BarbarianAssault')) / waveTime);
+	const finalRes = calcDurationAndQuantity({
+		durationInput,
+		singleTime: waveTime,
+		maxTripLength
+	});
+	if (typeof finalRes === 'string') return finalRes;
+	quantity = finalRes.quantity;
 
-	const duration = quantity * waveTime;
+	const duration = finalRes.duration;
 
 	boosts.push(`Each wave takes ${formatDuration(waveTime)}`);
 

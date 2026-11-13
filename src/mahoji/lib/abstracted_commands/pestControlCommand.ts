@@ -4,7 +4,7 @@ import { reduceNumByPercent, stringMatches, Time, toTitleCase } from '@oldschool
 import { Bank, Items } from 'oldschooljs';
 
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 import { hasSkillReqs, isValidSkill } from '@/lib/util/smallUtils.js';
 
 const itemBoosts = [
@@ -175,7 +175,7 @@ export async function pestControlBuyCommand(user: MUser, input: string) {
 	return `Successfully purchased ${loot} for ${cost} Void knight commendation points.`;
 }
 
-export async function pestControlStartCommand(user: MUser, channelId: string) {
+export async function pestControlStartCommand(user: MUser, channelId: string, durationInput?: string) {
 	if (await user.minionIsBusy()) return `${user.minionName} is busy.`;
 	if (user.combatLevel < 40) {
 		return 'You need a combat level of at least 40 to do Pest Control.';
@@ -207,9 +207,13 @@ export async function pestControlStartCommand(user: MUser, channelId: string) {
 		);
 	}
 
-	const quantity = Math.floor(maxLength / gameLength);
-
-	const duration = quantity * gameLength;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: gameLength,
+		maxTripLength: maxLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 
 	await ActivityManager.startTrip<MinigameActivityTaskOptionsWithNoChanges>({
 		userID: user.id,

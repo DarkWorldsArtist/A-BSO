@@ -2,7 +2,7 @@ import { calcWhatPercent, formatDuration, reduceNumByPercent, Time, toTitleCase 
 
 import { BitField } from '@/lib/constants.js';
 import type { GauntletOptions } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 import { formatSkillRequirements } from '@/lib/util/smallUtils.js';
 
 const baseRequirements = {
@@ -41,7 +41,8 @@ export async function gauntletCommand(
 	rng: RNGProvider,
 	user: MUser,
 	channelId: string,
-	type: 'corrupted' | 'normal' = 'normal'
+	type: 'corrupted' | 'normal' = 'normal',
+	durationInput?: string
 ) {
 	if (await user.minionIsBusy()) return `${user.minionName} is busy.`;
 	if (user.QP < 200) {
@@ -130,8 +131,13 @@ export async function gauntletCommand(
 
 	const maxTripLength = await user.calcMaxTripLength('Gauntlet');
 
-	const quantity = Math.floor(maxTripLength / gauntletLength);
-	const duration = quantity * gauntletLength;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: gauntletLength,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 
 	if (duration > maxTripLength) {
 		return `${user.minionName} can't go on trips longer than ${formatDuration(

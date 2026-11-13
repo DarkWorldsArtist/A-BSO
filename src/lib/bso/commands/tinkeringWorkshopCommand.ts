@@ -8,7 +8,14 @@ import { formatDuration, Time } from '@oldschoolgg/toolkit';
 import { randomVariation } from 'node-rng';
 import type { ItemBank } from 'oldschooljs';
 
-export async function tinkeringWorkshopCommand(user: MUser, material: string, channelId: string) {
+import { calcDurationAndQuantity } from '@/lib/util/minionUtils.js';
+
+export async function tinkeringWorkshopCommand(
+	user: MUser,
+	material: string,
+	channelId: string,
+	durationInput?: string
+) {
 	if (!isValidMaterialType(material)) {
 		return "That's not a valid material.";
 	}
@@ -25,8 +32,14 @@ export async function tinkeringWorkshopCommand(user: MUser, material: string, ch
 		gameTime *= 1 - globalMinigameBonus;
 	}
 
-	const quantity = Math.floor((await user.calcMaxTripLength('TinkeringWorkshop')) / gameTime);
-	const duration = randomVariation(quantity * gameTime, 5);
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: gameTime,
+		maxTripLength: await user.calcMaxTripLength('TinkeringWorkshop')
+	});
+	if (typeof res === 'string') return res;
+	const { quantity } = res;
+	const duration = randomVariation(res.duration, 5);
 
 	const MATERIAL_QTY_PER_PROJECT = 100;
 

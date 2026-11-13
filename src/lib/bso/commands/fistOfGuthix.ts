@@ -4,8 +4,9 @@ import { formatDuration, Time } from '@oldschoolgg/toolkit';
 import { randomVariation } from 'node-rng';
 
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
+import { calcDurationAndQuantity } from '@/lib/util/minionUtils.js';
 
-export async function fistOfGuthixCommand(user: MUser, channelId: string) {
+export async function fistOfGuthixCommand(user: MUser, channelId: string, durationInput?: string) {
 	if (await user.minionIsBusy()) return 'Your minion is busy.';
 
 	const hasCelestialPendant = user.hasEquippedOrInBank('Celestial pendant');
@@ -19,8 +20,14 @@ export async function fistOfGuthixCommand(user: MUser, channelId: string) {
 		gameTime *= 1 - globalMinigameBonus;
 	}
 
-	const quantity = Math.floor((await user.calcMaxTripLength('FistOfGuthix')) / gameTime);
-	const duration = randomVariation(quantity * gameTime, 5);
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: gameTime,
+		maxTripLength: await user.calcMaxTripLength('FistOfGuthix')
+	});
+	if (typeof res === 'string') return res;
+	const { quantity } = res;
+	const duration = randomVariation(res.duration, 5);
 
 	const boosts = [];
 	if (hasCelestialPendant) boosts.push('10% faster from Celestial pendant');

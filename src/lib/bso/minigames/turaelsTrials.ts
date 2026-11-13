@@ -6,27 +6,35 @@ import { Bank } from 'oldschooljs';
 
 import { degradeChargeBank } from '@/lib/degradeableItems.js';
 import { ChargeBank } from '@/lib/structures/Bank.js';
+import { calcDurationAndQuantity } from '@/lib/util/minionUtils.js';
 
 export const TuraelsTrialsMethods = ['melee', 'mage', 'range'] as const;
 export type TuraelsTrialsMethod = (typeof TuraelsTrialsMethods)[number];
+
+export function getTuraelsTrialsTimePerKill(minigameBonus = 0) {
+	let timePerKill = Time.Minute * 2.9;
+	if (minigameBonus > 0) {
+		timePerKill = reduceNumByPercent(timePerKill, minigameBonus * 100);
+	}
+	return timePerKill;
+}
 
 export function calculateTuraelsTrialsInput({
 	maxTripLength,
 	method,
 	isUsingBloodFury,
-	minigameBonus = 0
+	minigameBonus = 0,
+	tripOverride
 }: {
 	maxTripLength: number;
 	isUsingBloodFury: boolean;
 	method: TuraelsTrialsMethod;
 	minigameBonus?: number;
+	tripOverride?: { quantity: number; duration: number };
 }) {
-	let timePerKill = Time.Minute * 2.9;
-	if (minigameBonus > 0) {
-		timePerKill = reduceNumByPercent(timePerKill, minigameBonus * 100);
-	}
-	const quantity = Math.floor(maxTripLength / timePerKill);
-	const duration = Math.floor(timePerKill * quantity);
+	const timePerKill = getTuraelsTrialsTimePerKill(minigameBonus);
+	const quantity = tripOverride?.quantity ?? Math.floor(maxTripLength / timePerKill);
+	const duration = Math.floor(tripOverride?.duration ?? timePerKill * quantity);
 	const minutesRoundedUp = Math.ceil(duration / Time.Minute);
 
 	const cost = new Bank();
@@ -76,7 +84,12 @@ export function calculateTuraelsTrialsInput({
 	};
 }
 
-export async function turaelsTrialsStartCommand(user: MUser, channelId: string, method: TuraelsTrialsMethod) {
+export async function turaelsTrialsStartCommand(
+	user: MUser,
+	channelId: string,
+	method: TuraelsTrialsMethod,
+	durationInput?: string
+) {
 	if (await user.minionIsBusy()) {
 		return `${user.minionName} is busy.`;
 	}
@@ -104,11 +117,19 @@ export async function turaelsTrialsStartCommand(user: MUser, channelId: string, 
 		);
 	}
 
+	const tripRes = calcDurationAndQuantity({
+		durationInput,
+		singleTime: getTuraelsTrialsTimePerKill(globalMinigameBonus),
+		maxTripLength
+	});
+	if (typeof tripRes === 'string') return tripRes;
+
 	const { duration, quantity, cost, chargeBank } = calculateTuraelsTrialsInput({
 		maxTripLength,
 		method,
 		isUsingBloodFury,
-		minigameBonus: globalMinigameBonus
+		minigameBonus: globalMinigameBonus,
+		tripOverride: tripRes
 	});
 
 	const hasChargesResult = user.hasCharges(chargeBank);

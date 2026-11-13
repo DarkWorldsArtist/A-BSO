@@ -255,7 +255,8 @@ export enum BitField {
 	HasHalloweenWallkit = 234,
 	HasEarnedRiftGuardianFromStar = 235,
 	DisablePaints = 236,
-	DisableGlowEffects = 238
+	DisableGlowEffects = 238,
+	DisableQueueRepeatButton = 239
 }
 
 export interface IBitFieldData {
@@ -569,6 +570,11 @@ export const BitFieldData: Record<BitField, IBitFieldData> = {
 	},
 	[BitField.DisableDodgyNecklace]: {
 		name: 'Disable Dodgy Necklace',
+		protected: false,
+		userConfigurable: true
+	},
+	[BitField.DisableQueueRepeatButton]: {
+		name: 'Disable Queue Repeat Button',
 		protected: false,
 		userConfigurable: true
 	}

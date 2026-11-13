@@ -840,7 +840,7 @@ export async function handleTripFinish(
 
 	const components: ButtonBuilder[] = [];
 	components.push(makeRepeatTripButton());
-	if (perkTier >= PerkTier.Four) {
+	if (perkTier >= PerkTier.Four && !user.bitfield.includes(BitField.DisableQueueRepeatButton)) {
 		components.push(makeQueueTripButton());
 	}
 

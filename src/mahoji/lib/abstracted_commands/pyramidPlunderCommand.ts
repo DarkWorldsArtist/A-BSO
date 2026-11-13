@@ -2,9 +2,9 @@ import { formatDuration, reduceNumByPercent, Time } from '@oldschoolgg/toolkit';
 
 import { plunderBoosts, plunderRooms } from '@/lib/minions/data/plunder.js';
 import type { PlunderActivityTaskOptions } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
-export async function pyramidPlunderCommand(user: MUser, channelId: string) {
+export async function pyramidPlunderCommand(user: MUser, channelId: string, durationInput?: string) {
 	if (await user.minionIsBusy()) return `${user.minionName} is busy.`;
 	const skills = user.skillsAsLevels;
 	const thievingLevel = skills.thieving;
@@ -40,8 +40,13 @@ export async function pyramidPlunderCommand(user: MUser, channelId: string) {
 			plunderTime = reduceNumByPercent(plunderTime, percent);
 		}
 	}
-	const maxQuantity = Math.floor((await user.calcMaxTripLength('Plunder')) / plunderTime);
-	const tripLength = maxQuantity * plunderTime;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: plunderTime,
+		maxTripLength: await user.calcMaxTripLength('Plunder')
+	});
+	if (typeof res === 'string') return res;
+	const { quantity: maxQuantity, duration: tripLength } = res;
 
 	await ActivityManager.startTrip<PlunderActivityTaskOptions>({
 		rooms: completableRooms.map(room => room.number),

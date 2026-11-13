@@ -1,13 +1,18 @@
 import { Time } from '@oldschoolgg/toolkit';
 
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
-export async function castleWarsStartCommand(user: MUser, channelId: string) {
+export async function castleWarsStartCommand(user: MUser, channelId: string, durationInput?: string) {
 	if (await user.minionIsBusy()) return `${user.minionName} is busy.`;
 	const gameLength = Time.Minute * 18;
-	const quantity = Math.floor((await user.calcMaxTripLength('CastleWars')) / gameLength);
-	const duration = quantity * gameLength;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: gameLength,
+		maxTripLength: await user.calcMaxTripLength('CastleWars')
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 
 	await ActivityManager.startTrip<MinigameActivityTaskOptionsWithNoChanges>({
 		userID: user.id,

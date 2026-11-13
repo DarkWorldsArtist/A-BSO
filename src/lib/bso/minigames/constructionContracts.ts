@@ -311,14 +311,18 @@ function generateRewardsFromPool(totalQualityPoints: number, recipeWeight: numbe
 	return loot;
 }
 
+import { calcDurationAndQuantity } from '@/lib/util/minionUtils.js';
+
 export async function constructionContractsStartCommand({
 	user,
 	recipe,
-	channelId
+	channelId,
+	durationInput
 }: {
 	user: MUser;
 	channelId: string;
 	recipe: string;
+	durationInput?: string;
 }) {
 	if (await user.minionIsBusy()) return 'Your minion is busy.';
 
@@ -390,8 +394,13 @@ export async function constructionContractsStartCommand({
 	}
 
 	const maxTripLength = await user.calcMaxTripLength('ConstructionContracts');
-	const quantity = Math.floor(maxTripLength / durationPerContract);
-	const duration = quantity * durationPerContract;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: durationPerContract,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const { quantity, duration } = res;
 
 	if (!user.hasEquippedOrInBank(['Saw', 'Drygore saw', 'Crystal saw'])) {
 		return 'You need a Saw, Drygore saw, or Crystal saw to take on Construction Contracts.';

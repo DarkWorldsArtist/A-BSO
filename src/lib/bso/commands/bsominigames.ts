@@ -34,6 +34,7 @@ import { Items } from 'oldschooljs';
 
 import { choicesOf } from '@/discord/index.js';
 import { ownedMaterialOption } from '@/discord/presetCommandOptions.js';
+import { tripDurationOption } from '@/lib/util/minionUtils.js';
 
 export const bsoMinigamesCommand = defineCommand({
 	name: 'bsominigames',
@@ -85,7 +86,8 @@ export const bsoMinigamesCommand = defineCommand({
 								name: `${i.name} (${i.items.map(i => Items.itemNameFromId(i)).join(', ')})`,
 								value: i.name
 							}))
-						}
+						},
+						tripDurationOption
 					]
 				}
 			]
@@ -98,7 +100,8 @@ export const bsoMinigamesCommand = defineCommand({
 				{
 					type: 'Subcommand',
 					name: 'start',
-					description: 'Start a Monkey Rumble trip.'
+					description: 'Start a Monkey Rumble trip.',
+					options: [tripDurationOption]
 				},
 				{
 					type: 'Subcommand',
@@ -181,7 +184,8 @@ export const bsoMinigamesCommand = defineCommand({
 				{
 					type: 'Subcommand',
 					name: 'start',
-					description: 'Start a Fist of Guthix trip.'
+					description: 'Start a Fist of Guthix trip.',
+					options: [tripDurationOption]
 				}
 			]
 		},
@@ -193,7 +197,8 @@ export const bsoMinigamesCommand = defineCommand({
 				{
 					type: 'Subcommand',
 					name: 'start',
-					description: 'Start a Stealing Creation trip.'
+					description: 'Start a Stealing Creation trip.',
+					options: [tripDurationOption]
 				}
 			]
 		},
@@ -212,7 +217,8 @@ export const bsoMinigamesCommand = defineCommand({
 							type: 'String',
 							name: 'material',
 							description: 'The material you want to use to tinker with.'
-						}
+						},
+						tripDurationOption
 					]
 				}
 			]
@@ -307,7 +313,8 @@ export const bsoMinigamesCommand = defineCommand({
 							description: 'The attack method to use.',
 							choices: TuraelsTrialsMethods.map(method => ({ name: method, value: method })),
 							required: true
-						}
+						},
+						tripDurationOption
 					]
 				}
 			]
@@ -373,7 +380,8 @@ export const bsoMinigamesCommand = defineCommand({
 									value: r.name
 								}));
 							}
-						}
+						},
+						tripDurationOption
 					]
 				},
 				{
@@ -397,7 +405,12 @@ export const bsoMinigamesCommand = defineCommand({
 		} = options;
 
 		if (options.turaels_trials?.start) {
-			return turaelsTrialsStartCommand(user, channelId, options.turaels_trials.start.method);
+			return turaelsTrialsStartCommand(
+				user,
+				channelId,
+				options.turaels_trials.start.method,
+				options.turaels_trials.start.duration
+			);
 		}
 		if (options.guthixian_cache?.join) {
 			return joinGuthixianCache(user, channelId);
@@ -444,7 +457,8 @@ export const bsoMinigamesCommand = defineCommand({
 			return constructionContractsStartCommand({
 				user,
 				channelId,
-				recipe: options.construction_contracts.start.recipe
+				recipe: options.construction_contracts.start.recipe,
+				durationInput: options.construction_contracts.start.duration
 			});
 		}
 
@@ -495,11 +509,12 @@ export const bsoMinigamesCommand = defineCommand({
 				user: user,
 				tier: baxtorian_bathhouses.start.tier,
 				ore: baxtorian_bathhouses.start.heating,
-				mixture: baxtorian_bathhouses.start.water_mixture
+				mixture: baxtorian_bathhouses.start.water_mixture,
+				durationInput: baxtorian_bathhouses.start.duration
 			});
 		}
 
-		if (monkey_rumble?.start) return monkeyRumbleCommand(user, channelId);
+		if (monkey_rumble?.start) return monkeyRumbleCommand(user, channelId, monkey_rumble.start.duration);
 		if (monkey_rumble?.stats) return monkeyRumbleStatsCommand(user);
 
 		if (ourania_delivery_service?.buy) {
@@ -514,13 +529,18 @@ export const bsoMinigamesCommand = defineCommand({
 		}
 
 		if (fist_of_guthix?.start) {
-			return fistOfGuthixCommand(user, channelId);
+			return fistOfGuthixCommand(user, channelId, fist_of_guthix.start.duration);
 		}
 		if (stealing_creation?.start) {
-			return stealingCreationCommand(user, channelId);
+			return stealingCreationCommand(user, channelId, stealing_creation.start.duration);
 		}
 		if (options.tinkering_workshop?.start) {
-			return tinkeringWorkshopCommand(user, options.tinkering_workshop.start.material, channelId);
+			return tinkeringWorkshopCommand(
+				user,
+				options.tinkering_workshop.start.material,
+				channelId,
+				options.tinkering_workshop.start.duration
+			);
 		}
 
 		if (options.balthazars_big_bonanza?.start) {

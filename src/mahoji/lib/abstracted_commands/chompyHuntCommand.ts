@@ -3,7 +3,7 @@ import { Bank } from 'oldschooljs';
 
 import { avasDevices, chompyHats } from '@/lib/data/CollectionsExport.js';
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
-import { formatTripDuration } from '@/lib/util/minionUtils.js';
+import { calcDurationAndQuantity, formatTripDuration } from '@/lib/util/minionUtils.js';
 
 const diaryBoosts = [
 	['westernprovinces.elite', 100],
@@ -28,7 +28,10 @@ export async function chompyHuntClaimCommand(user: MUser) {
 	return `Added the following hats to your bank: ${missingHatsBank}`;
 }
 
-export async function chompyHuntCommand({ user, channelId, rng }: OSInteraction & { rng: RNGProvider }) {
+export async function chompyHuntCommand(
+	{ user, channelId, rng }: OSInteraction & { rng: RNGProvider },
+	durationInput?: string
+) {
 	if (user.QP < 10) {
 		return 'You need at least 10 QP to hunt Chompy birds.';
 	}
@@ -38,10 +41,17 @@ export async function chompyHuntCommand({ user, channelId, rng }: OSInteraction 
 		return 'You need an Ogre bow equipped in your range outfit, and Ogre arrows to hunt Chompy birds!';
 	}
 
-	const tripLength = await user.calcMaxTripLength('BigChompyBirdHunting');
+	const maxTripLength = await user.calcMaxTripLength('BigChompyBirdHunting');
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: Time.Hour / baseChompyPerHour,
+		maxTripLength
+	});
+	if (typeof res === 'string') return res;
+	const tripLength = res.duration;
 
 	const boosts: string[] = [];
-	let quantity = Math.floor((baseChompyPerHour / Time.Hour) * tripLength);
+	let quantity = res.quantity;
 	for (const [diary, boost] of diaryBoosts) {
 		const hasDiary = user.hasDiary(diary);
 		if (hasDiary) {

@@ -16,6 +16,8 @@ import { Emoji, formatDuration, reduceNumByPercent, Time } from '@oldschoolgg/to
 import { randArrItem } from 'node-rng';
 import { Bank } from 'oldschooljs';
 
+import { calcDurationAndQuantity } from '@/lib/util/minionUtils.js';
+
 export async function monkeyRumbleStatsCommand(user: MUser) {
 	const tier = monkeyTiers.find(t => t.id === monkeyTierOfUser(user))!;
 	const score = await user.fetchMinigameScore('monkey_rumble');
@@ -27,7 +29,7 @@ export async function monkeyRumbleStatsCommand(user: MUser) {
 **Rumble tokens:** ${user.bank.amount('Rumble token')}`;
 }
 
-export async function monkeyRumbleCommand(user: MUser, channelId: string): CommandResponse {
+export async function monkeyRumbleCommand(user: MUser, channelId: string, durationInput?: string): CommandResponse {
 	if (!user.hasEquipped("M'speak amulet")) {
 		return new MessageBuilder().addChatHeadImage('wurMuTheMonkey', getMonkeyPhrase());
 	}
@@ -76,8 +78,14 @@ export async function monkeyRumbleCommand(user: MUser, channelId: string): Comma
 		);
 	}
 
-	const quantity = Math.floor((await user.calcMaxTripLength('MonkeyRumble')) / fightDuration);
-	let duration = quantity * fightDuration;
+	const res = calcDurationAndQuantity({
+		durationInput,
+		singleTime: fightDuration,
+		maxTripLength: await user.calcMaxTripLength('MonkeyRumble')
+	});
+	if (typeof res === 'string') return res;
+	const { quantity } = res;
+	let duration = res.duration;
 
 	let chanceOfSpecial = Math.floor(125 * (6 - monkeyTierOfUser(user) / 2));
 	if (user.hasEquippedOrInBank('Big banana')) {
