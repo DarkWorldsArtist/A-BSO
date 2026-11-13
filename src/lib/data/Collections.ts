@@ -175,6 +175,7 @@ import {
 	krilTsutsarothCL,
 	lastManStandingCL,
 	leaguesCL,
+	maggotKingCL,
 	magicTrainingArenaCL,
 	mahoganyHomesCL,
 	masterCapesCL,
@@ -454,6 +455,12 @@ export const allCollectionLogs: ICollection = {
 					`${stats.kcBank[Monsters.TheLeviathan.id] ?? 0} KC`,
 					`${stats.kcBank[Monsters.AwakenedTheLeviathan.id] ?? 0} Awakened KC`
 				]
+			},
+			'Maggot King': {
+				alias: ['maggot king', 'maggotking'],
+				kcActivity: Monsters.MaggotKing.name,
+				allItems: Monsters.MaggotKing.allItems,
+				items: maggotKingCL
 			},
 			Vardorvis: {
 				alias: ['vardorvis'],

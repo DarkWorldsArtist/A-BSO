@@ -37,10 +37,32 @@ export enum QuestID {
 	ShadowsOfCustodia = 17,
 	TutorialIsland = 18,
 	AKingdomDivided = 19,
-	TheIdesOfMilk = 20
+	TheIdesOfMilk = 20,
+	TheBloodMoonRises = 21
 }
 
 export const quests: Quest[] = [
+	{
+		id: QuestID.TheBloodMoonRises,
+		qp: 4,
+		name: 'The Blood Moon Rises',
+		skillReqs: {
+			slayer: 74,
+			woodcutting: 74,
+			smithing: 72,
+			cooking: 72,
+			fletching: 70,
+			mining: 66,
+			hunter: 65,
+			crafting: 64,
+			herblore: 64,
+			magic: 57
+		},
+		// Represent the six XP choices as six individually consumable tomes.
+		rewards: new Bank().add('Hallowed flail').add('Sunspear').add(33_715, 6).freeze(),
+		// Bot duration; OSRS labels this quest Very Long, without a fixed time.
+		calcTime: () => Time.Hour * 3
+	},
 	{
 		id: QuestID.DesertTreasureII,
 		qp: 5,

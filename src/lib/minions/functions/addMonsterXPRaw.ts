@@ -120,7 +120,9 @@ export function addMonsterXPRaw(params: {
 
 	if (params.isOnTask) {
 		let newSlayerXP = 0;
-		if (maybeOSJSMonster?.data?.slayerXP) {
+		if (maybeMonster?.customSlayerXP !== undefined) {
+			newSlayerXP += params.taskQuantity! * maybeMonster.customSlayerXP;
+		} else if (maybeOSJSMonster?.data?.slayerXP) {
 			newSlayerXP += params.taskQuantity! * maybeOSJSMonster.data.slayerXP;
 		} else {
 			newSlayerXP += params.taskQuantity! * hp;

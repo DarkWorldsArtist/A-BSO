@@ -780,6 +780,11 @@ const noveltyFood: Buyable[] = [
 
 const Buyables: Buyable[] = [
 	{
+		name: 'Chisel',
+		aliases: ['chisel', 'chisle', 'Chisle'],
+		gpCost: 100
+	},
+	{
 		name: 'Pestle and mortar',
 		aliases: ['mortar and pestle', 'pestle & mortar', 'mortar & pestle'],
 		gpCost: 10_000,

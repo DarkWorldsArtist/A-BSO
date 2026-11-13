@@ -14,6 +14,10 @@ import { Monsters } from 'oldschooljs';
 import { colosseumCommand } from '@/lib/colosseum.js';
 import type { PvMMethod } from '@/lib/constants.js';
 import { trackLoot } from '@/lib/lootTrack.js';
+import {
+	isMaggotKingTakeEggs,
+	resolveMaggotKingMethod
+} from '@/lib/minions/data/killableMonsters/bosses/maggotKing.js';
 import { revenantMonsters } from '@/lib/minions/data/killableMonsters/revs.js';
 import type { MonsterActivityTaskOptions } from '@/lib/types/minions.js';
 import findMonster from '@/lib/util/findMonster.js';
@@ -39,7 +43,8 @@ export async function minionKillCommand(
 	method: PvMMethod | undefined,
 	wilderness: boolean | undefined,
 	_solo: boolean | undefined,
-	onTask: boolean | undefined
+	onTask: boolean | undefined,
+	takeEggs = false
 ): CommandResponse {
 	if (inputQuantity !== undefined && inputQuantity < 1) return 'Quantity must be greater than 0.';
 	if (await user.minionIsBusy()) {
@@ -75,6 +80,7 @@ export async function minionKillCommand(
 		return burningDominionCommand(interaction, user, channelId, name, inputQuantity);
 	}
 
+	let attackStyles = user.getAttackStyles();
 	let monster = findMonster(name);
 
 	const matchedRevenantMonster = revenantMonsters.find(monster =>
@@ -85,6 +91,21 @@ export async function minionKillCommand(
 	}
 
 	if (!monster) return invalidMonsterMsg;
+	if (monster.id === Monsters.MaggotKing.id) {
+		takeEggs = takeEggs || isMaggotKingTakeEggs(name);
+		const method = resolveMaggotKingMethod(user.gearBank, attackStyles);
+		if (typeof method === 'string') return method;
+		monster = method;
+		const meleeStyles = attackStyles.filter(
+			style => style === 'attack' || style === 'strength' || style === 'defence'
+		);
+		const secondaryStyle = method.defaultAttackStyles?.includes('magic') ? 'magic' : 'ranged';
+
+		attackStyles = [
+			...(meleeStyles.length > 0 ? meleeStyles : ['attack' as const]),
+			secondaryStyle
+		];
+	}
 
 	const [hasReqs, reason] = await user.hasMonsterRequirements(monster);
 	if (!hasReqs) {
@@ -108,7 +129,7 @@ export async function minionKillCommand(
 
 	const result = newMinionKillCommand({
 		gearBank: user.gearBank,
-		attackStyles: user.getAttackStyles(),
+		attackStyles,
 		currentSlayerTask: slayerInfo,
 		monster,
 		isTryingToUseWildy: wilderness ?? false,
@@ -177,6 +198,7 @@ export async function minionKillCommand(
 		iQty: inputQuantity,
 		duration: dtdResult ? Time.Second * 5 : result.duration,
 		type: 'MonsterKilling',
+		takeEggs: takeEggs || undefined,
 		usingCannon: !usingCannon ? undefined : usingCannon,
 		cannonMulti: !cannonMulti ? undefined : cannonMulti,
 		chinning: !chinning ? undefined : chinning,
@@ -191,6 +213,7 @@ export async function minionKillCommand(
 
 	let response = `${minionName} is now killing ${result.quantity}x ${monster.name}, ${dtdResult ? `using a <:deathtouched_dart:1560872986934902934> **Deathtouched dart**, it'll take around ${formatTripDuration(user, Time.Second * 5)}` : `It'll take around ${formatTripDuration(user, result.duration)} to finish`}. Attack styles used: ${result.attackStyles.join(', ')}.`;
 
+	if (takeEggs) result.messages.push('Taking eggs instead of normal loot.');
 	if (result.messages.length > 0) {
 		response += `\n\n${result.messages.join(', ')}`;
 	}
