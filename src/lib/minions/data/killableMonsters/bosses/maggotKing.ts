@@ -95,6 +95,7 @@ export const maggotKingKillable: KillableMonster = {
 
 const mageKillable: KillableMonster = {
 	...maggotKingKillable,
+	itemInBankBoosts: maggotKingKillable.itemInBankBoosts?.slice(0, 1),
 	equippedItemBoosts: [
 		...maggotKingKillable.equippedItemBoosts!.filter(boost => boost.gearSetup === 'melee'),
 		{
@@ -204,7 +205,44 @@ export function resolveMaggotKingMethod(
 		}
 		return mageKillable;
 	}
-	return 'Maggot King requires melee plus a ranged or fire-magic setup. Equip a crossbow with 85 Ranged and 100 ranged attack, or a fire staff with 75 Magic and 70 magic attack.';
+	const rangedMissing: string[] = [];
+	const magicMissing: string[] = [];
+
+	if (!rangeWeapon || !crossbows.includes(rangeWeapon.name)) {
+		rangedMissing.push('Equip a supported crossbow in your Ranged setup.');
+	}
+	if (gearBank.skillsAsLevels.ranged < 85) {
+		rangedMissing.push(`85 Ranged required (you have ${gearBank.skillsAsLevels.ranged}).`);
+	}
+	if (range.stats[GearStat.AttackRanged] < 100) {
+		rangedMissing.push(`100 ranged attack required (you have ${range.stats[GearStat.AttackRanged]}).`);
+	}
+	if (range.stats[GearStat.RangedStrength] < 50) {
+		rangedMissing.push(`50 ranged strength required (you have ${range.stats[GearStat.RangedStrength]}).`);
+	}
+
+	if (!mageWeapon || !fireStaves.includes(mageWeapon.name)) {
+		magicMissing.push('Equip a supported fire-magic weapon in your Magic setup.');
+	}
+	if (gearBank.skillsAsLevels.magic < 75) {
+		magicMissing.push(`75 Magic required (you have ${gearBank.skillsAsLevels.magic}).`);
+	}
+	if (mage.stats[GearStat.AttackMagic] < 70) {
+		magicMissing.push(`70 magic attack required (you have ${mage.stats[GearStat.AttackMagic]}).`);
+	}
+
+	if (trainingRanged) {
+		return `Maggot King — your Ranged setup is missing:\n- ${rangedMissing.join('\n- ')}`;
+	}
+	if (trainingMagic) {
+		return `Maggot King — your Magic setup is missing:\n- ${magicMissing.join('\n- ')}`;
+	}
+
+	return [
+		'Maggot King requires one of these setups:',
+		`Ranged — missing:\n- ${rangedMissing.join('\n- ')}`,
+		`Magic — missing:\n- ${magicMissing.join('\n- ')}`
+	].join('\n\n');
 }
 
 export function isMaggotKingTakeEggs(name: string): boolean {
