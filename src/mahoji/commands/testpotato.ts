@@ -161,8 +161,67 @@ for (const gear of Items.resolveItems([
 ])) {
 	islandMage.equip(Items.getOrThrow(gear));
 }
+const maggotKingMelee = new Gear();
+for (const gear of Items.resolveItems([
+	"Inquisitor's great helm",
+	'Infernal cape',
+	'Amulet of rancour',
+	"Inquisitor's hauberk",
+	"Inquisitor's plateskirt",
+	'Ferocious gloves',
+	'Avernic defender',
+	'Primordial boots',
+	'Ultor ring',
+	"Inquisitor's mace"
+])) {
+	maggotKingMelee.equip(Items.getOrThrow(gear));
+}
 
+const maggotKingRange = new Gear();
+for (const gear of Items.resolveItems([
+	'Masori mask (f)',
+	"Ava's assembler",
+	'Necklace of anguish',
+	'Masori body (f)',
+	'Masori chaps (f)',
+	'Zaryte vambraces',
+	'Pegasian boots',
+	'Venator ring',
+	'Zaryte crossbow',
+	'Twisted buckler',
+	'Ruby dragon bolts (e)'
+])) {
+	maggotKingRange.equip(Items.getOrThrow(gear));
+}
+
+const maggotKingMage = new Gear();
+for (const gear of Items.resolveItems([
+	'Ancestral hat',
+	'Imbued zamorak cape',
+	'Occult necklace',
+	'Ancestral robe top',
+	'Ancestral robe bottom',
+	'Confliction gauntlets',
+	'Eternal boots',
+	'Magus ring',
+	'Twinflame staff',
+	'Tome of fire'
+])) {
+	maggotKingMage.equip(Items.getOrThrow(gear));
+}
 const gearPresets = [
+	{
+		name: 'Maggot King - Ranged',
+		melee: maggotKingMelee,
+		range: maggotKingRange,
+		mage: new Gear()
+	},
+	{
+		name: 'Maggot King - Magic',
+		melee: maggotKingMelee,
+		range: new Gear(),
+		mage: maggotKingMage
+	},
 	{
 		name: 'ToB',
 		melee: TOBMaxMeleeGear,
@@ -693,6 +752,27 @@ async function giveElderClueRequirements(user: MUser) {
 	return `Spawned Elder clue requirements, including Falo the Bard items: ${faloTheBardPreset}.`;
 }
 
+const maggotKingPreset = new Bank()
+	.add('Shark', 10_000)
+	.add('Prayer potion(4)', 1_000)
+	.add('Super combat potion(4)', 1_000)
+	.add('Ranging potion(4)', 1_000)
+	.add('Antidote++(4)', 1_000)
+	.add('Ruby dragon bolts (e)', 100_000)
+	.add('Blood rune', 100_000)
+	.add('Fire rune', 1_000_000)
+	.add('Burnt page', 10_000)
+	.add('Crimson kisten')
+	.add('Voidwaker')
+	.add('Dragon claws')
+	.add('Burning claws')
+	.add('Webweaver bow')
+	.add("Craw's bow")
+	.add('Venator bow')
+	.add('Eye of ayak')
+	.add('Chisel')
+	.add('Elder venator fang', 10)
+	.add('Necklace of anguish', 10);
 const spawnPresets = [
 	['fishing', fishingPreset],
 	['openables', openablesBank],
@@ -704,7 +784,8 @@ const spawnPresets = [
 	['potions', potionsPreset],
 	['food', foodPreset],
 	['runes', runePreset],
-	['island', islandPreset]
+	['island', islandPreset],
+	['maggot-king', maggotKingPreset]
 ] as const;
 
 const thingsToWipe = [

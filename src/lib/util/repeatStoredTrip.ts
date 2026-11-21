@@ -435,8 +435,8 @@ const tripHandlers: {
 		args: (data: FarmingActivityTaskOptions) =>
 			data.autoFarmed
 				? {
-						auto_farm: {}
-					}
+					auto_farm: {}
+				}
 				: {}
 	},
 	[activity_type_enum.FightCaves]: {
@@ -575,7 +575,9 @@ const tripHandlers: {
 			else if (data.bob === SlayerActivityConstants.IceBarrage) method = 'barrage';
 			else if (data.bob === SlayerActivityConstants.IceBurst) method = 'burst';
 			return {
-				name: autocompleteMonsters.find(i => i.id === data.mi)?.name ?? data.mi?.toString(),
+				name: data.takeEggs
+					? 'Maggot King (Take-eggs)'
+					: (autocompleteMonsters.find(i => i.id === data.mi)?.name ?? data.mi?.toString()),
 				quantity: data.iQty,
 				method,
 				wilderness: data.isInWilderness,

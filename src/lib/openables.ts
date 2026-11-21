@@ -28,6 +28,7 @@ import {
 	itemID,
 	LarransChest,
 	LootTable,
+	MaggotEggs,
 	MasterMimicTable,
 	MoonKeyChest,
 	MuddyChest,
@@ -273,6 +274,14 @@ const masterClue = clueOpenables.find(c => c.name === 'Reward casket (master)');
 masterClue!.allItems.push(itemID('Clue scroll (grandmaster)'));
 
 const osjsOpenables: UnifiedOpenable[] = [
+	...MaggotEggs.map(egg => ({
+		name: egg.name,
+		id: egg.id,
+		openedItem: Items.getOrThrow(egg.id),
+		aliases: egg.aliases,
+		output: egg.table,
+		allItems: egg.allItems
+	})),
 	{
 		name: 'Brimstone chest',
 		id: 23_083,

@@ -143,6 +143,7 @@ function getSlayerContext({
 interface newOptions {
 	type: 'MonsterKilling';
 	user: MUser;
+	takeEggs?: boolean;
 	monster: KillableMonster;
 	q: number;
 	iQty?: number;
@@ -277,12 +278,10 @@ export function doMonsterTrip(data: newOptions) {
 			}
 
 			messages.push(
-				`${
-					hasPrayerLevel && !protectItem
-						? "Oh no! While running for your life, you panicked, got smited and couldn't protect a 4th item. "
-						: ''
-				}You died, you lost a lot of loot, and these equipped items: ${calc.lostItems}..${
-					reEquipedItems ? ' Your minion equips similar lost items from bank.' : ''
+				`${hasPrayerLevel && !protectItem
+					? "Oh no! While running for your life, you panicked, got smited and couldn't protect a 4th item. "
+					: ''
+				}You died, you lost a lot of loot, and these equipped items: ${calc.lostItems}..${reEquipedItems ? ' Your minion equips similar lost items from bank.' : ''
 				}`
 			);
 		}
@@ -335,6 +334,7 @@ export function doMonsterTrip(data: newOptions) {
 	}
 
 	const killOptions: MonsterKillOptions = {
+		takeEggs: monster.id === EMonster.MAGGOT_KING && data.takeEggs === true,
 		onSlayerTask: slayerContext.isOnTask,
 		slayerMaster: slayerContext.isOnTask ? slayerContext.slayerMaster.osjsEnum : undefined,
 		hasSuperiors: superiorTable,
@@ -381,12 +381,12 @@ export function doMonsterTrip(data: newOptions) {
 	const lootQuantity = wiped
 		? 0
 		: oriEffect({
-				gearBank,
-				quantity: finalQuantity,
-				duration,
-				messages,
-				monster: monster.name
-			});
+			gearBank,
+			quantity: finalQuantity,
+			duration,
+			messages,
+			monster: monster.name
+		});
 
 	const loot = wiped ? new Bank() : monster.table.kill(lootQuantity - (guaranteesVorkathHead ? 1 : 0), killOptions);
 
@@ -488,8 +488,7 @@ export function doMonsterTrip(data: newOptions) {
 			);
 		} else {
 			messages.push(
-				`You killed ${slayerContext.effectiveSlayed}x of your ${
-					slayerContext.currentTask?.quantity_remaining
+				`You killed ${slayerContext.effectiveSlayed}x of your ${slayerContext.currentTask?.quantity_remaining
 				} remaining kills, you now have ${slayerContext.quantityLeft} kills remaining.`
 			);
 		}

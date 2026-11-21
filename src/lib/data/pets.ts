@@ -19,6 +19,16 @@ export interface Pet {
 
 const pets: Pet[] = [
 	{
+		id: 67,
+		chance: 3500,
+		name: 'Maggot marquess',
+		type: 'BOSS',
+		altNames: ['MAGGOTMARQUESS', 'MAGGOTKING'],
+		formatFinish: (num: number) =>
+			'You had to kill Maggot King ' + fm(num) + ' times to get Maggot marquess! :pet:',
+		bossKeys: ['maggotKing']
+	},
+	{
 		id: 1,
 		emoji: '<:Baby_chinchompa_red:1560874066653610077>',
 		chance: 95_898,

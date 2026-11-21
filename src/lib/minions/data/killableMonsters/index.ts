@@ -447,4 +447,13 @@ const otherMonsters = [
 	}
 ];
 
-export const autocompleteMonsters = [...killableMonsters, ...otherMonsters, ...bsoAutocompleteMonsters];
+export const autocompleteMonsters = [
+	...killableMonsters,
+	...otherMonsters,
+	...bsoAutocompleteMonsters,
+	{
+		id: Monsters.MaggotKing.id,
+		name: 'Maggot King (Take-eggs)',
+		aliases: ['maggot king eggs', 'take-eggs', 'maggot eggs']
+	}
+];

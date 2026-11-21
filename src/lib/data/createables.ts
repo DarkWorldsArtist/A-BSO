@@ -1462,6 +1462,20 @@ const Reverteables: Createable[] = [
 
 const Createables: Createable[] = [
 	{
+		name: 'Etched elder venator fang',
+		inputItems: new Bank().add('Elder venator fang').freeze(),
+		outputItems: new Bank().add('Etched elder venator fang').freeze(),
+		requiredSkills: {
+			crafting: 84
+		},
+		customReq: async user => {
+			if (!user.owns('Chisel')) {
+				return 'You need a chisel to etch the elder venator fang.';
+			}
+			return null;
+		}
+	},
+	{
 		name: 'Godsword blade',
 		inputItems: {
 			[itemID('Godsword shard 1')]: 1,
