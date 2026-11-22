@@ -13,7 +13,7 @@ import { hasWildyHuntGearEquipped } from '@/lib/gear/functions/hasWildyHuntGearE
 import type { UserFullGearSetup } from '@/lib/gear/types.js';
 import { trackLoot } from '@/lib/lootTrack.js';
 import { calcLootXPHunting, generateHerbiTable } from '@/lib/skilling/functions/calcsHunter.js';
-import Hunter from '@/lib/skilling/skills/hunter/hunter.js';
+import Hunter, { hunterOutfitBonus } from '@/lib/skilling/skills/hunter/hunter.js';
 import type { Creature } from '@/lib/skilling/types.js';
 import type { Gear } from '@/lib/structures/Gear.js';
 import type { Skills } from '@/lib/types/index.js';
@@ -59,7 +59,8 @@ export function calculateHunterResult({
 	invincible = false,
 	noRandomness = false,
 	graceful,
-	experienceScore
+	experienceScore,
+	outfitMod = 0
 }: {
 	creature: Creature;
 	bank: Bank;
@@ -84,6 +85,7 @@ export function calculateHunterResult({
 	noRandomness?: boolean;
 	graceful: boolean;
 	experienceScore: number;
+	outfitMod?: number;
 }) {
 	const messages: string[] = [];
 	let gotPked = false;
@@ -102,6 +104,7 @@ export function calculateHunterResult({
 		graceful,
 		experienceScore,
 		noRandomness,
+		outfitMod,
 		rng
 	});
 	let totalHunterXP = xpReceived;
@@ -337,7 +340,8 @@ export const hunterTask: MinionTask = {
 				portentResult,
 				rng,
 				graceful,
-				experienceScore
+				experienceScore,
+				outfitMod: hunterOutfitBonus(user)
 			});
 
 		await user.transactItems({

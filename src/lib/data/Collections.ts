@@ -34,7 +34,8 @@ import {
 	treeBeardCL,
 	vasaMagusCL,
 	venatrixCL,
-	vladDrakanCL
+	vladDrakanCL,
+	yetiCL
 } from '@/lib/bso/collection-log/main.js';
 import {
 	balthazarsBigBonanzaCL,
@@ -191,6 +192,7 @@ import {
 	revenantsCL,
 	roguesDenCL,
 	rooftopAgilityCL,
+	rumourCL,
 	sarachnisCL,
 	scorpiaCL,
 	shadesOfMorttonCL,
@@ -891,7 +893,14 @@ export const allCollectionLogs: ICollection = {
 					'sup torm demon',
 					'superior tormented demons'
 				],
+				kcActivity: 'Superior Tormented Demon',
 				fmtProg: kcProg(BSOMonsters.SuperiorTormentedDemon.id)
+			},
+			Yeti: {
+				items: yetiCL,
+				alias: ['yeti'],
+				kcActivity: 'Yeti',
+				fmtProg: kcProg(BSOMonsters.Yeti.id)
 			},
 			"Champion's Challenge": {
 				alias: ['champion', 'champion scrolls', 'champion scroll', 'scroll', 'scrolls'],
@@ -1497,9 +1506,14 @@ export const allCollectionLogs: ICollection = {
 				items: demonicGorillaCL,
 				fmtProg: kcProg(Monsters.DemonicGorilla)
 			},
-			///	'Hunter Guild': {
-			///		items: CollectionLog.HunterGuild.items
-			///	},
+			'Hunter Guild': {
+				alias: ['hunter guild', 'hunter', 'rumours'],
+				kcActivity: {
+					Default: async (_, __, stats) => stats.rumours.total
+				},
+				items: rumourCL,
+				isActivity: true
+			},
 			'Monkey Backpacks': {
 				alias: ['monkey', 'monkey bps', 'backpacks'],
 				kcActivity: {
@@ -2060,7 +2074,7 @@ export async function getCollection(options: {
 		};
 	}
 
-	const igneTameKCs = logType === 'tame' ? await getAllIgneTameKCs(user.id) : null;
+	const igneTameKCs = ['collection', 'bank', 'tame'].includes(logType) ? await getAllIgneTameKCs(user.id) : null;
 	const minigameScores = options.minigameScoresOverride ?? (await user.fetchMinigameScores());
 
 	for (const [category, entries] of Object.entries(allCollectionLogs)) {
@@ -2104,12 +2118,39 @@ export async function getCollection(options: {
 					else userKC = undefined;
 				}
 
-				const tameKillable = tameKillableMonsters.find(
-					m => m.name.toLowerCase() === activityName.toLowerCase()
-				);
-				if (tameKillable && igneTameKCs !== null) {
-					if (!userKC) userKC = {};
-					userKC['Tame KC'] = igneTameKCs.idBank[tameKillable.id] ?? 0;
+				if (igneTameKCs !== null) {
+					const candidateNames = new Set<string>([activityName, ...(attributes.alias ?? [])]);
+					if (typeof attributes.kcActivity === 'string') {
+						candidateNames.add(attributes.kcActivity);
+					} else if (attributes.kcActivity && typeof attributes.kcActivity === 'object') {
+						for (const val of Object.values(attributes.kcActivity)) {
+							if (typeof val === 'string') candidateNames.add(val);
+							else if (Array.isArray(val)) {
+								for (const v of val) candidateNames.add(v);
+							}
+						}
+					}
+					const matchedTameMonsters = tameKillableMonsters.filter(
+						m =>
+							!m.tameCantKill &&
+							[m.name, ...m.aliases].some(a => {
+								for (const c of candidateNames) {
+									if (stringMatches(c, a)) return true;
+								}
+								return false;
+							})
+					);
+					if (matchedTameMonsters.length > 0) {
+						if (!userKC) userKC = {};
+						const seenIds = new Set<number>();
+						let tameKcTotal = 0;
+						for (const m of matchedTameMonsters) {
+							if (seenIds.has(m.id)) continue;
+							seenIds.add(m.id);
+							tameKcTotal += igneTameKCs.idBank[m.id] ?? 0;
+						}
+						userKC['Tame KC'] = tameKcTotal;
+					}
 				}
 
 				return {
@@ -2142,7 +2183,7 @@ export async function getCollection(options: {
 			category: 'Other',
 			name: monster.name,
 			collection: clItems,
-			completions: { Default: await user.getKC(monster.id), TameKC: igneTameKCs.idBank[monster.id] ?? 0 },
+			completions: { Default: await user.getKC(monster.id), 'Tame KC': igneTameKCs.idBank[monster.id] ?? 0 },
 			collectionObtained: userAmount,
 			collectionTotal: totalCl,
 			userItems: userCheckBank,

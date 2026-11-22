@@ -92,7 +92,11 @@ export const ignecarusTask: MinionTask = {
 				if (deaths[user.id].qty === quantity) continue;
 				else lootRolls = quantity - deaths[user.id].qty;
 			}
-			const loot = new Bank().add(IgnecarusLootTable.roll(lootRolls));
+			const loot = new Bank().add(
+				IgnecarusLootTable.roll(lootRolls, {
+					tertiaryItemPercentageChanges: user.buildTertiaryItemChanges(false, false, false)
+				})
+			);
 			if (isDoubleLootActive(duration)) {
 				loot.multiply(2);
 			}

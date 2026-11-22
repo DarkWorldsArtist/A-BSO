@@ -42,6 +42,7 @@ export const nexLootTable = new LootTable()
 	.tertiary(19, new LootTable().add('Clue scroll (elite)', 1, 99).add('Clue scroll (master)', 1, 1))
 	.tertiary(20, 'Clue scroll (grandmaster)')
 	.tertiary(86, 'Ancient hilt')
+	.tertiary(8, 'Ecumenical key shard', [2, 5])
 	.tertiary(3000, 'Bloodsoaked feather');
 
 export const NexMonster: KillableMonster = {

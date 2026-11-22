@@ -18,6 +18,9 @@ export const temporossTask: MinionTask = {
 			rewardTokens = Math.ceil(increaseNumByPercent(rewardTokens, rewardBoost));
 		}
 		const loot = getTemporossLoot(rewardTokens, currentLevel, user.bank);
+		if (user.hasEquippedOrInBank('Fishing master cape') && loot.has('Spirit flakes')) {
+			loot.add('Spirit flakes', loot.amount('Spirit flakes'));
+		}
 
 		let fXPtoGive = quantity * 5500 * (currentLevel / 40);
 		let fBonusXP = 0;

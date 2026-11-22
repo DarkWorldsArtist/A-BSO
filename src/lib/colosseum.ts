@@ -290,7 +290,7 @@ function calculateDeathChance(waveKC: number, hasBF: boolean, hasSGS: boolean, h
 	const baseChance = 80;
 	const kcReduction = 80 * (1 - Math.exp(-1.5 * cappedKc));
 
-	let newChance = baseChance - kcReduction;
+	let newChance = clamp(baseChance - kcReduction, { min: 1, max: 80 });
 
 	if (hasSGS) {
 		newChance = reduceNumByPercent(newChance, 5);
@@ -302,7 +302,7 @@ function calculateDeathChance(waveKC: number, hasBF: boolean, hasSGS: boolean, h
 		newChance = reduceNumByPercent(newChance, 20);
 	}
 
-	return clamp(newChance, { min: 1, max: 80 });
+	return newChance;
 }
 
 export class ColosseumWaveBank extends GeneralBank<number> {
@@ -414,7 +414,7 @@ export const colosseumWaveTime = (options: {
 	if (!options.hasClaws) {
 		waveDuration = increaseNumByPercent(waveDuration, 4);
 	}
-	if (!options.hasTorture || !options.hasBHook) {
+	if (!options.hasTorture && !options.hasBHook) {
 		waveDuration = increaseNumByPercent(waveDuration, 5);
 	}
 	return waveDuration;

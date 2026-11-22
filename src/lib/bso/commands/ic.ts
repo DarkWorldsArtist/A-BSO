@@ -1,6 +1,7 @@
 import { ItemContracts, resetBrokenContracts } from '@/lib/bso/itemContracts.js';
 
-import { Emoji, formatDuration } from '@oldschoolgg/toolkit';
+import { dateFm } from '@oldschoolgg/discord';
+import { Emoji } from '@oldschoolgg/toolkit';
 
 import { BitField } from '@/lib/constants.js';
 import { makeDonateIcButton } from '@/lib/util/interactions.js';
@@ -29,7 +30,7 @@ export const icCommand = defineCommand({
 		}
 	],
 	run: async ({ options, user, interaction }) => {
-		const details = ItemContracts.getItemContractDetails(user);
+		const details = await ItemContracts.getItemContractDetails(user);
 		if (!details) {
 			return resetBrokenContracts(user);
 		}
@@ -46,11 +47,9 @@ export const icCommand = defineCommand({
 				return {
 					content: `${
 						Emoji.ItemContract
-					} You have no item contract available at the moment. Come back in ${formatDuration(
-						details.durationRemaining
-					)}.
-
-${details.infoStr}`
+					} You have completed all daily Item Contracts! Resets at midnight EST (${dateFm(
+						details.nextReset
+					)}).\n\n${details.infoStr}`
 				};
 			}
 			return { content: `${Emoji.ItemContract} ${details.infoStr}`, components };
@@ -59,7 +58,7 @@ ${details.infoStr}`
 			? await ItemContracts.skip(interaction, user)
 			: await ItemContracts.handInContract(interaction, user);
 
-		const nextIcDetails = ItemContracts.getItemContractDetails(user);
+		const nextIcDetails = await ItemContracts.getItemContractDetails(user);
 		if (!nextIcDetails) {
 			return resetBrokenContracts(user);
 		}

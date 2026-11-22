@@ -181,9 +181,9 @@ export async function minionStatusCommand(
 		buttons.push(makeSpawnLampButton());
 	}
 
-	const icDetails = ItemContracts.getItemContractDetails(user);
+	const icDetails = await ItemContracts.getItemContractDetails(user);
 	if (icDetails !== null) {
-		if (icDetails.currentItem && icDetails.owns) {
+		if (icDetails.nextContractIsReady && icDetails.currentItem && icDetails.owns) {
 			buttons.push(makeSendICButton(icDetails.currentItem.name));
 		}
 	} else {

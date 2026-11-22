@@ -182,7 +182,11 @@ export const dominionTask: MinionTask = {
 				continue;
 			}
 
-			const loot = new Bank().add(BurningDominionTemplate.table.roll(userSuccessfulKills));
+			const loot = new Bank().add(
+				BurningDominionTemplate.table.roll(userSuccessfulKills, {
+					tertiaryItemPercentageChanges: user.buildTertiaryItemChanges(false, false, isOnTask)
+				})
+			);
 
 			teamLoot.add(user.id, loot);
 			totalLoot.add(loot);

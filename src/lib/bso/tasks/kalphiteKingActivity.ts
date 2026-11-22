@@ -63,11 +63,14 @@ export const kalphiteKingTask: MinionTask = {
 				}
 			}
 
-			const loot = new Bank();
-			loot.add(KalphiteKingMonster.table.kill(1, {}));
-
 			const winner = teamTable.roll();
 			if (!winner) continue;
+			const winnerUser = parsedUsers.find(u => u.id === winner)?.user;
+			const loot = new Bank().add(
+				KalphiteKingMonster.table.kill(1, {
+					tertiaryItemPercentageChanges: winnerUser?.buildTertiaryItemChanges(false, false, false)
+				})
+			);
 			teamsLoot.add(winner, loot);
 
 			kcAmounts[winner] = kcAmounts[winner] ? ++kcAmounts[winner] : 1;

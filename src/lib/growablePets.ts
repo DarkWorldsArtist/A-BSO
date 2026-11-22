@@ -106,6 +106,4 @@ export const handleGrowablePetGrowth: TripFinishEffect['fn'] = async ({ user, da
 	}
 };
 
-export const growablePetsCL = growablePets
-	.flatMap(i => i.stages)
-	.filter(i => !resolveItems(['Skip', 'Penguin egg']).includes(i));
+export const growablePetsCL = growablePets.flatMap(i => i.stages);

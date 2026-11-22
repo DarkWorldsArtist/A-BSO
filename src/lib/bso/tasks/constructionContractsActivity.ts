@@ -6,7 +6,7 @@ export const constructionContractsTask: MinionTask = {
 	async run(data: ConstructionContractsTaskOptions, { user, handleTripFinish }) {
 		const { quantity, channelId, duration, recipe } = data;
 
-		const result = calculateContractsResult(data);
+		const result = calculateContractsResult(data, user.hasCompletedCATier('grandmaster'));
 		const { loot, constructionXP, flavorMessage, completedContracts, failedContracts } = result;
 
 		const { newScore } = await user.incrementMinigameScore('construction_contracts', 1);

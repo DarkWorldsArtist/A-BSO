@@ -90,7 +90,7 @@ export const spawnLampResetTime = (user: MUser, perkTier: PerkTier) => {
 	const hasTier5 = perkTier >= PerkTier.Five;
 	const hasTier4 = !hasTier5 && perkTier === PerkTier.Four;
 
-	let cooldown = ([PerkTier.Six, PerkTier.Five] as number[]).includes(perkTier) ? Time.Hour * 12 : Time.Hour * 24;
+	let cooldown = perkTier >= PerkTier.Five ? Time.Hour * 12 : Time.Hour * 24;
 
 	if (!hasTier5 && !hasTier4 && hasPerm) {
 		cooldown = Time.Hour * 48;

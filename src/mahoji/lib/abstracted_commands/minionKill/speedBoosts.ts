@@ -1,3 +1,4 @@
+import { BSOItem } from '@/lib/bso/BSOItem.js';
 import { empyreanOutfit } from '@/lib/bso/collection-log/main.js';
 import {
 	defaultIslandUpgrades,
@@ -531,6 +532,13 @@ export const mainBoostEffects: (Boost | Boost[])[] = [
 				});
 			}
 
+			if (gearBank.usingPet('Frostbite') && monster.id === EBSOMonster.FROST_DRAGON) {
+				results.push({
+					percentageReduction: 75,
+					message: '4x speed for Frostbite'
+				});
+			}
+
 			if (gearBank.hasEquipped('Dwarven warhammer') && !isInWilderness) {
 				results.push({
 					percentageReduction: 40,
@@ -578,6 +586,40 @@ export const mainBoostEffects: (Boost | Boost[])[] = [
 						message: `${reduction}% for ${label} gear`
 					});
 					break;
+				}
+			}
+
+			if (monster.id === Monsters.MaggotKing.id) {
+				const bsoTorvaSet = [
+					BSOItem.TORVA_FULL_HELM,
+					BSOItem.TORVA_PLATEBODY,
+					BSOItem.TORVA_PLATELEGS,
+					BSOItem.TORVA_GLOVES,
+					BSOItem.TORVA_BOOTS
+				];
+				const bsoPernixSet = [
+					BSOItem.PERNIX_COWL,
+					BSOItem.PERNIX_BODY,
+					BSOItem.PERNIX_CHAPS,
+					BSOItem.PERNIX_GLOVES,
+					BSOItem.PERNIX_BOOTS
+				];
+				const bsoVirtusSet = [
+					BSOItem.VIRTUS_MASK,
+					BSOItem.VIRTUS_ROBE_TOP,
+					BSOItem.VIRTUS_ROBE_LEGS,
+					BSOItem.VIRTUS_GLOVES,
+					BSOItem.VIRTUS_BOOTS
+				];
+				const isMageRoute = Boolean(monster.disallowedAttackStyles?.includes('ranged'));
+				if (gearBank.gear.melee.hasEquipped(bsoTorvaSet, true, false)) {
+					results.push({ percentageReduction: 5, message: '5% for Torva gear' });
+				}
+				if (!isMageRoute && gearBank.gear.range.hasEquipped(bsoPernixSet, true, false)) {
+					results.push({ percentageReduction: 5, message: '5% for Pernix gear' });
+				}
+				if (isMageRoute && gearBank.gear.mage.hasEquipped(bsoVirtusSet, true, false)) {
+					results.push({ percentageReduction: 5, message: '5% for Virtus gear' });
 				}
 			}
 

@@ -35,6 +35,7 @@ import {
 	FishingStoredTripError
 } from '@/lib/skilling/skills/fishing/fishingRework.js';
 import Hunter from '@/lib/skilling/skills/hunter/hunter.js';
+import { getRumourHunter } from '@/lib/skilling/skills/hunter/rumours/util.js';
 import type {
 	ActivityTaskData,
 	ActivityTaskOptionsWithQuantity,
@@ -81,6 +82,7 @@ import type {
 	PickpocketActivityTaskOptions,
 	PuroPuroActivityTaskOptions,
 	RaidsOptions,
+	RumourActivityTaskOptions,
 	RunecraftActivityTaskOptions,
 	SawmillActivityTaskOptions,
 	ScatteringActivityTaskOptions,
@@ -89,6 +91,7 @@ import type {
 	ShadesOfMortonPyreLogsOptions,
 	SmeltingActivityTaskOptions,
 	SmithingActivityTaskOptions,
+	StealingArtefactsActivityTaskOptions,
 	TempleTrekkingActivityTaskOptions,
 	TheatreOfBloodTaskOptions,
 	TiaraRunecraftActivityTaskOptions,
@@ -435,8 +438,8 @@ const tripHandlers: {
 		args: (data: FarmingActivityTaskOptions) =>
 			data.autoFarmed
 				? {
-					auto_farm: {}
-				}
+						auto_farm: {}
+					}
 				: {}
 	},
 	[activity_type_enum.FightCaves]: {
@@ -517,6 +520,10 @@ const tripHandlers: {
 			name: data.rationName,
 			quantity: data.quantity
 		})
+	},
+	[activity_type_enum.Rumour]: {
+		commandName: 'rumours',
+		args: (data: RumourActivityTaskOptions) => ({ start: { tier: data.hunter ?? getRumourHunter(data.tier).id } })
 	},
 	[activity_type_enum.Hunter]: {
 		commandName: 'hunt',
@@ -683,16 +690,38 @@ const tripHandlers: {
 			rogues_den: {}
 		})
 	},
+	[activity_type_enum.StealingArtefacts]: {
+		commandName: 'activities',
+		args: (data: StealingArtefactsActivityTaskOptions) => ({
+			stealing_artefacts: {
+				start: {
+					quantity: data.quantity,
+					stamina: data.stamina,
+					teleport: data.teleportOptionEnabled,
+					glassblow_product: data.glassblow?.product ?? 'none'
+				}
+			}
+		})
+	},
 	[activity_type_enum.Sawmill]: {
 		commandName: 'activities',
 		args: (data: SawmillActivityTaskOptions) => ({
-			plank_make: { action: 'sawmill', quantity: data.plankQuantity, type: Items.itemNameFromId(data.plankID) }
+			plank_make: {
+				action: 'sawmill',
+				quantity: data.plankQuantity,
+				type: data.plankName ?? Items.itemNameFromId(data.plankID),
+				speed: data.speed
+			}
 		})
 	},
 	[activity_type_enum.Butler]: {
 		commandName: 'activities',
 		args: (data: ButlerActivityTaskOptions) => ({
-			plank_make: { action: 'butler', quantity: data.plankQuantity, type: Items.itemNameFromId(data.plankID) }
+			plank_make: {
+				action: 'butler',
+				quantity: data.plankQuantity,
+				type: data.plankName ?? Items.itemNameFromId(data.plankID)
+			}
 		})
 	},
 	[activity_type_enum.Sepulchre]: {

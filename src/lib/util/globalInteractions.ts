@@ -1,4 +1,5 @@
 import { ItemContracts } from '@/lib/bso/itemContracts.js';
+import { handlePartyRoomButton } from '@/lib/bso/partyRoom.js';
 import { repeatTameTrip } from '@/lib/bso/tames/tameTasks.js';
 
 import { type APIMessageComponentInteraction, SpecialResponse } from '@oldschoolgg/discord';
@@ -270,6 +271,8 @@ async function globalButtonInteractionHandler({
 			ephemeral: true
 		};
 	}
+
+	if (id.startsWith('PARTYROOM_')) return handlePartyRoomButton(interaction.user, id, interaction);
 
 	const userID = interaction.userId;
 

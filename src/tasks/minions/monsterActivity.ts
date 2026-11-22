@@ -278,10 +278,12 @@ export function doMonsterTrip(data: newOptions) {
 			}
 
 			messages.push(
-				`${hasPrayerLevel && !protectItem
-					? "Oh no! While running for your life, you panicked, got smited and couldn't protect a 4th item. "
-					: ''
-				}You died, you lost a lot of loot, and these equipped items: ${calc.lostItems}..${reEquipedItems ? ' Your minion equips similar lost items from bank.' : ''
+				`${
+					hasPrayerLevel && !protectItem
+						? "Oh no! While running for your life, you panicked, got smited and couldn't protect a 4th item. "
+						: ''
+				}You died, you lost a lot of loot, and these equipped items: ${calc.lostItems}..${
+					reEquipedItems ? ' Your minion equips similar lost items from bank.' : ''
 				}`
 			);
 		}
@@ -377,22 +379,31 @@ export function doMonsterTrip(data: newOptions) {
 
 	const guaranteesVorkathHead =
 		!wiped && monster.id === Monsters.Vorkath.id && currentKC < 50 && currentKC + quantity >= 50;
+	const guaranteesKQHead =
+		!wiped && monster.id === Monsters.KalphiteQueen.id && currentKC < 256 && currentKC + quantity >= 256;
+	const milestoneKillReduction = (guaranteesVorkathHead ? 1 : 0) + (guaranteesKQHead ? 1 : 0);
 
 	const lootQuantity = wiped
 		? 0
 		: oriEffect({
-			gearBank,
-			quantity: finalQuantity,
-			duration,
-			messages,
-			monster: monster.name
-		});
+				gearBank,
+				quantity: finalQuantity,
+				duration,
+				messages,
+				monster: monster.name
+			});
 
-	const loot = wiped ? new Bank() : monster.table.kill(lootQuantity - (guaranteesVorkathHead ? 1 : 0), killOptions);
+	const loot = wiped ? new Bank() : monster.table.kill(lootQuantity - milestoneKillReduction, killOptions);
 
 	if (guaranteesVorkathHead) {
 		const milestoneLoot = monster.table.kill(1, killOptions);
 		milestoneLoot.set("Vorkath's head", 1);
+		loot.add(milestoneLoot);
+	}
+
+	if (guaranteesKQHead) {
+		const milestoneLoot = monster.table.kill(1, killOptions);
+		milestoneLoot.set('Kq head (tattered)', 1);
 		loot.add(milestoneLoot);
 	}
 
@@ -488,7 +499,8 @@ export function doMonsterTrip(data: newOptions) {
 			);
 		} else {
 			messages.push(
-				`You killed ${slayerContext.effectiveSlayed}x of your ${slayerContext.currentTask?.quantity_remaining
+				`You killed ${slayerContext.effectiveSlayed}x of your ${
+					slayerContext.currentTask?.quantity_remaining
 				} remaining kills, you now have ${slayerContext.quantityLeft} kills remaining.`
 			);
 		}

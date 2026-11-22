@@ -409,8 +409,11 @@ async function infernoRun(
 		preZukDeathChance.add(hasTzkalCape, -5, 'TzKal cape');
 		zukDeathChance.add(hasTzkalCape, -5, 'TzKal cape');
 		emergedZukDeathChance.add(hasTzkalCape, -10, 'TzKal cape');
-		duration.add(allItems.includes(itemID('Ignis ring(i)')), -5, 'Ignis ring(i)');
-		duration.add(allItems.includes(itemID('Searcrown band')), -7, 'Searcrown band');
+		if (allItems.includes(itemID('Searcrown band'))) {
+			duration.add(true, -7, 'Searcrown band');
+		} else if (allItems.includes(itemID('Ignis ring(i)'))) {
+			duration.add(true, -5, 'Ignis ring(i)');
+		}
 		emergedZukDeathChance.add(user.skillLevel('defence') === 120, -10, '120 Defence');
 		const emergedKC = await user.fetchMinigameScore('emerged_inferno');
 		if (emergedKC > 0) {

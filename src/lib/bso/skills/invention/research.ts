@@ -36,7 +36,10 @@ export async function researchCommand({
 		return "That's not a valid material.";
 	}
 	const maxTripLength = await user.calcMaxTripLength('Research');
-	const timePerResearchPerMaterial = Time.Second * 3.59;
+	let timePerResearchPerMaterial = Time.Second * 3.59;
+	if (user.usingPet('Cogsworth')) {
+		timePerResearchPerMaterial *= 0.8;
+	}
 	const maxQuantity = Math.floor(maxTripLength / timePerResearchPerMaterial);
 	let quantity = inputQuantity ?? maxQuantity;
 	const ownedBank = user.materialsOwned();

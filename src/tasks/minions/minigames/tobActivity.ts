@@ -6,6 +6,7 @@ import { cryptoRng } from 'node-rng/crypto';
 import { Bank } from 'oldschooljs';
 
 import { drawChestLootImage } from '@/lib/canvas/chestImage.js';
+import { applyCAClueBoost } from '@/lib/combat_achievements/caClueBoost.js';
 import { tobMetamorphPets } from '@/lib/data/CollectionsExport.js';
 import { TOBRooms, TOBUniques } from '@/lib/data/tob.js';
 import { trackLoot } from '@/lib/lootTrack.js';
@@ -132,7 +133,7 @@ export const tobTask: MinionTask = {
 				const userDeaths = deaths[users.indexOf(user.id)];
 
 				const userLoot = new Bank(_userLoot);
-				if (roll(100)) {
+				if (roll(applyCAClueBoost(user, 100, 'grandmaster'))) {
 					userLoot.add('Clue scroll (grandmaster)');
 				}
 

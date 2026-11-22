@@ -40,9 +40,9 @@ export interface ILeftListStatus {
 
 export interface IKCActivity {
 	[key: string]:
-	| string
-	| string[]
-	| ((user: MUser, minigameScores: MinigameScore[], stats: MUserStats) => Promise<number>);
+		| string
+		| string[]
+		| ((user: MUser, minigameScores: MinigameScore[], stats: MUserStats) => Promise<number>);
 }
 
 export type FormatProgressFunction = ({
@@ -1575,9 +1575,10 @@ export const allPetsCL = resolveItems([
 	'Nid',
 	'Huberte',
 	'Moxi',
-	'Bran'
+	'Bran',
 	// 'Yami', // Currently unobtainable.
 	// 'Dom' // Currently unobtainable.
+	'Quetzin'
 ]);
 export const camdozaalCL = resolveItems([
 	'Barronite mace',
@@ -2498,6 +2499,15 @@ export const vardorvisCL = resolveItems([
 	"Awakener's orb",
 	'Blood quartz',
 	'Strangled tablet'
+]);
+
+export const rumourCL = resolveItems([
+	'Quetzin',
+	"Huntsman's kit",
+	'Guild hunter headwear',
+	'Guild hunter top',
+	'Guild hunter legs',
+	'Guild hunter boots'
 ]);
 
 export const amoxliatlCL = resolveItems(['Moxi', 'Glacial temotli', 'Pendant of ates (inert)', 'Frozen tear']);

@@ -158,6 +158,8 @@ export const kalphiteKingCL = resolveItems([
 
 export const ignecarusCL = resolveItems(['Ignecarus scales', 'Ignecarus dragonclaw', 'Dragon egg', 'Ignis ring']);
 
+export const yetiCL = resolveItems(['Frostclaw cape', 'Cold heart', 'Penguin egg', 'Yeti hide', 'Raw yeti meat']);
+
 export const treeBeardCL = resolveItems([
 	// Tangleroot pets
 	20_661,

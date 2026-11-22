@@ -1,7 +1,6 @@
 import { dateFm } from '@oldschoolgg/discord';
-import { Emoji, getNextUTCReset, notEmpty, objectEntries, Time } from '@oldschoolgg/toolkit';
+import { Emoji, notEmpty, objectEntries, Time } from '@oldschoolgg/toolkit';
 
-import { CONSTANTS } from '@/lib/constants.js';
 import type { SkillNameType } from '@/lib/skilling/types.js';
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
 import { formatTripDuration } from '@/lib/util/minionUtils.js';
@@ -48,13 +47,14 @@ function getTearsOfGuthixMissingSkillMessage(user: MUser): string | null {
 	return missing.length > 0 ? `You need the following requirements: ${missing}.` : null;
 }
 
+import { getNextESTWeekReset } from '@/lib/util/estTime.js';
+
 export async function tearsOfGuthixCommand(user: MUser, channelId: string) {
 	if (await user.minionIsBusy()) return `${user.minionName} is busy.`;
 	const currentStats = await user.fetchStats();
 	const lastPlayedDate = Number(currentStats.last_tears_of_guthix_timestamp);
-	const nextReset = getNextUTCReset(lastPlayedDate, CONSTANTS.TEARS_OF_GUTHIX_CD);
+	const nextReset = lastPlayedDate > 0 ? getNextESTWeekReset(new Date(lastPlayedDate)).getTime() : 0;
 
-	// If they have already claimed a ToG in the past 7days
 	if (Date.now() < nextReset) {
 		return `**${Emoji.Snake} Juna says...** You can drink from the Tears of Guthix in ${dateFm(new Date(nextReset))}`;
 	}

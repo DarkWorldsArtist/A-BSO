@@ -240,7 +240,12 @@ export const konarTasks: AssignableSlayerTask[] = [
 		monster: Monsters.GreaterDemon,
 		amount: [120, 170],
 		weight: 7,
-		monsters: [Monsters.GreaterDemon.id, Monsters.Skotizo.id],
+		monsters: [
+			Monsters.GreaterDemon.id,
+			Monsters.Skotizo.id,
+			Monsters.TormentedDemon.id,
+			EBSOMonster.SUPERIOR_TORMENTED_DEMON
+		],
 		extendedAmount: [200, 250],
 		extendedUnlockId: SlayerTaskUnlocksEnum.GreaterChallenge,
 		combatLevel: 75,

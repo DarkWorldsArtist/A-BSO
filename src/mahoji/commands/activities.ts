@@ -1,4 +1,4 @@
-import { ownedItemOption } from '@/discord/index.js';
+import { choicesOf, ownedItemOption } from '@/discord/index.js';
 import { Planks } from '@/lib/minions/data/planks.js';
 import Potions from '@/lib/minions/data/potions.js';
 import { quests } from '@/lib/minions/data/quests.js';
@@ -30,6 +30,7 @@ import puroOptions, { puroPuroStartCommand } from '@/mahoji/lib/abstracted_comma
 import { questCommand } from '@/mahoji/lib/abstracted_commands/questCommand.js';
 import { sawmillCommand } from '@/mahoji/lib/abstracted_commands/sawmillCommand.js';
 import { scatterCommand } from '@/mahoji/lib/abstracted_commands/scatterCommand.js';
+import { stealingArtefactsCommand } from '@/mahoji/lib/abstracted_commands/stealingArtefactsCommand.js';
 import { unchargeGloriesCommand } from '@/mahoji/lib/abstracted_commands/unchargeGloriesCommand.js';
 import { underwaterAgilityThievingCommand } from '@/mahoji/lib/abstracted_commands/underwaterCommand.js';
 import { warriorsGuildCommand } from '@/mahoji/lib/abstracted_commands/warriorsGuildCommand.js';
@@ -251,6 +252,7 @@ export const activitiesCommand = defineCommand({
 					description: 'The item to collect.',
 					autocomplete: async ({ value }: StringAutoComplete) => {
 						return collectables
+							.filter(p => !p.onlyTamesCan)
 							.filter(p => (!value ? true : p.item.name.toLowerCase().includes(value.toLowerCase())))
 							.map(p => ({ name: p.item.name, value: p.item.name }));
 					},
@@ -631,6 +633,56 @@ export const activitiesCommand = defineCommand({
 					choices: otherActivities.map(i => ({ name: i.name, value: i.type }))
 				}
 			]
+		},
+		{
+			name: 'stealing_artefacts',
+			description: 'The Stealing artefacts activity.',
+			type: 'SubcommandGroup',
+			options: [
+				{
+					type: 'Subcommand',
+					name: 'start',
+					description: 'Start a trip.',
+					options: [
+						{
+							type: 'Integer',
+							name: 'quantity',
+							description: 'Deliveries to complete.',
+							required: false,
+							min_value: 1
+						},
+						{
+							type: 'Boolean',
+							name: 'stamina',
+							description: 'Use stamina for a 30% boost.',
+							required: false
+						},
+						{
+							type: 'Boolean',
+							name: 'teleport',
+							description: 'Enable teleport efficiency checks.',
+							required: false
+						},
+						{
+							type: 'String',
+							name: 'glassblow_product',
+							description: 'Glassblow while stealing artefacts.',
+							required: false,
+							choices: choicesOf([
+								'none',
+								'beer_glass',
+								'empty_candle_lantern',
+								'empty_oil_lamp',
+								'vial',
+								'empty_fishbowl',
+								'unpowered_orb',
+								'lantern_lens',
+								'empty_light_orb'
+							])
+						}
+					]
+				}
+			]
 		}
 	],
 	run: async ({ options, channelId, user, interaction, rng }) => {
@@ -787,6 +839,9 @@ export const activitiesCommand = defineCommand({
 					options.underwater.drift_net_fishing.no_stams
 				);
 			}
+		}
+		if (options.stealing_artefacts?.start) {
+			return stealingArtefactsCommand(user, channelId, options.stealing_artefacts.start);
 		}
 
 		return 'Invalid command.';

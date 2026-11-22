@@ -1,7 +1,7 @@
 import { isGEUntradeable } from '@/lib/bso/bsoUtil.js';
 
-import { ButtonBuilder, ButtonStyle, bold, dateFm, userMention } from '@oldschoolgg/discord';
-import { calcPercentOfNum, getInterval, miniID, noOp, sumArr, Time, uniqueArr } from '@oldschoolgg/toolkit';
+import { ButtonBuilder, ButtonStyle, bold, dateFm, time, userMention } from '@oldschoolgg/discord';
+import { calcPercentOfNum, miniID, noOp, sumArr, Time, uniqueArr } from '@oldschoolgg/toolkit';
 import { Bank, type Item, type ItemBank, Items, toKMB } from 'oldschooljs';
 import PQueue from 'p-queue';
 import { clamp } from 'remeda';
@@ -12,6 +12,7 @@ import { BitField, globalConfig, PerkTier } from '@/lib/constants.js';
 import { isCustomItem } from '@/lib/customItems/util.js';
 import type { RobochimpUser } from '@/lib/roboChimp.js';
 import { fetchTableBank, makeTransactFromTableBankQueries } from '@/lib/table-banks/tableBank.js';
+import { getEST4HourBucket } from '@/lib/util/estTime.js';
 import { assert } from '@/lib/util/logError.js';
 
 export const generateGrandExchangeID = () => miniID(6).toLowerCase();
@@ -28,7 +29,7 @@ const gePerkTierSlotBoosts = [
 	[PerkTier.Two, 3],
 	[PerkTier.Three, 3],
 	[PerkTier.Four, 6],
-	...[PerkTier.Five, PerkTier.Six, PerkTier.Seven].map(tier => [tier, 2])
+	...[PerkTier.Five, PerkTier.Six, PerkTier.Seven, PerkTier.Eight].map(tier => [tier, 2])
 ] as const;
 
 function validateNumber(num: number) {
@@ -207,7 +208,9 @@ class GrandExchangeSingleton {
 	}
 
 	getInterval() {
-		return getInterval(4);
+		const start = getEST4HourBucket();
+		const end = new Date(start.getTime() + Time.Hour * 4);
+		return { start, end, nextResetStr: `${time(end, 'R')}` };
 	}
 
 	async fetchOwnedBank() {

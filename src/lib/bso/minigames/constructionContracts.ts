@@ -250,7 +250,12 @@ function generateMiddlingLoot(recipe: ContractRecipe, successfulContracts: numbe
 	return loot;
 }
 
-function generateRewardsFromPool(totalQualityPoints: number, recipeWeight: number, rarityBonus = 0): Bank {
+function generateRewardsFromPool(
+	totalQualityPoints: number,
+	recipeWeight: number,
+	rarityBonus = 0,
+	hasGmCA = false
+): Bank {
 	const loot = new Bank();
 
 	if (recipeWeight >= 2.5) {
@@ -266,7 +271,7 @@ function generateRewardsFromPool(totalQualityPoints: number, recipeWeight: numbe
 	}
 
 	if (recipeWeight >= 1.5) {
-		const gmClueChance = totalQualityPoints / 500000;
+		const gmClueChance = (totalQualityPoints / 500000) * (hasGmCA ? 1.05 : 1);
 		if (Math.random() < gmClueChance && loot.length === 0) {
 			loot.add('Clue scroll (grandmaster)', 1);
 		}
@@ -446,7 +451,7 @@ Materials: ${selectedRecipe.ingredients.map(i => `${i.quantity * quantity}x ${i.
 Boosts: ${boosts.length ? boosts.join(', ') : 'None'}`;
 }
 
-export function calculateContractsResult(data: ConstructionContractsTaskOptions) {
+export function calculateContractsResult(data: ConstructionContractsTaskOptions, hasGmCA = false) {
 	const recipe = ContractRecipes.find(r => r.name === data.recipe)!;
 	const rarityBonus = [0, 0.05, 0.1, 0.15, 0.2, 0.25][data.rarityUpgradeTier ?? 0] ?? 0;
 
@@ -469,7 +474,7 @@ export function calculateContractsResult(data: ConstructionContractsTaskOptions)
 		}
 	}
 
-	const primaryLoot = generateRewardsFromPool(totalQualityPoints, recipe.rewardWeight, rarityBonus);
+	const primaryLoot = generateRewardsFromPool(totalQualityPoints, recipe.rewardWeight, rarityBonus, hasGmCA);
 	const middlingLoot = generateMiddlingLoot(recipe, successfulContracts);
 	const totalLoot = new Bank().add(primaryLoot).add(middlingLoot);
 

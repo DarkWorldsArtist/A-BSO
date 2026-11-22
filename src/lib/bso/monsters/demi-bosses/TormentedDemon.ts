@@ -61,7 +61,7 @@ export const SuperiorTormentedDemon: CustomMonster = {
 		herblore: 70,
 		magic: 80
 	},
-	baseMonster: Monsters.BlackDemon,
+	baseMonster: Monsters.TormentedDemon,
 	itemCost: {
 		qtyPerKill: 1,
 		itemCost: new Bank().add('Divine water')
@@ -69,12 +69,17 @@ export const SuperiorTormentedDemon: CustomMonster = {
 	hp: 657,
 	itemInBankBoosts: [
 		new Bank({
-			Emberlight: 15,
+			Emberlight: 18,
 			Arclight: 15,
-			'Axe of the high sungod': 10,
-			Darklight: 5,
+			'Axe of the high sungod': 12,
+			Darklight: 6,
+			Silverlight: 3,
 			'Bandos godsword': 5,
 			'Dragon warhammer': 5
+		}).toJSON(),
+		new Bank({
+			'Scorching bow': 10,
+			'Purging staff': 10
 		}).toJSON(),
 		new Bank({
 			'TzKal cape': 5,

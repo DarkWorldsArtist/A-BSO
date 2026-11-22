@@ -57,7 +57,7 @@ function scaleHP(base: number, raidLevel: number, teamSize: keyof typeof teamSiz
 	return Math.floor(base * (1 + raidLevel / 250) * teamSizeScale[teamSize] * pathMultiplier);
 }
 
-function estimatePoints(raidLevel: number, teamSize: number) {
+export function estimatePoints(raidLevel: number, teamSize: number) {
 	const pointsTable = [
 		{ name: 'Akkha', hp: scaleHP(480, raidLevel, teamSize, averageWTPLevel[3]), mult: 1.0 },
 		{

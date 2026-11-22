@@ -1,4 +1,5 @@
 import { syncDoubleLoot, syncDoubleXP, syncPrescence } from '@/lib/bso/doubleLoot.js';
+import { refundPendingPartyRooms } from '@/lib/bso/partyRoom.js';
 import { syncSlayerMaskLeaderboardCache } from '@/lib/bso/skills/slayer/slayerMaskLeaderboard.js';
 
 import { Time } from '@oldschoolgg/toolkit';
@@ -7,9 +8,10 @@ import { TimerManager } from '@sapphire/timer-manager';
 import { bulkUpdateCommands } from '@/discord/utils.js';
 import { Channel, globalConfig, META_CONSTANTS } from '@/lib/constants.js';
 import { initTickers } from '@/lib/tickers.js';
+import { syncApplicationEmojis } from '@/lib/util/applicationEmojis.js';
 
 export const onStartup = async () => {
-	await Promise.all([syncDoubleLoot(), syncDoubleXP()]);
+	await Promise.all([syncDoubleLoot(), syncDoubleXP(), syncApplicationEmojis(), refundPendingPartyRooms()]);
 	syncSlayerMaskLeaderboardCache();
 	await syncPrescence();
 

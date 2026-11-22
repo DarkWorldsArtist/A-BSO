@@ -9,7 +9,7 @@ export const naxxusTask: MinionTask = {
 	async run(data: ActivityTaskOptionsWithQuantity, { user, handleTripFinish }) {
 		const { channelId, quantity, duration } = data;
 
-		const loot = rollNaxxusLoot(quantity, user.cl);
+		const loot = rollNaxxusLoot(quantity, user.cl, user.buildTertiaryItemChanges(false, false, false));
 
 		const xpStr = await user.addMonsterXP({
 			monsterID: Naxxus.id,

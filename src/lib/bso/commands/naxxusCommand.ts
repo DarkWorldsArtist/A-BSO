@@ -86,7 +86,7 @@ const itemBoostGroups: {
 		items: [
 			{ item: Items.getOrThrow('Searcrown band'), boost: 4 },
 			{ item: Items.getOrThrow('Ignis ring(i)'), boost: 2.5 },
-			{ item: Items.getOrThrow('Ultor ring'), boost: 2},
+			{ item: Items.getOrThrow('Ultor ring'), boost: 2 },
 			{ item: Items.getOrThrow('Berserker ring (i)'), boost: 1 }
 		]
 	},

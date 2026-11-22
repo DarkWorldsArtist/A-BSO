@@ -8,7 +8,6 @@ import Mining from '@/lib/skilling/skills/mining.js';
 import Woodcutting from '@/lib/skilling/skills/woodcutting/woodcutting.js';
 import {
 	clearQueue,
-	DAILY_QUEUE_CAP,
 	describeActivity,
 	getMaxQueueDepth,
 	getQueueStatus,
@@ -232,10 +231,10 @@ export const queueCommand = defineCommand({
 			const tripSelection = options.add.trip;
 			const quantity = Math.max(1, Math.min(options.add.quantity ?? 1, 4));
 
-			const { trips: currentTrips, depthLimit, dailyRemaining } = await getQueueStatus(user);
+			const { trips: currentTrips, depthLimit, dailyCap, dailyRemaining } = await getQueueStatus(user);
 
 			if (dailyRemaining <= 0) {
-				return `You have already used all ${DAILY_QUEUE_CAP} of your queued trips today. Your daily limit resets at midnight EST.`;
+				return `You have already used all ${dailyCap} of your queued trips today. Your daily limit resets at midnight EST.`;
 			}
 
 			const remainingSlots = depthLimit - currentTrips.length;
@@ -677,10 +676,10 @@ export const queueCommand = defineCommand({
 				return "Couldn't find any recent trip to queue.";
 			}
 
-			const { trips: currentTrips, depthLimit, dailyRemaining } = await getQueueStatus(user);
+			const { trips: currentTrips, depthLimit, dailyCap, dailyRemaining } = await getQueueStatus(user);
 
 			if (dailyRemaining <= 0) {
-				return `You have already used all ${DAILY_QUEUE_CAP} of your queued trips today. Your daily limit resets at midnight EST.`;
+				return `You have already used all ${dailyCap} of your queued trips today. Your daily limit resets at midnight EST.`;
 			}
 
 			const remainingSlots = depthLimit - currentTrips.length;
@@ -714,10 +713,10 @@ export const queueCommand = defineCommand({
 		}
 
 		if (options.list) {
-			const { trips, depthLimit, dailyUsed, dailyRemaining } = await getQueueStatus(user);
+			const { trips, depthLimit, dailyCap, dailyUsed, dailyRemaining } = await getQueueStatus(user);
 			let response = `**${user.minionName}'s Trip Queue**\n`;
 			response += `• Queue Capacity: ${trips.length}/${depthLimit} (Tier ${perkTier} Patron)\n`;
-			response += `• Daily Trips: ${dailyUsed}/${DAILY_QUEUE_CAP} used today (${dailyRemaining} remaining, resets at midnight EST)\n\n`;
+			response += `• Daily Trips: ${dailyUsed}/${dailyCap} used today (${dailyRemaining} remaining, resets at midnight EST)\n\n`;
 
 			if (trips.length === 0) {
 				response +=

@@ -738,6 +738,12 @@ export function inventionItemBoostRaw({
 			`${inventionBoosts.inventionMasterCape.materialCostReductionPercent}% less materials for mastery`
 		);
 	}
+	if (gearBank.usingPet('Cogsworth')) {
+		materialCost.mutReduceAllValuesByPercent(10);
+		messages.shift();
+		messages.unshift(`Removed ${materialCost}`);
+		messages.push('10% less materials for Cogsworth');
+	}
 
 	return { success: true, materialCost, messages, invention };
 }

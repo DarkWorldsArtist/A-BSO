@@ -80,7 +80,10 @@ export const nexTask: MinionTask = {
 				kcAmounts[survivor.id] = (kcAmounts[survivor.id] ?? 0) + 1;
 
 				const userLoot = new Bank();
-				const regularLoot = NexMonster.table.kill(1, {});
+				const userObj = parsedUsers.find(u => u.id === survivor.id)?.user;
+				const regularLoot = NexMonster.table.kill(1, {
+					tertiaryItemPercentageChanges: userObj?.buildTertiaryItemChanges(false, false, false)
+				});
 				for (const [item, qty] of regularLoot.items()) {
 					const finalQty = survivor.id === mvpUser.id ? Math.max(1, Math.round(qty * 1.1)) : qty;
 					userLoot.add(item.id, finalQty);

@@ -1,12 +1,17 @@
 import { time } from '@oldschoolgg/discord';
-import { formatDuration, getInterval, Time } from '@oldschoolgg/toolkit';
+import { formatDuration, Time } from '@oldschoolgg/toolkit';
 
 import type { MinigameActivityTaskOptionsWithNoChanges } from '@/lib/types/minions.js';
+import { getESTDateKey, getNextESTMidnight } from '@/lib/util/estTime.js';
 
-export const getGuthixianCacheInterval = () => getInterval(24);
+export const getGuthixianCacheInterval = () => {
+	const end = getNextESTMidnight();
+	const start = new Date(end.getTime() - Time.Day);
+	return { start, end, nextResetStr: `${time(end, 'R')} (midnight EST)` };
+};
 
 export async function userHasDoneCurrentGuthixianCache(user: MUser) {
-	const currentInterval = getGuthixianCacheInterval();
+	const todayKey = getESTDateKey();
 
 	const lastTrips = await prisma.activity.findMany({
 		where: {
@@ -18,11 +23,7 @@ export async function userHasDoneCurrentGuthixianCache(user: MUser) {
 		},
 		take: 10
 	});
-	return lastTrips.some(
-		trip =>
-			trip.finish_date.getTime() > currentInterval.start.getTime() &&
-			trip.finish_date.getTime() < currentInterval.end.getTime()
-	);
+	return lastTrips.some(trip => getESTDateKey(trip.finish_date) === todayKey);
 }
 
 export async function joinGuthixianCache(user: MUser, channelId: string) {

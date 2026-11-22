@@ -157,6 +157,12 @@ export const usableUnlocks: UsableUnlock[] = [
 		item: Items.getOrThrow('Mystic vigour prayer scroll'),
 		bitfield: BitField.HasMysticVigourScroll,
 		resultMessage: 'You used your Mystic vigour prayer scroll, and unlocked the Mystic vigour prayer.'
+	},
+	{
+		item: Items.getOrThrow('Elder knowledge'),
+		bitfield: BitField.HasConsumedElderKnowledge,
+		resultMessage:
+			'Your minion consumes the Elder knowledge and gains the ability to find Elder scroll pieces on trips of 25 minutes or longer.'
 	}
 ];
 for (const usableUnlock of usableUnlocks) {

@@ -51,6 +51,8 @@ export function memoryHarvestResult({
 	hasGuthixianBoost,
 	isUsingDivinationPotion,
 	hasMasterCape,
+	hasMasterCA = false,
+	hasGmCA = false,
 	rounds
 }: {
 	duration: number;
@@ -62,6 +64,8 @@ export function memoryHarvestResult({
 	hasDivineHand: boolean;
 	isUsingDivinationPotion: boolean;
 	hasMasterCape: boolean;
+	hasMasterCA?: boolean;
+	hasGmCA?: boolean;
 	rounds: number;
 }) {
 	const boosts: string[] = [];
@@ -126,13 +130,28 @@ export function memoryHarvestResult({
 		}
 
 		const clueChance = 1200;
-		// Step 3: Roll for pet
 		for (let t = 0; t < memoriesHarvested; t++) {
 			if (roll(petChance)) {
 				loot.add('Doopy');
 			}
 			if (hasDivineHand && roll(clueChance) && 'clueTable' in energy && energy.clueTable) {
 				loot.add(energy.clueTable.roll());
+			} else if (
+				hasDivineHand &&
+				'clueTable' in energy &&
+				energy.clueTable &&
+				(hasMasterCA || hasGmCA) &&
+				roll(clueChance * 20)
+			) {
+				const bonus = energy.clueTable.roll();
+				const clueItem = bonus.items()[0]?.[0];
+				if (
+					clueItem &&
+					((clueItem.name === 'Clue scroll (master)' && hasMasterCA) ||
+						(clueItem.name === 'Clue scroll (grandmaster)' && hasGmCA))
+				) {
+					loot.add(bonus);
+				}
 			}
 		}
 	}
@@ -211,6 +230,8 @@ export const memoryHarvestTask: MinionTask = {
 			hasDivineHand,
 			isUsingDivinationPotion,
 			hasMasterCape: user.hasEquippedOrInBank('Divination master cape'),
+			hasMasterCA: user.hasCompletedCATier('master'),
+			hasGmCA: user.hasCompletedCATier('grandmaster'),
 			rounds
 		});
 

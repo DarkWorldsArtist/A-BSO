@@ -96,6 +96,9 @@ Type \`confirm permanent ironman\` if you understand the above information, and 
 
 	type KeysThatArentReset =
 		| 'bank_bg_hex'
+		| 'unique_outline_hex'
+		| 'bank_title_hex'
+		| 'default_bank_flag'
 		| 'bank_sort_weightings'
 		| 'bank_sort_method'
 		| 'minion_bought_date'
@@ -116,12 +119,16 @@ Type \`confirm permanent ironman\` if you understand the above information, and 
 		BitField.HasPermanentTierOne,
 		BitField.DisabledRandomEvents,
 		BitField.AlwaysSmallBank,
-		BitField.PatronTier6
+		BitField.PatronTier6,
+		BitField.ShowTripLootValue
 	];
 
 	const createOptions: Required<Pick<Prisma.UserCreateInput, KeysThatArentReset>> = {
 		id: user.id,
 		bank_bg_hex: user.user.bank_bg_hex,
+		unique_outline_hex: user.user.unique_outline_hex,
+		bank_title_hex: user.user.bank_title_hex,
+		default_bank_flag: user.user.default_bank_flag,
 		bank_sort_method: user.user.bank_sort_method,
 		bank_sort_weightings: user.user.bank_sort_weightings as ItemBank,
 		minion_bought_date: user.user.minion_bought_date,

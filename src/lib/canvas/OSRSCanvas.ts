@@ -227,6 +227,51 @@ export class OSRSCanvas {
 		});
 	}
 
+	drawSegmentedText({
+		segments,
+		x,
+		y,
+		font = 'Bold',
+		center
+	}: {
+		segments: Array<{ text: string; color?: string }>;
+		x: number;
+		y: number;
+		font?: FontName;
+		center?: boolean;
+	}) {
+		this.ctx.font = OSRSCanvas.Fonts[font];
+		const rawCombined = segments.map(s => s.text).join('');
+		const trimmedCombined = rawCombined.trim();
+		if (trimmedCombined.length === 0) return;
+
+		const leadingTrimmedCount = rawCombined.length - rawCombined.trimStart().length;
+		const totalWidth = this.measureTextWidth(trimmedCombined, font);
+		const baseStartX = center ? x - Math.floor(totalWidth / 2) : x;
+
+		const sentinelWidth = this.measureTextWidth('|', font);
+		let rawOffset = 0;
+		for (const seg of segments) {
+			const segLen = seg.text.length;
+			const trimmedSeg = seg.text.trim();
+			if (trimmedSeg.length > 0) {
+				const segLeadingSpaces = segLen - seg.text.trimStart().length;
+				const charIndexInTrimmed = Math.max(0, rawOffset + segLeadingSpaces - leadingTrimmedCount);
+				const prefix = trimmedCombined.slice(0, charIndexInTrimmed);
+				const prefixWidth = prefix.length > 0 ? this.measureTextWidth(`${prefix}|`, font) - sentinelWidth : 0;
+				const segX = baseStartX + Math.round(prefixWidth);
+				const segColor = seg.color ?? OSRSCanvas.COLORS.ORANGE;
+
+				this.ctx.fillStyle = 'black';
+				this.rawDrawText({ text: trimmedSeg, x: segX + 1, y: y + 1, font });
+
+				this.ctx.fillStyle = segColor;
+				this.rawDrawText({ text: trimmedSeg, x: segX, y, font });
+			}
+			rawOffset += segLen;
+		}
+	}
+
 	drawSquare(x: number, y: number, w: number, h: number, color?: string) {
 		const ctx = this.ctx;
 		const pixelSize = 1;
@@ -333,7 +378,7 @@ export class OSRSCanvas {
 		}
 	}
 
-	private static getItemSpriteData(itemID: number): CanvasSpritesheet | null {
+	public static getItemSpriteData(itemID: number): CanvasSpritesheet | null {
 		if (BOT_TYPE === 'BSO' && CanvasModule.Spritesheet.BSOItems.has(itemID)) {
 			return CanvasModule.Spritesheet.BSOItems;
 		}
@@ -465,7 +510,7 @@ export class OSRSCanvas {
 		}
 
 		if (outline) {
-			drawImageWithOutline(this.ctx, ...args);
+			drawImageWithOutline(this.ctx, ...args, outline.outlineColor, outline.alpha);
 		} else {
 			this.ctx.drawImage(...args);
 		}

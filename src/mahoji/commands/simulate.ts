@@ -5,8 +5,10 @@ import { averageBank, Bank, ChambersOfXeric, toKMB } from 'oldschooljs';
 import { ColosseumWaveBank, startColosseumRun } from '@/lib/colosseum.js';
 import { SUPPORT_PROJECT_MSG } from '@/lib/constants.js';
 import pets from '@/lib/data/pets.js';
+import { allOpenables } from '@/lib/openables.js';
 import { assert } from '@/lib/util/logError.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
+import { simulateOpenableCommand } from '@/mahoji/lib/abstracted_commands/simulateOpenableCommand.js';
 
 async function determineCoxLimit(user: MUser) {
 	const perkTier = await user.fetchPerkTier();
@@ -198,10 +200,40 @@ export const simulateCommand = defineCommand({
 			type: 'Subcommand',
 			name: 'colosseum',
 			description: 'Simulate colosseum.'
+		},
+		{
+			type: 'Subcommand',
+			name: 'openable',
+			description: 'Simulate opening an openable item.',
+			options: [
+				{
+					type: 'String',
+					name: 'item',
+					description: 'The openable item to simulate.',
+					required: true,
+					autocomplete: async ({ value }: StringAutoComplete) => {
+						return allOpenables
+							.filter(i => (!value ? true : i.name.toLowerCase().includes(value.toLowerCase())))
+							.slice(0, 25)
+							.map(i => ({ name: i.name, value: i.name }));
+					}
+				},
+				{
+					type: 'Integer',
+					name: 'quantity',
+					description: 'How many to simulate (default 100).',
+					min_value: 1,
+					max_value: 1_000_000,
+					required: false
+				}
+			]
 		}
 	],
 	run: async ({ interaction, options, user }) => {
 		await interaction.defer();
+		if (options.openable) {
+			return simulateOpenableCommand(user, options.openable.item, options.openable.quantity);
+		}
 		if (options.colosseum) {
 			return simulateColosseumRuns();
 		}

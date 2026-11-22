@@ -14,6 +14,7 @@ import { dtCreatables } from '@/lib/data/creatables/dt.js';
 import { forestryCreatables } from '@/lib/data/creatables/forestryCreatables.js';
 import { gracefulOutfitCreatables } from '@/lib/data/creatables/gracefulOutfits.js';
 import { guardiansOfTheRiftCreatables } from '@/lib/data/creatables/guardiansOfTheRiftCreatables.js';
+import { hunterCreatables } from '@/lib/data/creatables/hunter.js';
 import { leaguesCreatables } from '@/lib/data/creatables/leagueCreatables.js';
 import { lmsCreatables } from '@/lib/data/creatables/lms.js';
 import { mysticStavesCreatables } from '@/lib/data/creatables/mysticStaves.js';
@@ -2756,6 +2757,7 @@ const Createables: Createable[] = [
 	...caCreatables,
 	...forestryCreatables,
 	...camdozaalItems,
+	...hunterCreatables,
 	...bsoCreatables
 ];
 

@@ -136,7 +136,7 @@ export const PatronRoles = {
 } as const;
 
 export const PatronRoleTiers = [
-	{ roleId: PatronRoles.Tier7, perkTier: PerkTier.Seven, bit: 23, tierNumber: 7 },
+	{ roleId: PatronRoles.Tier7, perkTier: PerkTier.Eight, bit: 23, tierNumber: 7 },
 	{ roleId: PatronRoles.Tier6, perkTier: PerkTier.Seven, bit: 22, tierNumber: 6 },
 	{ roleId: PatronRoles.Tier5, perkTier: PerkTier.Six, bit: 21, tierNumber: 5 },
 	{ roleId: PatronRoles.Tier4, perkTier: PerkTier.Five, bit: 20, tierNumber: 4 },
@@ -256,7 +256,9 @@ export enum BitField {
 	HasEarnedRiftGuardianFromStar = 235,
 	DisablePaints = 236,
 	DisableGlowEffects = 238,
-	DisableQueueRepeatButton = 239
+	DisableQueueRepeatButton = 239,
+	ShowTripLootValue = 240,
+	HasConsumedElderKnowledge = 241
 }
 
 export interface IBitFieldData {
@@ -577,6 +579,16 @@ export const BitFieldData: Record<BitField, IBitFieldData> = {
 		name: 'Disable Queue Repeat Button',
 		protected: false,
 		userConfigurable: true
+	},
+	[BitField.ShowTripLootValue]: {
+		name: 'Show Trip Loot Value Summary',
+		protected: false,
+		userConfigurable: true
+	},
+	[BitField.HasConsumedElderKnowledge]: {
+		name: 'Has Consumed Elder Knowledge',
+		protected: false,
+		userConfigurable: false
 	}
 } as const;
 
@@ -719,7 +731,7 @@ export const masteryKey = BOT_TYPE === 'OSB' ? 'osb_mastery' : 'bso_mastery';
 
 export const patronFeatures = {
 	ShowEnteredInGiveawayList: {
-		tier: PerkTier.Four
+		tier: PerkTier.Three
 	},
 	UnlimitedGiveaways: {
 		tier: PerkTier.Four

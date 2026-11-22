@@ -270,7 +270,8 @@ export const nieveTasks: AssignableSlayerTask[] = [
 			Monsters.GreaterDemon.id,
 			Monsters.KrilTsutsaroth.id,
 			Monsters.Skotizo.id,
-			Monsters.TormentedDemon.id
+			Monsters.TormentedDemon.id,
+			EBSOMonster.SUPERIOR_TORMENTED_DEMON
 		],
 		combatLevel: 75,
 		unlocked: true

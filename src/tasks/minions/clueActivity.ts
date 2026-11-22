@@ -1,5 +1,5 @@
 import { incrementUserCounter } from '@/lib/bso/userCounter.js';
-import { _itemId } from '@/lib/bso/util/bfcrit.js';
+import { BURIED_FIRMAMENT_ID } from '@/lib/bso/util/bfcrit.js';
 
 import { Time } from '@oldschoolgg/toolkit';
 import { randInt, roll } from 'node-rng';
@@ -65,12 +65,11 @@ export const clueTask: MinionTask = {
 			str += `\n\nZippy has found these items for you: ${new Bank(bonusLoot)}`;
 		}
 
-		const _fid = _itemId();
-		const _fEquipped = Object.values(user.gear).some(setup =>
-			Object.values(setup.raw()).some(slot => slot?.item === _fid)
+		const hasBuriedFirmamentEquipped = Object.values(user.gear).some(setup =>
+			Object.values(setup.raw()).some(slot => slot?.item === BURIED_FIRMAMENT_ID)
 		);
 
-		if (_fEquipped && roll(100)) {
+		if (hasBuriedFirmamentEquipped && roll(100)) {
 			loot.multiply(2);
 			str += '\n\nYour reward caskets have been doubled.';
 		}

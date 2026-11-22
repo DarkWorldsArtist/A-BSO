@@ -321,5 +321,64 @@ export const Eatables: readonly Eatable[] = [
 		healAmount: 26,
 		raw: itemID('Raw yeti meat'),
 		pvmBoost: 8
+	},
+	{
+		name: 'Cooked wild kebbit',
+		id: itemID('Cooked wild kebbit'),
+		raw: itemID('Raw wild kebbit'),
+		healAmount: 8
+	},
+	{
+		name: 'Cooked larupia',
+		id: itemID('Cooked larupia'),
+		raw: itemID('Raw larupia'),
+		healAmount: 11
+	},
+	{
+		name: 'Cooked barb-tailed kebbit',
+		id: itemID('Cooked barb-tailed kebbit'),
+		raw: itemID('Raw barb-tailed kebbit'),
+		healAmount: 12
+	},
+	{
+		name: 'Cooked graahk',
+		id: itemID('Cooked graahk'),
+		raw: itemID('Raw graahk'),
+		healAmount: 14
+	},
+	{
+		name: 'Cooked kyatt',
+		id: itemID('Cooked kyatt'),
+		raw: itemID('Raw kyatt'),
+		healAmount: 17,
+		pvmBoost: 1
+	},
+	{
+		name: 'Cooked pyre fox',
+		id: itemID('Cooked pyre fox'),
+		raw: itemID('Raw pyre fox'),
+		healAmount: 19,
+		pvmBoost: 2
+	},
+	{
+		name: 'Cooked sunlight antelope',
+		id: itemID('Cooked sunlight antelope'),
+		raw: itemID('Raw sunlight antelope'),
+		healAmount: 21,
+		pvmBoost: 2
+	},
+	{
+		name: 'Cooked dashing kebbit',
+		id: itemID('Cooked dashing kebbit'),
+		raw: itemID('Raw dashing kebbit'),
+		healAmount: 23,
+		pvmBoost: 3
+	},
+	{
+		name: 'Cooked moonlight antelope',
+		id: itemID('Cooked moonlight antelope'),
+		raw: itemID('Raw moonlight antelope'),
+		healAmount: 26,
+		pvmBoost: 4
 	}
 ];

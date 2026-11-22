@@ -219,8 +219,7 @@ export const TOBMaxMeleeGear = constructGearSetup({
 	hands: 'Torva gloves',
 	legs: 'Torva platelegs',
 	feet: 'Torva boots',
-	weapon: 'Drygore longsword',
-	shield: 'Offhand drygore longsword',
+	weapon: 'Axe of the high sungod',
 	ring: 'Searcrown band'
 });
 
@@ -275,7 +274,7 @@ const speedReductionForGear = 16;
 const speedReductionForKC = 40;
 const speedReductionForDarts = 4;
 
-const maxSpeedReductionFromItems = 43;
+const maxSpeedReductionFromItems = 47;
 const maxSpeedReductionUser =
 	(speedReductionForGear + speedReductionForKC + speedReductionForDarts) * 1.3 + maxSpeedReductionFromItems;
 
@@ -341,6 +340,7 @@ export function calcTOBBaseDuration({ team, hardMode }: { team: TobTeam[]; hardM
 		 *
 		 */
 		const meleeWeaponBoosts = [
+			['Axe of the high sungod', 22],
 			['Drygore longsword', 10],
 			['Offhand drygore longsword', 8],
 			['Scythe of vitur', 15],

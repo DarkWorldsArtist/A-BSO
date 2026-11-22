@@ -221,7 +221,8 @@ export const chaeldarTasks: AssignableSlayerTask[] = [
 			Monsters.GreaterDemon.id,
 			Monsters.KrilTsutsaroth.id,
 			Monsters.Skotizo.id,
-			Monsters.TormentedDemon.id
+			Monsters.TormentedDemon.id,
+			EBSOMonster.SUPERIOR_TORMENTED_DEMON
 		],
 		combatLevel: 70,
 		unlocked: true

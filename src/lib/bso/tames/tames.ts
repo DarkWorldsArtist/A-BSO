@@ -220,7 +220,7 @@ export const igneArmors = [
 ].map(i => ({ ...i, tameSpecies: [TameSpeciesID.Igne], slot: 'equipped_armor' as const }));
 
 export type TameKillableMonster = {
-	loot: (opts: { quantity: number; tame: MTame }) => Bank;
+	loot: (opts: { quantity: number; tame: MTame; user: MUser; kc: number; rng: RNGProvider }) => Bank;
 	deathChance?: (opts: { tame: MTame; kc: number }) => number;
 	oriWorks?: boolean;
 	mustBeAdult?: boolean;
@@ -300,6 +300,45 @@ export const tameKillableMonsters: TameKillableMonster[] = [
 			return armorObj.coxDeathChance;
 		},
 		healAmountNeeded: 1888,
+		mustBeAdult: true,
+		oriWorks: false
+	},
+	{
+		id: 334_913,
+		name: 'Tombs of Amascut',
+		aliases: ['toa', 'tombs of amascut'],
+		timeToFinish: Time.Minute * 90,
+		itemsRequired: resolveItems([]),
+		loot() {
+			return new Bank();
+		},
+		deathChance: ({ tame }) => {
+			const armorEquipped = tame.equippedArmor;
+			if (!armorEquipped) return 95;
+			const armorObj = igneArmors.find(i => i.item.id === armorEquipped.id)!;
+			return armorObj.coxDeathChance;
+		},
+		healAmountNeeded: 1888,
+		mustBeAdult: true,
+		oriWorks: false
+	},
+	{
+		id: 334_914,
+		name: 'Depths of Atlantis',
+		aliases: ['doa', 'depths of atlantis'],
+		timeToFinish: Time.Minute * 95,
+		itemsRequired: resolveItems([]),
+		minArmorTier: Items.getOrThrow('Dwarven igne armor'),
+		loot() {
+			return new Bank();
+		},
+		deathChance: ({ tame }) => {
+			const armorEquipped = tame.equippedArmor;
+			if (!armorEquipped) return 95;
+			const armorObj = igneArmors.find(i => i.item.id === armorEquipped.id)!;
+			return armorObj.coxDeathChance;
+		},
+		healAmountNeeded: 2100,
 		mustBeAdult: true,
 		oriWorks: false
 	},

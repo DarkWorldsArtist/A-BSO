@@ -207,9 +207,18 @@ export default class LootTable {
 		const rng = options.rng ?? MathRNG;
 		const effectiveTertiaryItems = options.tertiaryItemPercentageChanges
 			? this.tertiaryItems.map(i => {
-					if (typeof i.item !== 'number') return i;
 					if (i.options?.freeze === true) return i;
-					const change = options.tertiaryItemPercentageChanges?.get(Items.get(i.item)!.name);
+					let change: number | undefined;
+					if (typeof i.item === 'number') {
+						change = options.tertiaryItemPercentageChanges?.get(Items.get(i.item)!.name);
+					} else if (i.item instanceof LootTable) {
+						for (const id of i.item.allItems) {
+							const itemName = Items.get(id)?.name;
+							if (!itemName) continue;
+							const c = options.tertiaryItemPercentageChanges?.get(itemName);
+							if (c && (!change || c > change)) change = c;
+						}
+					}
 					if (!change) return i;
 					return {
 						...i,

@@ -67,6 +67,7 @@ import { minionCommand } from '@/mahoji/commands/minion.js';
 import { mixCommand } from '@/mahoji/commands/mix.js';
 import { offerCommand } from '@/mahoji/commands/offer.js';
 import { openCommand } from '@/mahoji/commands/open.js';
+import { partyRoomCommand } from '@/mahoji/commands/partyroom.js';
 import { patreonCommand } from '@/mahoji/commands/patreon.js';
 import { payCommand } from '@/mahoji/commands/pay.js';
 import { pohCommand } from '@/mahoji/commands/poh.js';
@@ -77,6 +78,7 @@ import { raidCommand } from '@/mahoji/commands/raid.js';
 import { redeemCommand } from '@/mahoji/commands/redeem.js';
 import { rollCommand } from '@/mahoji/commands/roll.js';
 import { rpCommand } from '@/mahoji/commands/rp.js';
+import { rumourCommand } from '@/mahoji/commands/rumour.js';
 import { runecraftCommand } from '@/mahoji/commands/runecraft.js';
 import { sacrificeCommand } from '@/mahoji/commands/sacrifice.js';
 import { sellCommand } from '@/mahoji/commands/sell.js';
@@ -107,6 +109,7 @@ export const allCommandsDONTIMPORT: AnyCommand[] = [
 	claimCommand,
 	mCommand,
 	gpCommand,
+	partyRoomCommand,
 	payCommand,
 	craftCommand,
 	fishCommand,
@@ -121,6 +124,7 @@ export const allCommandsDONTIMPORT: AnyCommand[] = [
 	giveawayCommand,
 	helpCommand,
 	huntCommand,
+	rumourCommand,
 	giftCommand,
 	inviteCommand,
 	minionKCommand,

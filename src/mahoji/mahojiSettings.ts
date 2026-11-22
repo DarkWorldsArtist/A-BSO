@@ -42,10 +42,7 @@ export function resolveAvailableItemBoosts(gearBank: GearBank, monster: Killable
 					gearBank.bank.has(parsedId) ||
 					Object.values(gearBank.gear).some(gear => gear.hasEquipped(parsedId, false, false));
 
-				if (
-					boostAmount > highestBoostAmount ||
-					(boostAmount === highestBoostAmount && ownsExactItem)
-				) {
+				if (boostAmount > highestBoostAmount || (boostAmount === highestBoostAmount && ownsExactItem)) {
 					highestBoostAmount = boostAmount;
 					highestBoostItem = parsedId;
 				}

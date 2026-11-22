@@ -12,11 +12,12 @@ describe('perk tier helpers', () => {
 	});
 
 	test('computes patron trip bonus from perk tier', () => {
-		expect(patronMaxTripBonus(PerkTier.Two)).toBe(Time.Minute * 3);
-		expect(patronMaxTripBonus(PerkTier.Three)).toBe(Time.Minute * 6);
+		expect(patronMaxTripBonus(PerkTier.Two)).toBe(Time.Minute * 5);
+		expect(patronMaxTripBonus(PerkTier.Three)).toBe(Time.Minute * 10);
 		expect(patronMaxTripBonus(PerkTier.Four)).toBe(Time.Minute * 15);
 		expect(patronMaxTripBonus(PerkTier.Five)).toBe(Time.Minute * 20);
 		expect(patronMaxTripBonus(PerkTier.Six)).toBe(Time.Minute * 25);
 		expect(patronMaxTripBonus(PerkTier.Seven)).toBe(Time.Minute * 25);
+		expect(patronMaxTripBonus(PerkTier.Eight)).toBe(Time.Minute * 25);
 	});
 });

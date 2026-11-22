@@ -4,6 +4,8 @@ import { globalDroprates } from '@/lib/bso/globalDroprates.js';
 import { roll } from 'node-rng';
 import type { Bank } from 'oldschooljs';
 
+import { applyCAClueBoost } from '@/lib/combat_achievements/caClueBoost.js';
+
 // user is null if tame is killing
 export function handleSpecialCoxLoot(user: MUser | null, loot: Bank) {
 	const takonDropRate = user
@@ -18,7 +20,7 @@ export function handleSpecialCoxLoot(user: MUser | null, loot: Bank) {
 	if (roll(steveDropRate)) {
 		loot.add('Steve');
 	}
-	if (roll(140)) {
+	if (roll(applyCAClueBoost(user, 140, 'grandmaster'))) {
 		loot.add('Clue scroll (grandmaster)');
 	}
 }

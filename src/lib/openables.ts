@@ -58,6 +58,7 @@ import {
 	SpoilsOfWarTable
 } from '@/lib/simulation/misc.js';
 import { Farming } from '@/lib/skilling/skills/farming/index.js';
+import { hunterSackOpenables } from '@/lib/skilling/skills/hunter/rumours/util.js';
 
 const CacheOfRunesTable = new LootTable()
 	.add('Death rune', [1000, 1500], 2)
@@ -664,6 +665,7 @@ export const allOpenables: UnifiedOpenable[] = [
 	...clueOpenables,
 	...osjsOpenables,
 	...bsoOpenables,
+	...hunterSackOpenables,
 	...shadeChestOpenables
 ];
 
@@ -694,6 +696,11 @@ export function getOpenableLoot({
 	rng: RNGProvider;
 }) {
 	return openable.output instanceof LootTable
-		? { bank: openable.output.roll(quantity), message: null }
+		? {
+				bank: openable.output.roll(quantity, {
+					tertiaryItemPercentageChanges: user.buildTertiaryItemChanges(false, false, false)
+				}),
+				message: null
+			}
 		: openable.output({ user, self: openable, quantity, totalLeaguesPoints, rng });
 }

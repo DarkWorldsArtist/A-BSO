@@ -1,5 +1,6 @@
 import { bsoItemContractDonationGivenLb, bsoItemContractLb } from '@/lib/bso/leaderboards/itemContractsLb.js';
 import { bsoTamesHatchedLb } from '@/lib/bso/leaderboards/tamesHatchedLb.js';
+import { tameKillableMonsters } from '@/lib/bso/tames/tames.js';
 
 import { calcWhatPercent, formatDuration, stringMatches, toTitleCase } from '@oldschoolgg/toolkit';
 import { convertXPtoLVL } from 'oldschooljs';
@@ -20,11 +21,12 @@ import { fetchCLLeaderboard, fetchTameCLLeaderboard } from '@/lib/util/clLeaderb
 import { userEventsToMap } from '@/lib/util/userEvents.js';
 
 async function kcLb(interaction: MInteraction, name: string, ironmanOnly: boolean, tame: boolean) {
-	const monster = effectiveMonsters.find(mon => [mon.name, ...mon.aliases].some(alias => stringMatches(alias, name)));
+	const monsterPool = tame ? tameKillableMonsters : effectiveMonsters;
+	const monster = monsterPool.find(mon => [mon.name, ...mon.aliases].some(alias => stringMatches(alias, name)));
 	if (!monster) return "That's not a valid monster!";
 	const list = tame
 		? await prisma.$queryRawUnsafe<{ id: string; score: number }[]>(
-				`SELECT ta.user_id::text AS id, SUM((ta.data->>'quantity')::int) AS score
+				`SELECT ta.user_id::text AS id, SUM((ta.data->>'quantity')::int)::int AS score
                   FROM tame_activity ta
                   ${ironmanOnly ? 'INNER JOIN users u ON u.id = ta.user_id' : ''}
                  WHERE ta.completed = true
@@ -70,6 +72,29 @@ async function farmingContractLb(interaction: MInteraction, ironmanOnly: boolean
 		interaction,
 		users: list.map(u => ({ id: u.id, score: u.count })),
 		title: 'Farming Contracts Leaderboard'
+	});
+}
+
+async function rumoursLb(interaction: MInteraction, ironmanOnly: boolean) {
+	const list = await prisma.$queryRaw<{ id: string; score: bigint }[]>`
+		SELECT us.user_id::text AS id, totals.score
+		FROM user_stats us
+		INNER JOIN users u ON u.id = us.user_id::text
+		CROSS JOIN LATERAL (
+			SELECT COALESCE(SUM(value::bigint), 0)::bigint AS score
+			FROM jsonb_each_text(us.rumours::jsonb)
+		) totals
+		WHERE totals.score > 0
+		  AND (${ironmanOnly} = false OR u."minion.ironman" = true)
+		ORDER BY totals.score DESC, us.user_id ASC
+		LIMIT 2000;
+	`;
+	return doMenuWrapper({
+		ironmanOnly,
+		interaction,
+		users: list.map(user => ({ id: user.id, score: Number(user.score) })),
+		title: 'Hunter Rumours Leaderboard',
+		formatter: score => `${score.toLocaleString()} rumours completed`
 	});
 }
 
@@ -609,8 +634,13 @@ export const leaderboardCommand = defineCommand({
 					description: 'The monster you want to check the leaderboard of.',
 					required: true,
 					autocomplete: async ({ value }: StringAutoComplete) => {
-						return effectiveMonsters
-							.filter(m => (!value ? true : m.name.toLowerCase().includes(value.toLowerCase())))
+						const seen = new Set<number>();
+						return [...effectiveMonsters, ...tameKillableMonsters]
+							.filter(m => {
+								if (seen.has(m.id)) return false;
+								seen.add(m.id);
+								return !value ? true : m.name.toLowerCase().includes(value.toLowerCase());
+							})
 							.map(i => ({ name: i.name, value: i.name }));
 					}
 				},
@@ -627,6 +657,12 @@ export const leaderboardCommand = defineCommand({
 			type: 'Subcommand',
 			name: 'farming_contracts',
 			description: 'Check the farming contracts leaderboard.',
+			options: [ironmanOnlyOption]
+		},
+		{
+			type: 'Subcommand',
+			name: 'rumours',
+			description: 'Check the total Hunter Rumours completion leaderboard.',
 			options: [ironmanOnlyOption]
 		},
 		{
@@ -918,6 +954,10 @@ export const leaderboardCommand = defineCommand({
 
 		if (options.farming_contracts) {
 			return farmingContractLb(interaction, Boolean(options.farming_contracts.ironmen_only));
+		}
+
+		if (options.rumours) {
+			return rumoursLb(interaction, Boolean(options.rumours.ironmen_only));
 		}
 
 		if (options.inferno) {

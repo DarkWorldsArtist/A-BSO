@@ -140,7 +140,8 @@ async function checkTOBUser(
 		'Blade of saeldor (c)',
 		'Scythe of vitur (uncharged)',
 		'Scythe of vitur',
-		'Drygore longsword'
+		'Drygore longsword',
+		'Axe of the high sungod'
 	];
 	const requiredMeleeCapes = ['Fire cape', 'Infernal cape', 'TzKal cape', 'Abyssal cape'];
 	if (!meleeGear.hasEquipped(requiredMeleeWeapons) || !meleeGear.hasEquipped(requiredMeleeCapes)) {
@@ -237,9 +238,13 @@ async function checkTOBUser(
 	if (teamSize === 1) {
 		if (
 			!meleeGear.hasEquipped(['Drygore longsword', 'Offhand drygore longsword'], true) &&
-			!meleeGear.hasEquipped('Scythe of vitur')
+			!meleeGear.hasEquipped('Scythe of vitur') &&
+			!meleeGear.hasEquipped('Axe of the high sungod')
 		) {
-			return [true, 'You must either have a charged Scythe of vitur, or dual Drygore longswords to solo ToB'];
+			return [
+				true,
+				'You must either have a charged Scythe of vitur, dual Drygore longswords, or an Axe of the high sungod to solo ToB'
+			];
 		}
 		const minRangeSoloGear = ['Hellfire bow', 'Hellfire arrow'];
 		if (!rangeGear.hasEquipped('Chincannon') && !rangeGear.hasEquipped(minRangeSoloGear, true)) {

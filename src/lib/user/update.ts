@@ -8,6 +8,7 @@ import type { AutoFarmFilterEnum, bank_sort_method_enum, CropUpgradeType, Prisma
 import type { PatchTypes } from '@/lib/skilling/skills/farming/index.js';
 import type { FarmingPatchSettingsKey } from '@/lib/skilling/skills/farming/utils/farmingHelpers.js';
 import type { FarmingPreferredSeeds } from '@/lib/skilling/skills/farming/utils/types.js';
+import type { RumourBlockList } from '@/lib/skilling/skills/hunter/rumours/util.js';
 import type { SkillNameType } from '@/lib/skilling/types.js';
 import type { DegradeableItemColumns, GearColumns } from '@/lib/user/userTypes.js';
 
@@ -59,6 +60,9 @@ type PrismaNullableStringKeys =
 	| 'minion_icon'
 	| 'minion_name'
 	| 'bank_bg_hex'
+	| 'unique_outline_hex'
+	| 'bank_title_hex'
+	| 'default_bank_flag'
 	| 'username'
 	| 'RSN'
 	| 'username_with_badges'
@@ -83,7 +87,8 @@ type BSOUserUpdateInput = {
 		| 'emerged_inferno_attempts'
 		| 'dungeoneering_tokens'
 		| 'guthixian_cache_boosts_available'
-		| 'ourania_tokens',
+		| 'ourania_tokens'
+		| 'patron_double_time_used_mins',
 		PrismaIntUpdateInput
 	> &
 	Record<'monkeys_fought', PrismaArrayUpdateInput<string>> &
@@ -96,13 +101,20 @@ type BSOUserUpdateInput = {
 		ItemBank
 	> &
 	Record<
-		'last_bonanza_date' | 'lastSpawnLamp' | 'lastGivenBoxx' | 'last_item_contract_date' | 'last_spawn_box_date',
+		| 'last_bonanza_date'
+		| 'lastSpawnLamp'
+		| 'lastGivenBoxx'
+		| 'last_item_contract_date'
+		| 'last_spawn_box_date'
+		| 'last_party_room_date'
+		| 'last_box_frenzy_date',
 		Date | number | null
 	>;
 
 export type FullUserUpdateInput = Partial<
 	{
 		blowpipe: IBlowpipeData;
+		rumour_blocked_ids: RumourBlockList;
 		slayer_last_task: number;
 		minion_farmingContract: IFarmingContract | null;
 		minion_birdhouseTraps: IBirdhouseData | null;

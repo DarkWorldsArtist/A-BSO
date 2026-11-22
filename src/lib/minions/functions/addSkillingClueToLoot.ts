@@ -41,13 +41,24 @@ export default function addSkillingClueToLoot(
 				? user.skillsAsLevels[skill]
 				: user.skillLevel(skill);
 	const nestChance = wcCapeNestBoost ? Math.floor(256 * 0.9) : 256;
-	const cluesTotalWeight = sumArr(clues.map(c => c[1]));
+	const hasGmCA =
+		typeof user === 'object' &&
+		user !== null &&
+		'hasCompletedCATier' in user &&
+		typeof user.hasCompletedCATier === 'function'
+			? user.hasCompletedCATier('grandmaster')
+			: false;
 	let chance = Math.floor(clueChance / (100 + userLevel));
 	let nests = 0;
 
 	if (skill === 'woodcutting' && twitcherSetting === 'clue') {
 		chance = Math.floor((clueChance * 0.8) / (100 + userLevel));
 	}
+
+	const effectiveClues = hasGmCA
+		? clues.map(([id, w]) => [id, id === itemID('Clue scroll (grandmaster)') ? w * 1.05 : w] as const)
+		: clues;
+	const effectiveTotalWeight = sumArr(effectiveClues.map(c => c[1]));
 
 	for (let i = 0; i < quantity; i++) {
 		if (skill === 'woodcutting' && !clueNestsOnly && rng.roll(nestChance)) {
@@ -78,8 +89,8 @@ export default function addSkillingClueToLoot(
 		if (!rng.roll(chance)) continue;
 		const nextTier = false;
 		let gotClue = false;
-		let clueRoll = rng.randFloat(0, cluesTotalWeight);
-		for (const clue of clues) {
+		let clueRoll = rng.randFloat(0, effectiveTotalWeight);
+		for (const clue of effectiveClues) {
 			if (clueRoll < clue[1] || nextTier) {
 				nests++;
 				gotClue = true;

@@ -13,7 +13,7 @@ import {
 	type IslandUpgradeTiers
 } from '@/lib/bso/commands/islandUpgrades.js';
 import { isDoubleXPActive } from '@/lib/bso/doubleLoot.js';
-import { _itemId } from '@/lib/bso/util/bfcrit.js';
+import { BURIED_FIRMAMENT_ID } from '@/lib/bso/util/bfcrit.js';
 
 import { bold } from '@oldschoolgg/discord';
 import { Events, formatOrdinal, increaseNumByPercent, notEmpty, Time, toTitleCase } from '@oldschoolgg/toolkit';
@@ -221,7 +221,6 @@ export async function addXP(user: MUser, params: AddXpParams): Promise<string> {
 	let totalStaticBoost = 0;
 	const staticBoostsApplied: string[] = [];
 	let outfitBoostPercent = 0;
-	const _fid = _itemId();
 	for (const item of resolveItems([
 		'First age tiara',
 		'First age amulet',
@@ -234,7 +233,7 @@ export async function addXP(user: MUser, params: AddXpParams): Promise<string> {
 			totalFirstAgeBonus += 1;
 		}
 	}
-	if (user.hasEquipped(_fid)) {
+	if (user.hasEquipped(BURIED_FIRMAMENT_ID)) {
 		originalFirstAgeEquipped += 1;
 		totalFirstAgeBonus += 2;
 	}

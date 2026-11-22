@@ -14,14 +14,15 @@ import {
 	uniqueArr
 } from '@oldschoolgg/toolkit';
 import { Bank, type ItemBank, Items } from 'oldschooljs';
-import { clamp } from 'remeda';
 
 import type { activity_type_enum } from '@/prisma/main/enums.js';
 import { choicesOf, itemOption } from '@/discord/index.js';
+import { bankFlags } from '@/lib/canvas/bankImage.js';
 import { CanvasModule } from '@/lib/canvas/CanvasModule.js';
 import { gearImages } from '@/lib/canvas/gearImageData.js';
 import { ItemIconPacks } from '@/lib/canvas/iconPacks.js';
-import { BitField, BitFieldData } from '@/lib/constants.js';
+import { OSRSCanvas } from '@/lib/canvas/OSRSCanvas.js';
+import { BitField, BitFieldData, PerkTier } from '@/lib/constants.js';
 import { Eatables } from '@/lib/data/eatables.js';
 import { CombatOptionsArray } from '@/lib/minions/data/combatConstants.js';
 import { birdhouseSeeds } from '@/lib/skilling/skills/hunter/birdHouseTrapping.js';
@@ -29,7 +30,7 @@ import { autoslayChoices, slayerMasterChoices } from '@/lib/slayer/constants.js'
 import { setDefaultAutoslay, setDefaultSlayerMaster } from '@/lib/slayer/slayerUtil.js';
 import { BankSortMethods, isValidBankSortMethod } from '@/lib/sorts.js';
 import { parseBank } from '@/lib/util/parseStringBank.js';
-import { isValidNickname } from '@/lib/util/smallUtils.js';
+import { isValidNickname, patronMsg } from '@/lib/util/smallUtils.js';
 import { toggleBitfield } from '@/lib/util.js';
 
 type ExtendedBitFieldDataa = (typeof BitFieldData)[BitField] & {
@@ -41,6 +42,20 @@ type ExtendedBitFieldDataa = (typeof BitFieldData)[BitField] & {
 };
 
 const configBitFieldOverrides: Partial<Record<BitField, Partial<ExtendedBitFieldDataa>>> = {
+	[BitField.ShowTripLootValue]: {
+		name: 'Show Trip Loot Value Summary',
+		userConfigurable: true,
+		bit: BitField.ShowTripLootValue,
+		canToggle: async user => {
+			if ((await user.fetchPerkTier()) < PerkTier.Two) {
+				return {
+					result: false,
+					message: patronMsg(PerkTier.Two)
+				};
+			}
+			return { result: true };
+		}
+	},
 	[BitField.SelfGamblingLocked]: {
 		name: 'Lock Self From Gambling',
 		userConfigurable: true,
@@ -152,6 +167,7 @@ async function favItemConfig(
 	user: MUser,
 	itemToAdd: string | undefined,
 	itemToRemove: string | undefined,
+	manyToAdd: string | undefined,
 	reset: boolean
 ) {
 	if (reset) {
@@ -159,6 +175,24 @@ async function favItemConfig(
 		return 'Cleared all favorite items.';
 	}
 	const currentFavorites = user.user.favoriteItems;
+	const limit = ((await user.fetchPerkTier()) + 1) * 100;
+	if (manyToAdd) {
+		const items = parseBank({ inputStr: manyToAdd, noDuplicateItems: true })
+			.filter(i => !i.customItemData?.isSecret)
+			.filter(i => !currentFavorites.includes(i.id));
+		if (items.length === 0) return 'No valid items were given.';
+		const newFavs = uniqueArr([...currentFavorites, ...items.items().map(i => i[0].id)]);
+		if (newFavs.length > limit) {
+			return `You can't favorite that many items, you can favorite a maximum of ${limit}.`;
+		}
+		await user.update({
+			favoriteItems: newFavs
+		});
+		return `Added ${items
+			.items()
+			.map(i => i[0].name)
+			.join(', ')} to your favorite items, you now have ${newFavs.length} favorite items.`;
+	}
 	const item = Items.getItem(itemToAdd ?? itemToRemove);
 	const currentItems = `Your current favorite items are: ${
 		currentFavorites.length === 0
@@ -170,7 +204,6 @@ async function favItemConfig(
 	}.`;
 	if (!item || item.customItemData?.isSecret) return currentItems;
 	if (itemToAdd) {
-		const limit = ((await user.fetchPerkTier()) + 1) * 100;
 		if (currentFavorites.length >= limit) {
 			return `You can't favorite anymore items, you can favorite a maximum of ${limit}.`;
 		}
@@ -334,19 +367,69 @@ async function bankSortConfig(
 	return bankSortConfig(user, undefined, undefined, undefined, undefined);
 }
 
+const NAMED_HEX_PRESETS: Record<string, string> = {
+	purple: '#AC7FFF',
+	gold: '#FFB800',
+	cyan: '#00FFFF',
+	green: '#00FF80',
+	red: '#FF4444',
+	pink: '#FF66CC',
+	white: '#FFFFFF',
+	orange: '#FF981F',
+	blue: '#4E82F5'
+};
+
+const HEX_COLOR_ERROR_MSG =
+	"That's not a valid hex color. Provide a 6-character hex code (such as #4e42f5 or 4e42f5), a preset (purple, gold, cyan, green, red, pink, white, orange, blue), or 'reset'.";
+
+function parseHexColorInput(
+	input?: string
+): { type: 'empty' } | { type: 'reset' } | { type: 'valid'; hex: string } | { type: 'invalid' } {
+	if (!input) return { type: 'empty' };
+	const trimmed = input.trim().toLowerCase();
+	if (trimmed === 'reset' || trimmed === 'default' || trimmed === 'none') {
+		return { type: 'reset' };
+	}
+	if (NAMED_HEX_PRESETS[trimmed]) {
+		return { type: 'valid', hex: NAMED_HEX_PRESETS[trimmed] };
+	}
+	const candidate = (trimmed.startsWith('#') ? trimmed : `#${trimmed}`).toUpperCase();
+	if (!isValidHexColor(candidate)) {
+		return { type: 'invalid' };
+	}
+	return { type: 'valid', hex: candidate };
+}
+
+async function renderOutlinePreviewImage(user: MUser, outlineColor: string): Promise<Buffer> {
+	await CanvasModule.waitTillReady();
+	const canvas = new OSRSCanvas({ width: 56, height: 48, iconPackId: user.iconPackId });
+	canvas.ctx.fillStyle = '#3e3529';
+	canvas.ctx.fillRect(0, 0, canvas.width, canvas.height);
+	await canvas.drawItemIDSprite({
+		itemID: 20_997,
+		x: 10,
+		y: 8,
+		outline: { outlineColor, alpha: 1 },
+		quantity: 2,
+		textColor: outlineColor,
+		user
+	});
+	return canvas.toScaledOutput(2);
+}
+
 async function bgColorConfig(user: MUser, hex?: string) {
 	const currentColor = user.user.bank_bg_hex;
-
 	const embed = new EmbedBuilder();
+	const parsed = parseHexColorInput(hex);
 
-	if (hex === 'reset') {
+	if (parsed.type === 'reset') {
 		await user.update({
 			bank_bg_hex: null
 		});
 		return 'Reset your bank background color.';
 	}
 
-	if (!hex) {
+	if (parsed.type === 'empty') {
 		if (!currentColor) {
 			return 'You have no background color set.';
 		}
@@ -359,18 +442,139 @@ async function bgColorConfig(user: MUser, hex?: string) {
 		};
 	}
 
-	hex = hex.toUpperCase();
-	if (!isValidHexColor(hex)) {
-		return "That's not a valid hex color. It needs to be 7 characters long, starting with '#', for example: #4e42f5 - use this to pick one: <https://www.google.com/search?q=hex+color+picker>";
+	if (parsed.type === 'invalid') {
+		return HEX_COLOR_ERROR_MSG;
 	}
 
 	await user.update({
-		bank_bg_hex: hex
+		bank_bg_hex: parsed.hex
 	});
 
 	return {
-		embeds: [embed.setColor(hexToDecimal(hex)).setDescription(`Your background color is now \`${hex}\``)]
+		embeds: [
+			embed.setColor(hexToDecimal(parsed.hex)).setDescription(`Your background color is now \`${parsed.hex}\`.`)
+		]
 	};
+}
+
+async function uniqueOutlineColorConfig(user: MUser, hex?: string): CommandResponse {
+	if ((await user.fetchPerkTier()) < PerkTier.Two) {
+		return patronMsg(PerkTier.Two);
+	}
+	const currentColor = user.user.unique_outline_hex;
+	const embed = new EmbedBuilder();
+	const parsed = parseHexColorInput(hex);
+
+	if (parsed.type === 'reset') {
+		await user.update({
+			unique_outline_hex: null
+		});
+		return 'Reset your unique item outline color to default (#AC7FFF).';
+	}
+
+	if (parsed.type === 'empty') {
+		if (!currentColor) {
+			return 'You have no custom unique item outline color set (using default #AC7FFF).';
+		}
+		return {
+			embeds: [
+				embed
+					.setColor(hexToDecimal(currentColor))
+					.setDescription(`Your current unique item outline color is \`${currentColor}\`.`)
+			]
+		};
+	}
+
+	if (parsed.type === 'invalid') {
+		return HEX_COLOR_ERROR_MSG;
+	}
+
+	await user.update({
+		unique_outline_hex: parsed.hex
+	});
+
+	const previewBuffer = await renderOutlinePreviewImage(user, parsed.hex);
+
+	return {
+		embeds: [
+			embed
+				.setColor(hexToDecimal(parsed.hex))
+				.setDescription(`Your unique item outline color is now \`${parsed.hex}\`.`)
+		],
+		files: [{ buffer: previewBuffer, name: 'outline_preview.png' }]
+	};
+}
+
+async function bankTitleColorConfig(user: MUser, hex?: string) {
+	if ((await user.fetchPerkTier()) < PerkTier.Three) {
+		return patronMsg(PerkTier.Three);
+	}
+	const currentColor = user.user.bank_title_hex;
+	const embed = new EmbedBuilder();
+	const parsed = parseHexColorInput(hex);
+
+	if (parsed.type === 'reset') {
+		await user.update({
+			bank_title_hex: null
+		});
+		return 'Reset your bank title color to default (#FF981F).';
+	}
+
+	if (parsed.type === 'empty') {
+		if (!currentColor) {
+			return 'You have no custom bank title color set (using default #FF981F).';
+		}
+		return {
+			embeds: [
+				embed
+					.setColor(hexToDecimal(currentColor))
+					.setDescription(`Your current bank title color is \`${currentColor}\`.`)
+			]
+		};
+	}
+
+	if (parsed.type === 'invalid') {
+		return HEX_COLOR_ERROR_MSG;
+	}
+
+	await user.update({
+		bank_title_hex: parsed.hex
+	});
+
+	return {
+		embeds: [
+			embed.setColor(hexToDecimal(parsed.hex)).setDescription(`Your bank title color is now \`${parsed.hex}\`.`)
+		]
+	};
+}
+
+const DEFAULT_BANK_FLAG_CHOICES = [
+	'none',
+	'show_market_price',
+	'show_price',
+	'show_alch',
+	'show_names',
+	'show_id'
+] as const;
+
+async function defaultBankFlagConfig(user: MUser, flag?: string) {
+	if ((await user.fetchPerkTier()) < PerkTier.Three) {
+		return patronMsg(PerkTier.Three);
+	}
+	const currentFlag = user.user.default_bank_flag;
+	if (!flag) {
+		return `Your current default bank overlay flag is: \`${currentFlag ?? 'none'}\`.`;
+	}
+	const normalized = flag.trim().toLowerCase();
+	if (normalized === 'none' || normalized === 'reset' || normalized === 'default') {
+		await user.update({ default_bank_flag: null });
+		return 'Cleared your default bank overlay flag.';
+	}
+	if (!bankFlags.includes(normalized as any)) {
+		return `Invalid bank flag. Valid options: ${DEFAULT_BANK_FLAG_CHOICES.join(', ')}.`;
+	}
+	await user.update({ default_bank_flag: normalized });
+	return `Your default bank overlay flag is now set to \`${normalized}\`.`;
 }
 
 async function handleChannelEnable(
@@ -512,7 +716,14 @@ async function handleCombatOptions(user: MUser, command: 'add' | 'remove' | 'lis
 }
 
 function pinnedTripLimit(perkTier: number) {
-	return clamp(perkTier + 1, { min: 1, max: 4 });
+	if (perkTier >= PerkTier.Eight) return 12;
+	if (perkTier === PerkTier.Seven) return 10;
+	if (perkTier === PerkTier.Six) return 8;
+	if (perkTier === PerkTier.Five) return 6;
+	if (perkTier === PerkTier.Four) return 4;
+	if (perkTier === PerkTier.Three) return 3;
+	if (perkTier === PerkTier.Two) return 2;
+	return 1;
 }
 export async function pinTripCommand(user: MUser, tripId: string | undefined, customName: string | undefined) {
 	if (!tripId) return 'Invalid trip.';
@@ -528,7 +739,7 @@ export async function pinTripCommand(user: MUser, tripId: string | undefined, cu
 	const limit = pinnedTripLimit(await user.fetchPerkTier());
 	const currentPinnedTripsCount = await prisma.pinnedTrip.count({ where: { user_id: user.id } });
 	if (currentPinnedTripsCount >= limit) {
-		return `You cannot have more than ${limit}x pinned trips, unpin one first. Your limit is ${limit}, you can get up to 4 by being a patron.`;
+		return `You cannot have more than ${limit}x pinned trips, unpin one first. Your limit is ${limit}, you can get up to 12 by being a patron.`;
 	}
 
 	await prisma.pinnedTrip.create({
@@ -894,10 +1105,57 @@ export const configCommand = defineCommand({
 							required: false
 						},
 						{
+							type: 'String',
+							name: 'add_many',
+							description: 'Add multiple items to your favorite items at once.',
+							required: false
+						},
+						{
 							type: 'Boolean',
 							name: 'reset',
 							description: 'Reset all of your favorite items',
 							required: false
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'unique_outline_color',
+					description:
+						'Patron T1+: Set a custom hex color for new Collection Log item outlines in bank images.',
+					options: [
+						{
+							type: 'String',
+							name: 'color',
+							description: 'Hex color (e.g. #4e42f5), preset (gold, cyan, crimson, etc.), or reset.',
+							required: false
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'bank_title_color',
+					description: 'Patron T2+: Set a custom hex color for your bank title text.',
+					options: [
+						{
+							type: 'String',
+							name: 'color',
+							description: 'Hex color (e.g. #4e42f5), preset (gold, cyan, purple, etc.), or reset.',
+							required: false
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'default_bank_flag',
+					description: 'Patron T2+: Set a default overlay flag applied to your /bank images.',
+					options: [
+						{
+							type: 'String',
+							name: 'flag',
+							description: 'The default overlay flag to apply.',
+							required: false,
+							choices: choicesOf(DEFAULT_BANK_FLAG_CHOICES)
 						}
 					]
 				},
@@ -1066,6 +1324,9 @@ LIMIT 20;
 				toggle,
 				combat_options,
 				bg_color,
+				unique_outline_color,
+				bank_title_color,
+				default_bank_flag,
 				bank_sort,
 				favorite_alchs,
 				favorite_food,
@@ -1109,6 +1370,15 @@ LIMIT 20;
 			if (bg_color) {
 				return bgColorConfig(user, bg_color.color);
 			}
+			if (unique_outline_color) {
+				return uniqueOutlineColorConfig(user, unique_outline_color.color);
+			}
+			if (bank_title_color) {
+				return bankTitleColorConfig(user, bank_title_color.color);
+			}
+			if (default_bank_flag) {
+				return defaultBankFlagConfig(user, default_bank_flag.flag);
+			}
 			if (bank_sort) {
 				return bankSortConfig(
 					user,
@@ -1131,7 +1401,13 @@ LIMIT 20;
 				return favFoodConfig(user, favorite_food.add, favorite_food.remove, Boolean(favorite_food.reset));
 			}
 			if (favorite_items) {
-				return favItemConfig(user, favorite_items.add, favorite_items.remove, Boolean(favorite_items.reset));
+				return favItemConfig(
+					user,
+					favorite_items.add,
+					favorite_items.remove,
+					favorite_items.add_many,
+					Boolean(favorite_items.reset)
+				);
 			}
 			if (favorite_bh_seeds) {
 				return favBhSeedsConfig(

@@ -5,11 +5,13 @@ import type { ItemBank } from 'oldschooljs';
 import type { CropUpgradeType } from '@/prisma/main/enums.js';
 import type { NMZStrategy } from '@/lib/constants.js';
 import type { SlayerActivityConstants } from '@/lib/minions/data/combatConstants.js';
+import type { StealingArtefactsGlassblowData } from '@/lib/minions/data/stealingArtefacts.js';
 import type { AttackStyles } from '@/lib/minions/functions/index.js';
 import type { MinigameName } from '@/lib/settings/minigames.js';
 import type { UnderwaterAgilityThievingTrainingSkill } from '@/lib/skilling/skills/agility.js';
 import type { IPatchData } from '@/lib/skilling/skills/farming/utils/types.js';
 import type { SharkLureQuantity } from '@/lib/skilling/skills/fishing/fishingUtil.js';
+import type { Rumour, RumourHunterID, RumourOption } from '@/lib/skilling/skills/hunter/rumours/util.js';
 import type { TwitcherGloves } from '@/lib/skilling/skills/woodcutting/woodcutting.js';
 import type { Peak } from '@/lib/util/peaks.js';
 
@@ -345,6 +347,14 @@ export interface HunterActivityTaskOptions extends ActivityTaskOptions {
 	usingStaminaPotion?: boolean;
 }
 
+export interface RumourActivityTaskOptions extends ActivityTaskOptions {
+	type: 'Rumour';
+	tier: RumourOption;
+	hunter?: RumourHunterID;
+	quantity: number;
+	rumours: Rumour[];
+}
+
 export interface AlchingActivityTaskOptions extends ActivityTaskOptions {
 	type: 'Alching';
 	itemID: number;
@@ -506,6 +516,14 @@ export interface PlunderActivityTaskOptions extends MinigameActivityTaskOptions 
 	rooms: number[];
 }
 
+export interface StealingArtefactsActivityTaskOptions extends MinigameActivityTaskOptions {
+	type: 'StealingArtefacts';
+	stamina: boolean;
+	teleportOptionEnabled: boolean;
+	teleportEligible: boolean;
+	glassblow?: StealingArtefactsGlassblowData;
+}
+
 export interface ValeTotemsActivityTaskOptions extends MinigameActivityTaskOptions {
 	type: 'ValeTotems';
 	offerings: number;
@@ -541,12 +559,15 @@ export interface SawmillActivityTaskOptions extends ActivityTaskOptions {
 	type: 'Sawmill';
 	plankID: number;
 	plankQuantity: number;
+	speed?: number;
+	plankName?: string;
 }
 
 export interface ButlerActivityTaskOptions extends ActivityTaskOptions {
 	type: 'Butler';
 	plankID: number;
 	plankQuantity: number;
+	plankName?: string;
 }
 
 export interface GnomeRestaurantActivityTaskOptions extends MinigameActivityTaskOptions {
@@ -733,6 +754,7 @@ export type ActivityTaskData =
 	| EnchantingActivityTaskOptions
 	| ConstructionActivityTaskOptions
 	| HunterActivityTaskOptions
+	| RumourActivityTaskOptions
 	| ZalcanoActivityTaskOptions
 	| SawmillActivityTaskOptions
 	| ButlerActivityTaskOptions
@@ -798,4 +820,5 @@ export type ActivityTaskData =
 	| CutLeapingFishActivityTaskOptions
 	| CreateForestersRationsActivityTaskOptions
 	| ColoTaskOptions
+	| StealingArtefactsActivityTaskOptions
 	| BSOActivityTaskData;

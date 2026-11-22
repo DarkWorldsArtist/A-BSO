@@ -6,6 +6,7 @@ import { Items } from 'oldschooljs';
 
 import type { TameActivity } from '@/prisma/main.js';
 import { ClueTiers } from '@/lib/clues/clueTiers.js';
+import { formatTripDuration } from '@/lib/util/minionUtils.js';
 
 export async function tameLastFinishedActivity(user: MUser) {
 	const tameID = user.user.selected_tame;
@@ -52,10 +53,12 @@ export function calculateMaximumTameFeedingLevelGain(tame: MTame) {
 	return Math.floor(difference / 2) - 1;
 }
 
-export function getTameStatus(tameActivity: TameActivity | null) {
+export function getTameStatus(tameActivity: TameActivity | null, user?: MUser) {
 	if (tameActivity) {
-		const currentDate = Date.now();
-		const timeRemaining = `${formatDuration(tameActivity.finish_date.valueOf() - currentDate, true)} remaining`;
+		const remainingMs = Math.max(0, tameActivity.finish_date.valueOf() - Date.now());
+		const timeRemaining = user
+			? `${formatTripDuration(user, remainingMs)} remaining`
+			: `${formatDuration(remainingMs, true)} remaining`;
 		const activityData = tameActivity.data as any as TameTaskOptions;
 		switch (activityData.type) {
 			case TameType.Combat:

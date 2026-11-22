@@ -1,7 +1,12 @@
+import { ShrimplingImpling } from '@/lib/bso/customImplings.js';
+import { chanceOfDOAUnique, pickUniqueToGiveUser } from '@/lib/bso/depthsOfAtlantis.js';
+import { DOANonUniqueTable } from '@/lib/bso/doa/doaLootTable.js';
+import { globalDroprates } from '@/lib/bso/globalDroprates.js';
 import { applyClueCodexToLoot } from '@/lib/bso/skills/invention/effects/clueCodexEffect.js';
 import type { MTame } from '@/lib/bso/structures/MTame.js';
 import {
 	type ArbitraryTameActivity,
+	getIgneTameKC,
 	seaMonkeySpells,
 	TameSpeciesID,
 	type TameTaskOptions,
@@ -25,6 +30,8 @@ import { trackLoot } from '@/lib/lootTrack.js';
 import { allOpenables } from '@/lib/openables.js';
 import { runCommand } from '@/lib/settings/settings.js';
 import { getTemporossLoot } from '@/lib/simulation/tempoross.js';
+import { calcTOALoot, estimatePoints, toaOrnamentKits, toaPetTransmogItems } from '@/lib/simulation/toa.js';
+import type { RaidLevel } from '@/lib/simulation/toaUtils.js';
 import { WintertodtCrate } from '@/lib/simulation/wintertodt.js';
 import type { ActivityTaskData } from '@/lib/types/minions.js';
 import { makeTameRepeatTripButton } from '@/lib/util/interactions.js';
@@ -137,9 +144,31 @@ async function handleImplingLocator(user: MUser, tame: MTame, duration: number, 
 			messages,
 			true
 		);
-		if (result && result.bank.length > 0) {
+		const caughtBank = result?.bank ? result.bank.clone() : new Bank();
+
+		if (user.skillLevel('hunter') >= 97) {
+			const minutes = Math.floor(duration / Time.Minute);
+			let shrimplingRate = 2500;
+			if (user.bitfield.includes(BitField.HasScrollOfTheHunt)) {
+				shrimplingRate = Math.floor(shrimplingRate / 2);
+			}
+			if (user.hasEquipped('Hunter master cape')) {
+				shrimplingRate = Math.floor(shrimplingRate / 2);
+			}
+			let shrimplingsCaught = 0;
+			for (let i = 0; i < minutes; i++) {
+				if (roll(shrimplingRate)) {
+					shrimplingsCaught++;
+				}
+			}
+			if (shrimplingsCaught > 0) {
+				caughtBank.add(ShrimplingImpling.id, shrimplingsCaught);
+			}
+		}
+
+		if (caughtBank.length > 0) {
 			const actualImplingLoot = new Bank();
-			for (const [item, qty] of result.bank.items()) {
+			for (const [item, qty] of caughtBank.items()) {
 				const openable = allOpenables.find(i => i.id === item.id)!;
 				assert(!isEmpty(openable));
 				if (keepJars) {
@@ -169,7 +198,7 @@ async function handleImplingLocator(user: MUser, tame: MTame, duration: number, 
 				}
 			}
 			loot.add(actualImplingLoot);
-			messages.push(`${tame} caught ${result.bank} with their Impling locator`);
+			messages.push(`${tame} caught ${caughtBank} with their Impling locator`);
 			await tame.addToStatsBank('implings_loot', actualImplingLoot);
 		}
 	}
@@ -210,7 +239,48 @@ export async function runTameTask(activity: TameActivity, tame: MTame) {
 					}
 				}
 			}
-			const loot = mon.loot({ quantity: killQty, tame });
+			const kc = (await getIgneTameKC(tame)).idBank[mon.id] ?? 0;
+			let loot: Bank;
+			if (mon.id === 334_913) {
+				loot = new Bank();
+				const lvl = tame.maxCombatLevel;
+				const raidLevel: RaidLevel = lvl < 80 ? 150 : lvl < 85 ? 200 : lvl < 90 ? 300 : 350;
+				const points = estimatePoints(raidLevel, 1);
+				for (let i = 0; i < killQty; i++) {
+					const res = calcTOALoot({
+						users: [{ id: user.id, points, cl: user.cl, kc: kc + i, deaths: [] }],
+						raidLevel,
+						rng: cryptoRng
+					});
+					const raidLoot = res.teamLoot.get(user.id);
+					for (const [kitItem] of toaOrnamentKits) {
+						if (user.owns(kitItem.id) || loot.has(kitItem.id)) {
+							raidLoot.remove(kitItem.id, raidLoot.amount(kitItem.id));
+						}
+					}
+					for (const transmogId of toaPetTransmogItems) {
+						if (user.owns(transmogId) || loot.has(transmogId)) {
+							raidLoot.remove(transmogId, raidLoot.amount(transmogId));
+						}
+					}
+					loot.add(raidLoot);
+				}
+			} else if (mon.id === 334_914) {
+				loot = new Bank();
+				const uniqueChance = chanceOfDOAUnique(1, false);
+				for (let i = 0; i < killQty; i++) {
+					if (roll(uniqueChance)) {
+						loot.add(pickUniqueToGiveUser(user.cl));
+					} else {
+						loot.add(DOANonUniqueTable.roll());
+					}
+					if (roll(globalDroprates.doaCrush.baseRate)) {
+						loot.add('Crush');
+					}
+				}
+			} else {
+				loot = mon.loot({ quantity: killQty, tame, user, kc, rng: cryptoRng });
+			}
 			const messages: string[] = [];
 
 			let str = `${user}, ${tame} finished killing ${quantity}x ${mon.name}.${

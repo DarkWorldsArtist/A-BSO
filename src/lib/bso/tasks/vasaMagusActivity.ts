@@ -56,16 +56,17 @@ export const vasaTask: MinionTask = {
 			globalDroprates.voidling.baseRate,
 			globalDroprates.voidling.clIncrease
 		);
+		const tertiaryItemPercentageChanges = user.buildTertiaryItemChanges(false, false, false);
 		for (let i = 0; i < quantity; i++) {
-			loot.add(VasaMagusLootTable.roll());
+			loot.add(VasaMagusLootTable.roll(1, { tertiaryItemPercentageChanges }));
 			if (rng.roll(petDroprate)) loot.add('Voidling');
 			const mon = rng.pick(vasaBosses);
 			const qty = rng.randInt(1, 3);
 			lootOf[mon.name] = (lootOf[mon.name] ?? 0) + qty;
 			if ('kill' in mon && mon.kill) {
-				loot.add(mon.kill(qty, {}));
+				loot.add(mon.kill(qty, { tertiaryItemPercentageChanges }));
 			} else if ('table' in mon && mon.table && 'kill' in mon.table && mon.table.kill) {
-				const bossLoot = mon.table.kill(qty, {});
+				const bossLoot = mon.table.kill(qty, { tertiaryItemPercentageChanges });
 				if ('specialLoot' in mon && mon.specialLoot) {
 					mon.specialLoot({
 						loot: bossLoot,

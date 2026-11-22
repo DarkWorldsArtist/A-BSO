@@ -193,8 +193,12 @@ class CacheManager {
 		const cachedServer = globalConfig.guildIdsToCache.includes(guildId);
 		if (cachedServer) {
 			const key = `${guildId}:${userId}`;
-			if (refreshCache) return await globalClient.fetchMember({ guildId, userId });
-			const delayCheck = await Cache.tryRatelimit(key, 'delay_member_fetch');
+			if (refreshCache) {
+				const member = await globalClient.fetchMember({ guildId, userId });
+				await this.setMember(member);
+				return member;
+			}
+			const delayCheck = await this.tryRatelimit(key, 'delay_member_fetch');
 			if (cacheOnly || !delayCheck.success) {
 				// If we're under time out, it could be assumed to be cached, but...
 				const cacheMember = await this.getJson<IMember>(RedisKeys.Discord.Member(guildId, userId));
@@ -203,14 +207,18 @@ class CacheManager {
 				} else {
 					if (cacheOnly) return null;
 					const member = await globalClient.fetchMember({ guildId, userId });
-					await Cache.setMember(member);
+					await this.setMember(member);
 					return member;
 				}
 			}
 		}
 		if (cachedServer || externalServer) {
 			// We can fetch now
-			return await globalClient.fetchMember({ guildId, userId });
+			const member = await globalClient.fetchMember({ guildId, userId });
+			if (cachedServer) {
+				await this.setMember(member);
+			}
+			return member;
 		}
 		return null;
 	}
@@ -674,6 +682,34 @@ class CacheManager {
 		});
 		await this.setWebhookPermissions(permissions);
 		return permissions;
+	}
+
+	private get partyRoomPendingRefundsKey() {
+		return `${BOT_TYPE}:party_room:pending_refunds`;
+	}
+
+	async getPartyRoomPendingRefunds(): Promise<Record<string, { hostId: string; bank: Record<string, number> }>> {
+		return (
+			(await this.getJson<Record<string, { hostId: string; bank: Record<string, number> }>>(
+				this.partyRoomPendingRefundsKey
+			)) ?? {}
+		);
+	}
+
+	async setPartyRoomPendingRefund(
+		sessionId: string,
+		refund: { hostId: string; bank: Record<string, number> }
+	): Promise<void> {
+		const current = await this.getPartyRoomPendingRefunds();
+		current[sessionId] = refund;
+		await this.setJson(this.partyRoomPendingRefundsKey, current);
+	}
+
+	async deletePartyRoomPendingRefund(sessionId: string): Promise<void> {
+		const current = await this.getPartyRoomPendingRefunds();
+		if (!(sessionId in current)) return;
+		delete current[sessionId];
+		await this.setJson(this.partyRoomPendingRefundsKey, current);
 	}
 
 	async close() {

@@ -59,6 +59,7 @@ import Tanning from '@/lib/skilling/skills/crafting/craftables/tanning.js';
 import Bars from '@/lib/skilling/skills/smithing/smeltables.js';
 import { assert } from '@/lib/util/logError.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
+import { formatTripDuration } from '@/lib/util/minionUtils.js';
 import { parseStringBank } from '@/lib/util/parseStringBank.js';
 import { formatSkillRequirements } from '@/lib/util/smallUtils.js';
 import { getItemCostFromConsumables } from '@/mahoji/lib/abstracted_commands/minionKill/handleConsumables.js';
@@ -245,7 +246,7 @@ const tameImageReplacementEasterEggs: TameImageReplacementEasterEgg[] = [
 ];
 for (const dd of tameImageReplacementChoices) {
 	tameImageReplacementEasterEggs.push({
-		shouldActivate: ({ tame, perkTier }) => tame.custom_icon_id === dd.name && perkTier >= PerkTier.Four,
+		shouldActivate: ({ tame, perkTier }) => tame.custom_icon_id === dd.name && perkTier >= PerkTier.Three,
 		image: dd.image
 	});
 }
@@ -1021,7 +1022,7 @@ async function killCommand(user: MUser, channelId: string, str: string) {
 
 	let reply = `${tame} is now killing ${quantity}x ${monster.name}${
 		deathChance > 0 ? `, and has a ${deathChance.toFixed(2)}% chance of dying` : ''
-	}. The trip will take ${formatDuration(fakeDuration)}.\n\nRemoved ${foodRes.str}`;
+	}. The trip will take ${formatTripDuration(user, fakeDuration)}.\n\nRemoved ${foodRes.str}`;
 
 	if (boosts.length > 0) {
 		reply += `\n\n**Boosts:** ${boosts.join(', ')}.`;
@@ -1119,7 +1120,7 @@ async function collectCommand(user: MUser, channelId: string, str: string) {
 
 	let reply = `${tame} is now collecting ${quantity * collectable.quantity}x ${
 		collectable.item.name
-	}. The trip will take ${formatDuration(duration)}.`;
+	}. The trip will take ${formatTripDuration(user, duration)}.`;
 
 	if (boosts.length > 0) {
 		reply += `\n\n**Boosts:** ${boosts.join(', ')}.`;
@@ -1249,7 +1250,7 @@ async function monkeyMagicHandler(
 
 	let reply = `${tame} is now casting the ${
 		spellOptions.spell.name
-	} spell ${quantity}x times, removed ${finalCost} from your bank. The trip will take ${formatDuration(duration)}.`;
+	} spell ${quantity}x times, removed ${finalCost} from your bank. The trip will take ${formatTripDuration(user, duration)}.`;
 
 	if (boosts.length > 0) {
 		reply += `\n\n**Boosts:** ${boosts.join(', ')}.`;
@@ -1392,8 +1393,8 @@ async function viewCommand(interaction: MInteraction, user: MUser, tameID: numbe
 
 	const files: SendableFile[] = [fedImage];
 
-	const isTierThree = perkTier >= PerkTier.Four;
-	if (isTierThree) {
+	const isTierTwo = perkTier >= PerkTier.Three;
+	if (isTierTwo) {
 		files.push(
 			await makeBankImage({
 				bank: loot,
@@ -1436,8 +1437,8 @@ async function viewCommand(interaction: MInteraction, user: MUser, tameID: numbe
 			.map(i => `${i[1]}x ${i[0]}`)
 			.join(', ')}`;
 	}
-	if (!isTierThree) {
-		content += '\nYou need to be a Tier 3 patron to see all the loot your tame has collected.';
+	if (!isTierTwo) {
+		content += '\nYou need to be a Tier 2 patron to see all the loot your tame has collected.';
 	}
 	return {
 		content,
@@ -1450,7 +1451,7 @@ async function statusCommand(user: MUser) {
 	if (!tame) {
 		return 'You have no tame selected.';
 	}
-	return `${tame} is currently: ${getTameStatus(activity).join('. ')}.`;
+	return `${tame} is currently: ${getTameStatus(activity, user).join('. ')}.`;
 }
 
 async function tameEquipCommand(user: MUser, itemName: string) {
@@ -1648,7 +1649,7 @@ async function tameClueCommand(user: MUser, channelId: string, inputName: string
 
 	let reply = `${tame} is now completing ${quantity}x ${Items.itemNameFromId(
 		clueTier.scrollID
-	)}. Removed ${cost} from your bank. The trip will take ${formatDuration(task.duration)}.`;
+	)}. Removed ${cost} from your bank. The trip will take ${formatTripDuration(user, task.duration)}.`;
 
 	if (boosts.length > 0) {
 		reply += `\n\n**Boosts:** ${boosts.join(', ')}.`;
@@ -1991,7 +1992,8 @@ export const tamesCommand = defineCommand({
 			});
 			if (typeof task === 'string') return task;
 
-			let reply = `${tame} is now doing ${tameActivity.name}. The trip will take ${formatDuration(
+			let reply = `${tame} is now doing ${tameActivity.name}. The trip will take ${formatTripDuration(
+				user,
 				task.duration
 			)}.`;
 
@@ -2002,8 +2004,8 @@ export const tamesCommand = defineCommand({
 			return reply;
 		}
 		if (options.set_custom_image) {
-			if ((await user.fetchPerkTier()) < PerkTier.Four) {
-				return 'You need to be a Tier 3 patron to set a custom image for your tame.';
+			if ((await user.fetchPerkTier()) < PerkTier.Three) {
+				return 'You need to be a Tier 2 patron to set a custom image for your tame.';
 			}
 
 			// Handle resetting the custom image:

@@ -1,180 +1,177 @@
-import { itemContractResetTime } from '@/lib/bso/bsoConstants.js';
+import { isGEUntradeable, isSuperUntradeable } from '@/lib/bso/bsoUtil.js';
 import { DragonTable } from '@/lib/bso/grandmasterClue.js';
 import { Ignecarus } from '@/lib/bso/monsters/bosses/Ignecarus.js';
 import { kalphiteKingLootTable } from '@/lib/bso/monsters/bosses/KalphiteKing.js';
 import { VasaMagus } from '@/lib/bso/monsters/bosses/VasaMagus.js';
 import { BSOMonsters } from '@/lib/bso/monsters/customMonsters.js';
 import { nexLootTable } from '@/lib/bso/monsters/nex.js';
-import { combinedTmbUmbEmbTables } from '@/lib/bso/openables/mysteryBoxes.js';
-import { PMBTable } from '@/lib/bso/openables/pmb.js';
 import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
 import { chargePortentIfHasCharges, PortentID } from '@/lib/bso/skills/divination.js';
 import { allThirdAgeItems, runeAlchablesTable } from '@/lib/bso/tables/sharedTables.js';
 import { LampTable } from '@/lib/bso/xpLamps.js';
 
 import { dateFm } from '@oldschoolgg/discord';
-import { Emoji, formatDuration, formatOrdinal } from '@oldschoolgg/toolkit';
-import { randArrItem, roll } from 'node-rng';
-import { Bank, type ItemBank, Items, itemID, LootTable, resolveItems } from 'oldschooljs';
+import { Emoji, formatOrdinal } from '@oldschoolgg/toolkit';
+import { randArrItem } from 'node-rng';
+import { Bank, type ItemBank, Items, LootTable, resolveItems } from 'oldschooljs';
 
 import { BitField } from '@/lib/constants.js';
+import { allPetIDs } from '@/lib/data/CollectionsExport.js';
+import { allOpenablesIDs } from '@/lib/openables.js';
+import { getESTDateKey, getNextESTMidnight } from '@/lib/util/estTime.js';
 import { tradePlayerItems } from '@/lib/util/tradePlayerItems.js';
 import { unqueuedTransactItems } from '@/lib/util/transactItemsFromBank.js';
 import { userQueueFn } from '@/lib/util/userQueues.js';
 
+export const DAILY_ITEM_CONTRACTS_LIMIT = 3;
+
 export interface ItemContractDetails {
 	totalContracts: number;
 	streak: number;
-	currentItem: any;
+	currentItem: ReturnType<typeof Items.getOrThrow> | null;
 	nextContractIsReady: boolean;
-	durationRemaining: number;
-	differenceFromLastContract: number;
+	contractsRemainingToday: number;
+	hasFreeSkipToday: boolean;
+	nextReset: Date;
 	owns: boolean | null;
-	canSkip: boolean;
-	lastDate: number;
 	infoStr: string;
 }
 
 const contractTable = new LootTable()
-	.every('Coins', [1_000_000, 3_500_000])
-	.tertiary(50, LampTable)
-	.tertiary(50, MysteryBoxes)
-	.add(DragonTable, [1, 2], 2)
-	.add(runeAlchablesTable, [1, 3], 3)
-	.every(runeAlchablesTable, [1, 3])
+	.every('Coins', [2_500_000, 6_000_000])
+	.tertiary(25, LampTable)
+	.tertiary(20, MysteryBoxes)
+	.add(DragonTable, [1, 3], 2)
+	.add(runeAlchablesTable, [2, 4], 3)
+	.every(runeAlchablesTable, [2, 4])
 	.add(
 		new LootTable()
-			.add('Clue scroll (beginner)', 1, 50)
-			.add('Clue scroll (easy)', 1, 40)
-			.add('Clue scroll (medium)', 1, 30)
-			.add('Clue scroll (hard)', 1, 20)
-			.add('Clue scroll (elite)', 1, 10)
-			.add('Clue scroll (master)', 1, 5)
-			.add('Clue scroll (grandmaster)', 1, 2)
+			.add('Clue scroll (medium)', 1, 20)
+			.add('Clue scroll (hard)', 1, 25)
+			.add('Clue scroll (elite)', 1, 15)
+			.add('Clue scroll (master)', 1, 8)
+			.add('Clue scroll (grandmaster)', 1, 3)
 	);
 
-const itemContractItemsSet = new Set([
-	...combinedTmbUmbEmbTables,
-	...kalphiteKingLootTable.allItems.filter(i => i !== itemID('Baby kalphite king')),
-	// ...AbyssalDragonLootTable.allItems,
+const rawContractCandidates = new Set([
+	...kalphiteKingLootTable.allItems,
 	...VasaMagus.allItems,
-	...Ignecarus.allItems.filter(i => i !== itemID('Dragon egg')),
+	...Ignecarus.allItems,
 	...nexLootTable.allItems,
-	...PMBTable.allItems,
-	...[
-		...BSOMonsters.FrostDragon.table.allItems,
-		...BSOMonsters.GanodermicBeast.table.allItems,
-		...BSOMonsters.Grifolaroo.table.allItems,
-		...BSOMonsters.RumPumpedCrab.table.allItems,
-		...BSOMonsters.QueenBlackDragon.table.allItems
-	],
-	...resolveItems([
-		'Untradeable mystery box',
-		'Tradeable mystery box',
-		'Pet mystery box',
-		'Holiday mystery box',
-		'Dwarven bar',
-		'Dwarven ore'
-	])
+	...BSOMonsters.FrostDragon.table.allItems,
+	...BSOMonsters.GanodermicBeast.table.allItems,
+	...BSOMonsters.Grifolaroo.table.allItems,
+	...BSOMonsters.RumPumpedCrab.table.allItems,
+	...BSOMonsters.QueenBlackDragon.table.allItems,
+	...resolveItems(['Dwarven bar', 'Dwarven ore', 'Runite bar', 'Adamantite bar', 'Mahogany plank', 'Teak plank'])
 ]);
 
-const cantBeContract = resolveItems(['Coins']);
-for (const id of cantBeContract) {
-	itemContractItemsSet.delete(id);
-}
+const excludedContractItems = new Set([
+	...resolveItems([
+		'Coins',
+		'Clue scroll (beginner)',
+		'Clue scroll (easy)',
+		'Clue scroll (medium)',
+		'Clue scroll (hard)',
+		'Clue scroll (elite)',
+		'Clue scroll (master)',
+		'Clue scroll (grandmaster)'
+	]),
+	...allPetIDs,
+	...allThirdAgeItems
+]);
 
-const itemContractItems = Array.from(itemContractItemsSet);
+const itemContractItems = Array.from(rawContractCandidates).filter(id => {
+	if (excludedContractItems.has(id)) return false;
+	if (allOpenablesIDs.has(id)) return false;
+	const item = Items.get(id);
+	if (!item) return false;
+	if (isSuperUntradeable(item) || isGEUntradeable(item)) return false;
+	if ((item.price ?? 0) > 50_000_000) return false;
+	return Boolean(item.tradeable);
+});
 
-function pickItemContract(streak: number) {
-	let item = randArrItem(itemContractItems);
-	if (streak > 50) {
-		const fifties = Math.floor(streak / 50);
-		for (let i = 0; i < fifties; i++) {
-			if (roll(95 + i * 5)) {
-				item = randArrItem(allThirdAgeItems);
-			}
-		}
-	}
-
-	return item;
+function pickItemContract() {
+	return randArrItem(itemContractItems) ?? itemContractItems[0];
 }
 
 export async function resetBrokenContracts(user: MUser) {
 	await user.update({ current_item_contract: null });
-	return 'Sorry, your item contract was bugged, try again it should be fixed now.';
+	return 'Sorry, your item contract was reset, please try again.';
 }
-function getItemContractDetails(mUser: MUser): ItemContractDetails | null {
-	const currentDate = Date.now();
-	let lastDate = Number(mUser.user.last_item_contract_date);
-	if (lastDate === 0) lastDate = Date.now() - itemContractResetTime;
-	const difference = currentDate - lastDate;
+
+async function getItemContractDetails(mUser: MUser): Promise<ItemContractDetails | null> {
+	const stats = await mUser.fetchStats();
+	const todayKey = getESTDateKey();
+	const usedToday = stats.ic_daily_date === todayKey ? stats.ic_daily_count : 0;
+	const contractsRemainingToday = Math.max(0, DAILY_ITEM_CONTRACTS_LIMIT - usedToday);
+	const hasFreeSkipToday = stats.ic_free_skip_date !== todayKey;
+	const nextReset = getNextESTMidnight();
+
 	const totalContracts = mUser.user.total_item_contracts;
 	const streak = mUser.user.item_contract_streak;
 	try {
 		const currentItem = mUser.user.current_item_contract
 			? Items.getOrThrow(mUser.user.current_item_contract)
 			: null;
-		const durationRemaining = Date.now() - (lastDate + itemContractResetTime);
-		const nextContractIsReady = difference >= itemContractResetTime;
-		const { bank } = mUser;
-
-		const owns = currentItem ? bank.has(currentItem.id) : null;
+		const nextContractIsReady = contractsRemainingToday > 0;
+		const owns = currentItem ? mUser.bank.has(currentItem.id) : null;
 		return {
 			totalContracts,
 			streak,
 			currentItem,
 			nextContractIsReady,
-			durationRemaining,
-			differenceFromLastContract: difference,
+			contractsRemainingToday,
+			hasFreeSkipToday,
+			nextReset,
 			owns,
-			canSkip: difference < itemContractResetTime,
-			lastDate,
 			infoStr: `**Current Contract:** ${
 				currentItem
 					? `${currentItem.name} (ID: ${currentItem.id}) (You${owns ? '' : " don't"} own it)`
 					: '*None*'
 			}
+**Contracts Remaining Today:** ${contractsRemainingToday}/${DAILY_ITEM_CONTRACTS_LIMIT} (Resets ${dateFm(nextReset)})
+**Free Skip Available:** ${hasFreeSkipToday ? 'Yes' : 'No (resets midnight EST)'}
 **Current Streak:** ${streak}
-**Total Contracts Completed:** ${totalContracts}
-${!currentItem ? `**Next Contract:** ${nextContractIsReady ? 'Ready now.' : formatDuration(durationRemaining)}` : ''}`
+**Total Contracts Completed:** ${totalContracts}`
 		};
-	} catch (e) {
+	} catch {
 		return null;
 	}
 }
 
 async function skip(interaction: MInteraction, user: MUser) {
-	const details = getItemContractDetails(user);
+	const details = await getItemContractDetails(user);
 	if (details === null) {
 		return resetBrokenContracts(user);
 	}
-	const { currentItem, differenceFromLastContract, streak, canSkip } = details;
+	const { currentItem, hasFreeSkipToday } = details;
 	if (!currentItem) return "You don't have a contract to skip.";
-	if (canSkip) {
-		return `Your current contract is a ${currentItem.name} (ID:${
-			currentItem.id
-		}), you can't skip it yet, you need to wait ${formatDuration(
-			itemContractResetTime - differenceFromLastContract
-		)}.`;
+
+	if (hasFreeSkipToday) {
+		await interaction.confirmation(
+			`Use your free daily skip to replace **${currentItem.name}** without losing your streak?`
+		);
+		const newItem = pickItemContract();
+		const todayKey = getESTDateKey();
+		await Promise.all([
+			user.update({ current_item_contract: newItem }),
+			user.statsUpdate({ ic_free_skip_date: todayKey })
+		]);
+		return `Used your free daily skip! Your streak was preserved and your new contract is **${Items.itemNameFromId(newItem)}**.`;
 	}
 
 	await interaction.confirmation(
-		`Are you sure you want to skip your item contract? You won't be able to get another contract for ${formatDuration(
-			itemContractResetTime / 2
-		)}.`
+		`You already used your free daily skip today. Skipping **${currentItem.name}** again will reset your streak to 0. Continue?`
 	);
 
-	const newItem = pickItemContract(streak);
-
+	const newItem = pickItemContract();
 	await user.update({
-		last_item_contract_date: Date.now() - itemContractResetTime / 2,
 		current_item_contract: newItem,
 		item_contract_streak: 0
 	});
 
-	return `You skipped your item contract, your streak was reset, and your next contract will be available in ${formatDuration(
-		itemContractResetTime / 2
-	)}.`;
+	return `You skipped your item contract, your streak was reset to 0, and your new contract is **${Items.itemNameFromId(newItem)}**.`;
 }
 
 async function icDonateValidation(user: MUser, donator: MUser) {
@@ -187,7 +184,7 @@ async function icDonateValidation(user: MUser, donator: MUser) {
 	if (user.bitfield.includes(BitField.NoItemContractDonations)) {
 		return "That user doesn't want donations.";
 	}
-	const details = getItemContractDetails(user);
+	const details = await getItemContractDetails(user);
 	if (!details) return resetBrokenContracts(user);
 
 	if (!details.nextContractIsReady || !details.currentItem) {
@@ -214,9 +211,6 @@ async function donateICHandler(interaction: MInteraction): CommandResponse {
 
 	const user = await mUserFetch(userID);
 	const donator = await mUserFetch(interaction.userId);
-	Logging.logDebug(
-		`User ${donator.logName} is attempting to donate item contract to ${user.logName}, their current ic is: ${user.user.current_item_contract}`
-	);
 
 	const errorStr = await icDonateValidation(user, donator);
 	if (typeof errorStr === 'string') return { content: errorStr, ephemeral: true };
@@ -243,23 +237,15 @@ async function donateICHandler(interaction: MInteraction): CommandResponse {
 		await donator.statsBankUpdate('ic_donations_given_bank', cost);
 		await user.statsBankUpdate('ic_donations_received_bank', cost);
 		const handInResult = await handInContract(interaction, user, { skipConfirmation: true });
-		const nextIcDetails = getItemContractDetails(user);
+		const nextIcDetails = await getItemContractDetails(user);
 		if (!nextIcDetails) {
-			Logging.logError(
-				`${new Date().toLocaleString()}: User ${user.id} was donated ${cost} from ${donator.id}. The NEW contract was a broken item. ID#: ${user.user.current_item_contract}`
-			);
 			await resetBrokenContracts(user);
 			return {
-				content:
-					'**Important**: This should NOT have happened. Please inform Cyr or Magna. We are resetting your contract so it should work anyway, but please tell us.'
+				content: 'Your contract was reset due to an invalid item.'
 			};
 		}
 		return {
-			content: `${donator} donated ${cost} for ${user}'s Item Contract!
-
-${user.mention} ${handInResult}
-
-${Emoji.ItemContract} Your next contract is: ${nextIcDetails.currentItem?.name} ${dateFm(new Date(Date.now() + itemContractResetTime))}.`,
+			content: `${donator} donated ${cost} for ${user}'s Item Contract!\n\n${user.mention} ${handInResult}\n\n${Emoji.ItemContract} Your next contract is: ${nextIcDetails.currentItem?.name}.`,
 			allowedMentions: {
 				users: [user.id]
 			}
@@ -275,26 +261,26 @@ async function handInContract(
 	user: MUser,
 	options: { skipConfirmation?: boolean } = {}
 ): Promise<string> {
-	const details = getItemContractDetails(user);
+	const details = await getItemContractDetails(user);
 	if (!details) {
 		return resetBrokenContracts(user);
 	}
-	const { nextContractIsReady, durationRemaining, currentItem, owns, streak } = details;
+	const { nextContractIsReady, nextReset, currentItem, owns, streak } = details;
 
 	if (!nextContractIsReady) {
-		return `You have no item contract available at the moment. Come back in ${formatDuration(durationRemaining)}.`;
+		return `You have completed all ${DAILY_ITEM_CONTRACTS_LIMIT} Item Contracts for today! Resets at midnight EST (${dateFm(nextReset)}).`;
 	}
 
 	if (!currentItem) {
+		const assigned = pickItemContract();
 		await user.update({
-			current_item_contract: pickItemContract(streak),
-			last_item_contract_date: Date.now()
+			current_item_contract: assigned
 		});
-		return handInContract(interaction, user, options);
+		return `You were assigned a new item contract: **${Items.itemNameFromId(assigned)}**.`;
 	}
 
 	if (!owns) {
-		return `Your current contract is a ${currentItem.name} (Id: ${currentItem.id}), go get one!`;
+		return `Your current contract is a ${currentItem.name} (ID: ${currentItem.id}), go get one!`;
 	}
 	const cost = new Bank().add(currentItem.id);
 	const newStreak = streak + 1;
@@ -307,14 +293,14 @@ async function handInContract(
 
 	return userQueueFn(user.id, async () => {
 		await user.sync();
-		const freshDetails = getItemContractDetails(user);
+		const freshDetails = await getItemContractDetails(user);
 		if (!freshDetails) {
 			return resetBrokenContracts(user);
 		}
 
 		const {
 			nextContractIsReady: freshNextContractIsReady,
-			durationRemaining: freshDurationRemaining,
+			nextReset: freshNextReset,
 			currentItem: freshCurrentItem,
 			owns: freshOwns,
 			streak: freshStreak,
@@ -322,21 +308,18 @@ async function handInContract(
 		} = freshDetails;
 
 		if (!freshNextContractIsReady) {
-			return `You have no item contract available at the moment. Come back in ${formatDuration(
-				freshDurationRemaining
-			)}.`;
+			return `You have completed all ${DAILY_ITEM_CONTRACTS_LIMIT} Item Contracts for today! Resets at midnight EST (${dateFm(freshNextReset)}).`;
 		}
 
 		if (!freshCurrentItem) {
 			await user.update({
-				current_item_contract: pickItemContract(freshStreak),
-				last_item_contract_date: Date.now()
+				current_item_contract: pickItemContract()
 			});
 			return 'You were given a new item contract.';
 		}
 
 		if (!freshOwns) {
-			return `Your current contract is a ${freshCurrentItem.name} (Id: ${freshCurrentItem.id}), go get one!`;
+			return `Your current contract is a ${freshCurrentItem.name} (ID: ${freshCurrentItem.id}), go get one!`;
 		}
 
 		return finishContract(user, freshCurrentItem, freshStreak, freshTotalContracts);
@@ -352,18 +335,25 @@ async function finishContract(
 	const cost = new Bank().add(currentItem.id);
 	const newStreak = streak + 1;
 	const loot = new Bank().add(contractTable.roll());
+	const streakBonusMult = 1 + Math.min(0.5, Math.floor(newStreak / 5) * 0.05);
+	const baseCoins = loot.amount('Coins');
+	if (baseCoins > 0) {
+		loot.set('Coins', Math.floor(baseCoins * streakBonusMult));
+	}
+
 	let gotBonus = '';
 	for (const [kc, rolls] of [
 		[100, 25],
 		[50, 15],
 		[25, 10],
-		[10, 5]
+		[10, 5],
+		[5, 2]
 	]) {
 		if (newStreak % kc === 0) {
 			gotBonus = `You got ${rolls} bonus rolls for your ${formatOrdinal(newStreak)} contract!`;
 			for (let i = 0; i < rolls; i++) {
 				loot.add(contractTable.roll());
-				loot.add(runeAlchablesTable.roll(5));
+				loot.add(runeAlchablesTable.roll(4));
 			}
 			break;
 		}
@@ -379,6 +369,10 @@ async function finishContract(
 		loot.multiply(2);
 	}
 
+	const todayKey = getESTDateKey();
+	const stats = await user.fetchStats();
+	const newDailyCount = stats.ic_daily_date === todayKey ? stats.ic_daily_count + 1 : 1;
+
 	await unqueuedTransactItems({
 		user,
 		itemsToRemove: cost,
@@ -389,7 +383,7 @@ async function finishContract(
 			total_item_contracts: {
 				increment: 1
 			},
-			current_item_contract: pickItemContract(newStreak),
+			current_item_contract: pickItemContract(),
 			item_contract_bank: new Bank()
 				.add(currentItem.id)
 				.add(user.user.item_contract_bank as ItemBank)
@@ -401,6 +395,10 @@ async function finishContract(
 	});
 
 	await Promise.all([
+		user.statsUpdate({
+			ic_daily_date: todayKey,
+			ic_daily_count: newDailyCount
+		}),
 		ClientSettings.updateBankSetting('item_contract_cost', cost),
 		ClientSettings.updateBankSetting('item_contract_loot', loot),
 		ClientSettings.updateClientGPTrackSetting('gp_ic', loot.amount('Coins')),

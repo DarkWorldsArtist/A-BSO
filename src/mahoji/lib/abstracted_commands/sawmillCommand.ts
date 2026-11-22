@@ -25,7 +25,7 @@ export async function sawmillCommand(
 	}
 
 	const boosts = [];
-	let timePerPlank = (Time.Second * 37) / 27;
+	let timePerPlank = (Time.Second * 25) / 27;
 
 	if (user.hasGracefulEquipped()) {
 		timePerPlank *= 0.9;
@@ -35,6 +35,16 @@ export async function sawmillCommand(
 	if (skills.woodcutting >= 60 && user.QP >= 50) {
 		timePerPlank *= 0.9;
 		boosts.push('10% for Woodcutting Guild unlocked');
+	}
+	if (user.owns('Plank sack') && user.owns('Log basket')) {
+		timePerPlank /= 2;
+		boosts.push('2x speed for Plank sack + Log basket');
+	}
+
+	const validSpeed = speed && speed > 1 && speed < 6 ? speed : undefined;
+	if (validSpeed) {
+		timePerPlank /= validSpeed;
+		boosts.push(`${validSpeed}x speed boost`);
 	}
 
 	const maxTripLength = await user.calcMaxTripLength('Sawmill');
@@ -52,15 +62,14 @@ export async function sawmillCommand(
 	if (quantity === 0) {
 		return `You don't have any ${Items.itemNameFromId(plank.inputItem)}.`;
 	}
-	let duration = quantity * timePerPlank;
+	const duration = quantity * timePerPlank;
 
 	const { GP } = user;
 
 	let cost = plank!.gpCost * 2 * quantity;
 
-	if (speed && speed > 1 && speed < 6) {
-		cost += Math.ceil(cost * (speed * ((speed + 0.2) / 6)));
-		duration /= speed;
+	if (validSpeed) {
+		cost += Math.ceil(cost * (validSpeed * ((validSpeed + 0.2) / 6)));
 	}
 
 	if (GP < cost) {
@@ -85,6 +94,8 @@ export async function sawmillCommand(
 		duration,
 		plankID: plank?.outputItem,
 		plankQuantity: quantity,
+		speed: validSpeed,
+		plankName: plank.name,
 		userID: user.id,
 		channelId
 	});

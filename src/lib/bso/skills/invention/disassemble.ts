@@ -215,6 +215,12 @@ export async function handleDisassembly({
 		messages.push(`${reduction}% faster disassembly for inventors tools`);
 	}
 
+	const usingCogsworth = user.usingPet('Cogsworth');
+	if (usingCogsworth) {
+		timePer = reduceNumByPercent(timePer, 25);
+		messages.push('25% faster disassembly for Cogsworth');
+	}
+
 	// The max amount of items they can disassemble this trip
 	const maxCanDo = floor(maxTripLength / timePer);
 
@@ -226,7 +232,11 @@ export async function handleDisassembly({
 	if (masterCapeBoost?.has) {
 		messages.push(`${MASTER_CAPE_JUNK_REDUCTION}% junk chance reduction for ${masterCapeBoost.cape}`);
 	}
-	const junkChance = calcJunkChance(data.lvl, masterCapeBoost ? masterCapeBoost.has : false);
+	let junkChance = calcJunkChance(data.lvl, masterCapeBoost ? masterCapeBoost.has : false);
+	if (usingCogsworth) {
+		junkChance = Math.max(1, junkChance - 5);
+		messages.push('5% junk chance reduction for Cogsworth');
+	}
 
 	for (let i = 0; i < realQuantity; i++) {
 		if (percentChance(junkChance)) {

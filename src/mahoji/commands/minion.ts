@@ -518,7 +518,7 @@ export const minionCommand = defineCommand({
 		if (options.cancel) return cancelTaskCommand(user, interaction);
 
 		if (options.set_icon) {
-			if (perkTier < PerkTier.Four) return patronMsg(PerkTier.Four);
+			if (perkTier < PerkTier.Two) return patronMsg(PerkTier.Two);
 
 			const res = FormattedCustomEmoji.exec(options.set_icon.icon);
 			if (!res || !res[0]) return "That's not a valid emoji.";

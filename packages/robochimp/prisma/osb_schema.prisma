@@ -302,6 +302,9 @@ model User {
   minion_birdhouseTraps           Json?     @map("minion.birdhouseTraps") @db.Json
   finished_quest_ids              Int[]     @default([])
 
+  // Maps guild hunters to blocked creature IDs. Missing hunters are unblocked.
+  rumour_blocked_ids Json @default("{}") @db.Json
+
   // Relations
   farmedCrops    FarmedCrop[]
   botItemSell    BotItemSell[]
@@ -558,6 +561,7 @@ model Minigame {
   shades_of_morton        Int    @default(0)
   tombs_of_amascut        Int    @default(0)
   colosseum               Int    @default(0)
+  stealing_artefacts      Int    @default(0)
   pizazz_points           Int    @default(0)
 
   user User @relation(fields: [user_id], references: [id])
@@ -658,6 +662,19 @@ model EconomyTransaction {
   @@map("economy_transaction")
 }
 
+model GamblingTransaction {
+  id            Int      @id @default(autoincrement())
+  user_id       BigInt
+  date          DateTime @default(now())
+  type          String   @db.VarChar(32)
+  amount_staked BigInt
+  pnl           BigInt
+
+  @@index([user_id, date])
+  @@index([type, date])
+  @@map("gambling_transaction")
+}
+
 model StashUnit {
   stash_id        Int
   user_id         BigInt
@@ -669,6 +686,9 @@ model StashUnit {
 }
 
 model UserStats {
+  // Completed rumour counts keyed by tier.
+  rumours Json @default("{}") @db.Json
+
   user_id                BigInt @id
   sell_gp                BigInt @default(0)
   items_sold_bank        Json   @default("{}") @db.Json
@@ -850,6 +870,7 @@ model HistoricalData {
 }
 
 enum activity_type_enum {
+  Rumour
   Agility
   Cooking
   MonsterKilling
@@ -904,6 +925,7 @@ enum activity_type_enum {
   GnomeRestaurant
   SoulWars
   RoguesDenMaze
+  StealingArtefacts
   Gauntlet
   CastleWars
   MageArena
@@ -1177,6 +1199,7 @@ model CLCategoryItem {
 }
 
 enum command_name_enum {
+  rumours
   cache_refresh
   testpotato
   achievementdiary

@@ -42,6 +42,11 @@ export async function temporossCommand(user: MUser, channelId: string, quantity:
 		durationPerRoss = reduceNumByPercent(durationPerRoss, 10);
 	}
 
+	if (user.hasEquippedOrInBank('Fishing master cape')) {
+		messages.push('20% more reward permits and 2x Spirit flakes for Fishing master cape');
+		rewardBoost += 20;
+	}
+
 	const maxTripLength = await user.calcMaxTripLength('Tempoross');
 	if (!quantity) {
 		quantity = Math.floor(maxTripLength / durationPerRoss);

@@ -104,14 +104,31 @@ describe('Bank Images', async () => {
 	});
 
 	test('Custom Background 1021 (Drunkenbeer)', async () => {
-		const bank = new Bank();
-		for (const item of testItems.slice(0, 10)) {
-			bank.add(item);
-		}
+		const bank = new Bank()
+			.add('Coins', 50_000)
+			.add('Platinum token', 500_000)
+			.add('Feather', 50_000_000)
+			.add('Fire rune', 5_000_000_000)
+			.add('Air rune', 5_000_000_000_000)
+			.add('Twisted bow', 1);
 		const result = await bankImageTask.generateBankImage({
 			bank,
 			title: 'Drunkenbeer BG',
-			bankBackgroundId: 1021
+			bankBackgroundId: 1021,
+			flags: { showNewCL: 1 },
+			collectionLog: new Bank(),
+			user: {
+				user: {
+					bankBackground: 1021,
+					unique_outline_hex: '#00FF80',
+					bank_title_hex: '#00FFFF',
+					bitfield: []
+				},
+				cl: new Bank(),
+				bitfield: [],
+				paintedItems: new Map(),
+				fetchPerkTier: async () => 5
+			} as unknown as MUser
 		});
 		expect(result.image).toBeDefined();
 		expect(result.image.length).toBeGreaterThan(1000);

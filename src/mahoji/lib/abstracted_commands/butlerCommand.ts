@@ -136,6 +136,7 @@ export async function butlerCommand(user: MUser, plankName: string, quantity: nu
 		duration,
 		plankID: plank?.outputItem,
 		plankQuantity: quantity,
+		plankName: plank.name,
 		userID: user.id,
 		channelId: channelId.toString()
 	});

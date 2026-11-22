@@ -8,9 +8,11 @@ import { BitField } from '@/lib/constants.js';
 import { capeGambleCommand, capeGambleStatsCommand } from '@/mahoji/lib/abstracted_commands/capegamble.js';
 import { diceCommand } from '@/mahoji/lib/abstracted_commands/diceCommand.js';
 import { duelCommand } from '@/mahoji/lib/abstracted_commands/duelCommand.js';
+import { highRollerCommand } from '@/mahoji/lib/abstracted_commands/highRollerCommand.js';
 import { hotColdCommand } from '@/mahoji/lib/abstracted_commands/hotColdCommand.js';
 import { luckyPickCommand } from '@/mahoji/lib/abstracted_commands/luckyPickCommand.js';
 import { slotsCommand } from '@/mahoji/lib/abstracted_commands/slotsCommand.js';
+import { statsCommand } from '@/mahoji/lib/abstracted_commands/statCommand.js';
 
 export const gambleCommand = defineCommand({
 	name: 'gamble',
@@ -104,6 +106,40 @@ export const gambleCommand = defineCommand({
 		},
 		/**
 		 *
+		 * High Roller Pot
+		 *
+		 */
+		{
+			type: 'Subcommand',
+			name: 'high_roller',
+			description: 'Host a High Roller Pot, challenge friends, or open it for anyone to join.',
+			options: [
+				{
+					type: 'String',
+					name: 'stake',
+					description: 'The amount of GP each participant must wager.',
+					required: true
+				},
+				{
+					type: 'String',
+					name: 'payout_mode',
+					description: 'Choose how the pot will be distributed.',
+					required: false,
+					choices: [
+						{ name: 'Winner takes all', value: 'winner_takes_all' },
+						{ name: 'Top 3 (60/30/10)', value: 'top_three' }
+					]
+				},
+				{
+					type: 'String',
+					name: 'invites',
+					description: 'Mention up to 50 users to challenge directly. Leave empty for open joins.',
+					required: false
+				}
+			]
+		},
+		/**
+		 *
 		 * Slots
 		 *
 		 */
@@ -162,9 +198,18 @@ export const gambleCommand = defineCommand({
 					required: true
 				}
 			]
+		},
+		{
+			type: 'Subcommand',
+			name: 'pnl',
+			description: 'View your personal gambling profit and loss stats.',
+			options: []
 		}
 	],
 	run: async ({ options, interaction, guildId, user, rng }) => {
+		if (options.pnl) {
+			return statsCommand(user, 'Gambling PNL');
+		}
 		if (options.item) {
 			if (options.item.item) {
 				return capeGambleCommand(user, options.item.item, interaction, rng, options.item.autoconfirm);
@@ -179,6 +224,17 @@ export const gambleCommand = defineCommand({
 				return 'One of you has gambling disabled and cannot participate in this duel!';
 			}
 			return duelCommand(rng, user, interaction, targetUser, options.duel.user, options.duel.amount);
+		}
+
+		if (options.high_roller) {
+			return highRollerCommand({
+				interaction,
+				user,
+				rng,
+				stakeInput: options.high_roller.stake,
+				payoutMode: options.high_roller.payout_mode,
+				invitesInput: options.high_roller.invites ?? null
+			});
 		}
 
 		if (options.dice) {

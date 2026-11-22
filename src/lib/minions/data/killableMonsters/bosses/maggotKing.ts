@@ -7,8 +7,6 @@ import { QuestID } from '@/lib/minions/data/quests.js';
 import type { KillableMonster } from '@/lib/minions/types.js';
 import type { GearBank } from '@/lib/structures/GearBank.js';
 
-// Ranged + melee route. Duration, gear floors and supplies are bot balancing
-// values, not fixed OSRS mechanics. Wiki ranged MMG assumes around 20 kills/h.
 export const maggotKingKillable: KillableMonster = {
 	id: Monsters.MaggotKing.id,
 	name: Monsters.MaggotKing.name,
@@ -32,6 +30,8 @@ export const maggotKingKillable: KillableMonster = {
 			gearSetup: 'melee',
 			required: false,
 			items: [
+				{ itemID: itemID('Axe of the high sungod'), boostPercent: 15 },
+				{ itemID: itemID('Drygore mace'), boostPercent: 11 },
 				{ itemID: itemID("Inquisitor's mace"), boostPercent: 8 },
 				{ itemID: itemID('Soulreaper axe'), boostPercent: 6 },
 				{ itemID: itemID('Abyssal bludgeon'), boostPercent: 4 }
@@ -40,28 +40,63 @@ export const maggotKingKillable: KillableMonster = {
 		{
 			gearSetup: 'melee',
 			required: false,
-			items: [
-				{ itemID: itemID("Inquisitor's hauberk"), boostPercent: 3 },
-				{ itemID: itemID('Torva platebody'), boostPercent: 2 }
-			]
+			items: [{ itemID: itemID('Offhand drygore mace'), boostPercent: 4 }]
+		},
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [{ itemID: itemID("Inquisitor's hauberk"), boostPercent: 3 }]
+		},
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [{ itemID: itemID("Inquisitor's plateskirt"), boostPercent: 3 }]
+		},
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [{ itemID: itemID('TzKal cape'), boostPercent: 5 }]
+		},
+		{
+			gearSetup: 'melee',
+			required: false,
+			items: [{ itemID: itemID("Brawler's hook necklace"), boostPercent: 5 }]
 		},
 		{
 			gearSetup: 'melee',
 			required: false,
 			items: [
-				{ itemID: itemID("Inquisitor's plateskirt"), boostPercent: 3 },
-				{ itemID: itemID('Torva platelegs'), boostPercent: 2 }
+				{ itemID: itemID('Searcrown band'), boostPercent: 5 },
+				{ itemID: itemID('Ignis ring(i)'), boostPercent: 3 }
 			]
 		},
 		{
 			gearSetup: 'range',
 			required: false,
 			items: [
+				{ itemID: itemID('Hellfire bow'), boostPercent: 15 },
+				{ itemID: itemID('Zaryte bow'), boostPercent: 11 },
+				{ itemID: itemID('Twisted bow'), boostPercent: 9 },
 				{ itemID: itemID('Zaryte crossbow'), boostPercent: 8 },
 				{ itemID: itemID('Armadyl crossbow'), boostPercent: 5 },
 				{ itemID: itemID('Dragon hunter crossbow'), boostPercent: 3 },
 				{ itemID: itemID('Dragon crossbow'), boostPercent: 3 }
 			]
+		},
+		{
+			gearSetup: 'range',
+			required: false,
+			items: [{ itemID: itemID('Tidal collector (i)'), boostPercent: 5 }]
+		},
+		{
+			gearSetup: 'range',
+			required: false,
+			items: [{ itemID: itemID('Farsight snapshot necklace'), boostPercent: 5 }]
+		},
+		{
+			gearSetup: 'range',
+			required: false,
+			items: [{ itemID: itemID('Ring of piercing (i)'), boostPercent: 5 }]
 		}
 	],
 	itemInBankBoosts: [
@@ -77,7 +112,7 @@ export const maggotKingKillable: KillableMonster = {
 			[itemID('Venator bow')]: 2
 		}
 	],
-	projectileUsage: { required: true, calculateQuantity: ({ quantity }) => quantity * 20 },
+	projectileUsage: { required: true, calculateQuantity: ({ quantity }) => quantity * 5 },
 	defaultAttackStyles: ['attack', 'ranged'],
 	attackStyleToUse: GearStat.AttackCrush,
 	attackStylesUsed: [GearStat.AttackCrush, GearStat.AttackMagic, GearStat.AttackRanged],
@@ -102,6 +137,8 @@ const mageKillable: KillableMonster = {
 			gearSetup: 'mage',
 			required: false,
 			items: [
+				{ itemID: itemID('Void staff'), boostPercent: 15 },
+				{ itemID: itemID("Tumeken's shadow"), boostPercent: 10 },
 				{ itemID: itemID('Harmonised nightmare staff'), boostPercent: 8 },
 				{ itemID: itemID('Twinflame staff'), boostPercent: 6 }
 			]
@@ -110,9 +147,23 @@ const mageKillable: KillableMonster = {
 			gearSetup: 'mage',
 			required: false,
 			items: [{ itemID: itemID('Confliction gauntlets'), boostPercent: 4 }]
+		},
+		{
+			gearSetup: 'mage',
+			required: false,
+			items: [{ itemID: itemID('Vasa cloak'), boostPercent: 5 }]
+		},
+		{
+			gearSetup: 'mage',
+			required: false,
+			items: [{ itemID: itemID('Arcane blast necklace'), boostPercent: 5 }]
+		},
+		{
+			gearSetup: 'mage',
+			required: false,
+			items: [{ itemID: itemID('Spellbound ring'), boostPercent: 5 }]
 		}
 	],
-	// Wiki magic MMG: approximately 25 kills/hour before bot modifiers.
 	timeToFinish: Time.Minute * 2.4,
 	levelRequirements: { attack: 80, strength: 85, defence: 70, magic: 75, prayer: 74 },
 	minimumGearRequirements: {
@@ -126,10 +177,34 @@ const mageKillable: KillableMonster = {
 		{ itemCost: new Bank().add('Prayer potion(4)'), qtyPerKill: 0.5 },
 		{ itemCost: new Bank().add('Super combat potion(4)'), qtyPerKill: 0.1 },
 		{ itemCost: new Bank().add('Antidote++(4)'), qtyPerKill: 0.1 },
-		// Model thirty Fire Wave casts per kill. Fire spells are the supported mage route.
 		{ itemCost: new Bank().add('Blood rune', 30).add('Fire rune', 210), qtyPerKill: 1, isRuneCost: true }
 	]
 };
+
+const MAGGOT_SPAWN_BOWS = resolveItems([
+	'Webweaver bow',
+	"Craw's bow",
+	'Venator bow',
+	'Bow of faerdhinen',
+	'Bow of faerdhinen (c)',
+	'Magic comp bow',
+	'Yew comp bow',
+	'Willow comp bow',
+	'Comp ogre bow',
+	'Scorching bow',
+	'Crystal bow'
+]);
+
+function applySpawnBowPenalty(gearBank: GearBank, monster: KillableMonster): KillableMonster {
+	const hasSpawnBow = MAGGOT_SPAWN_BOWS.some(
+		id => gearBank.bank.has(id) || Object.values(gearBank.gear).some(g => g.hasEquipped(id))
+	);
+	if (hasSpawnBow) return monster;
+	return {
+		...monster,
+		timeToFinish: Math.round(monster.timeToFinish * 1.05)
+	};
+}
 
 export function resolveMaggotKingMethod(
 	gearBank: GearBank,
@@ -150,9 +225,14 @@ export function resolveMaggotKingMethod(
 		'Dragon crossbow',
 		'Dragon hunter crossbow',
 		'Armadyl crossbow',
-		'Zaryte crossbow'
+		'Zaryte crossbow',
+		'Twisted bow',
+		'Hellfire bow',
+		'Zaryte bow'
 	];
 	const fireStaves = [
+		'Void staff',
+		"Tumeken's shadow",
 		'Harmonised nightmare staff',
 		'Twinflame staff',
 		'Kodai wand',
@@ -167,7 +247,7 @@ export function resolveMaggotKingMethod(
 		gearBank.skillsAsLevels.ranged >= 85 &&
 		range.meetsStatRequirements(maggotKingKillable.minimumGearRequirements!.range!)[0]
 	) {
-		return maggotKingKillable;
+		return applySpawnBowPenalty(gearBank, maggotKingKillable);
 	}
 	if (
 		!trainingRanged &&
@@ -176,8 +256,23 @@ export function resolveMaggotKingMethod(
 		gearBank.skillsAsLevels.magic >= 75 &&
 		mage.meetsStatRequirements(mageKillable.minimumGearRequirements!.mage!)[0]
 	) {
+		if (mageWeapon.name === "Tumeken's shadow") {
+			return applySpawnBowPenalty(gearBank, {
+				...mageKillable,
+				itemCost: [
+					{ itemCost: new Bank().add('Prayer potion(4)'), qtyPerKill: 0.5 },
+					{ itemCost: new Bank().add('Super combat potion(4)'), qtyPerKill: 0.1 },
+					{ itemCost: new Bank().add('Antidote++(4)'), qtyPerKill: 0.1 },
+					{
+						itemCost: new Bank().add('Soul rune', 60).add('Chaos rune', 150),
+						qtyPerKill: 1,
+						isRuneCost: true
+					}
+				]
+			});
+		}
 		if (mage.hasEquipped('Tome of fire') && gearBank.bank.amount('Burnt page') >= 2) {
-			return {
+			return applySpawnBowPenalty(gearBank, {
 				...mageKillable,
 				equippedItemBoosts: [
 					...mageKillable.equippedItemBoosts!,
@@ -201,15 +296,15 @@ export function resolveMaggotKingMethod(
 						qtyPerKill: 1.5
 					}
 				]
-			};
+			});
 		}
-		return mageKillable;
+		return applySpawnBowPenalty(gearBank, mageKillable);
 	}
 	const rangedMissing: string[] = [];
 	const magicMissing: string[] = [];
 
 	if (!rangeWeapon || !crossbows.includes(rangeWeapon.name)) {
-		rangedMissing.push('Equip a supported crossbow in your Ranged setup.');
+		rangedMissing.push('Your minion needs to have a crossbow, or a twisted bow.');
 	}
 	if (gearBank.skillsAsLevels.ranged < 85) {
 		rangedMissing.push(`85 Ranged required (you have ${gearBank.skillsAsLevels.ranged}).`);
@@ -222,7 +317,7 @@ export function resolveMaggotKingMethod(
 	}
 
 	if (!mageWeapon || !fireStaves.includes(mageWeapon.name)) {
-		magicMissing.push('Equip a supported fire-magic weapon in your Magic setup.');
+		magicMissing.push("Your minion needs to have gear for casting fire spells, or a Tumeken's shadow.");
 	}
 	if (gearBank.skillsAsLevels.magic < 75) {
 		magicMissing.push(`75 Magic required (you have ${gearBank.skillsAsLevels.magic}).`);
@@ -232,16 +327,16 @@ export function resolveMaggotKingMethod(
 	}
 
 	if (trainingRanged) {
-		return `Maggot King — your Ranged setup is missing:\n- ${rangedMissing.join('\n- ')}`;
+		return `Maggot King - your Ranged setup is missing:\n- ${rangedMissing.join('\n- ')}`;
 	}
 	if (trainingMagic) {
-		return `Maggot King — your Magic setup is missing:\n- ${magicMissing.join('\n- ')}`;
+		return `Maggot King - your Magic setup is missing:\n- ${magicMissing.join('\n- ')}`;
 	}
 
 	return [
 		'Maggot King requires one of these setups:',
-		`Ranged — missing:\n- ${rangedMissing.join('\n- ')}`,
-		`Magic — missing:\n- ${magicMissing.join('\n- ')}`
+		`Ranged - missing:\n- ${rangedMissing.join('\n- ')}`,
+		`Magic - missing:\n- ${magicMissing.join('\n- ')}`
 	].join('\n\n');
 }
 

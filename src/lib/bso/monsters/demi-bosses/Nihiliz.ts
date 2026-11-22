@@ -55,6 +55,7 @@ export const NihilizLootTable = new LootTable()
 	.tertiary(2000, 'Nihil horn')
 	.tertiary(1200, 'Zaryte vambraces')
 	.tertiary(150, 'Clue scroll (grandmaster)')
+	.tertiary(12, 'Ecumenical key shard', [1, 3])
 	.tertiary(5000, 'Nexling');
 
 export const Nihiliz: CustomMonster = {

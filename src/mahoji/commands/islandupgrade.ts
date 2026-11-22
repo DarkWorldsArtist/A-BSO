@@ -37,7 +37,12 @@ import {
 	upgradeCategoryMeta,
 	upgradeDefinitions
 } from '@/lib/bso/commands/islandUpgrades.js';
-import { _checkCriteria, _everEarned, _grantBank, _userOwnsOrEquips } from '@/lib/bso/util/bfcrit.js';
+import {
+	checkBuriedFirmamentCriteria,
+	grantBuriedFirmamentBank,
+	hasEarnedBuriedFirmament,
+	userOwnsOrEquipsBuriedFirmament
+} from '@/lib/bso/util/bfcrit.js';
 
 import { truncateString } from '@oldschoolgg/toolkit';
 import { Bank, type ItemBank } from 'oldschooljs';
@@ -357,8 +362,8 @@ function accumulationStatusLine(
 	return `**Ready to collect:** ${formatYields(yields)}${capNote}\n> Use \`/island gather collect type:${CATEGORY_TO_CHOICE[category]}\``;
 }
 
-async function _checkAndGrant(user: MUser, upgrades: IslandUpgradeTiers): Promise<string> {
-	if (_userOwnsOrEquips(user)) return '';
+async function checkAndGrantBuriedFirmament(user: MUser, upgrades: IslandUpgradeTiers): Promise<string> {
+	if (userOwnsOrEquipsBuriedFirmament(user)) return '';
 
 	const userStats = await prisma.userStats.upsert({
 		where: { user_id: BigInt(user.id) },
@@ -388,10 +393,10 @@ async function _checkAndGrant(user: MUser, upgrades: IslandUpgradeTiers): Promis
 		userId: user.id,
 		minigameScores
 	};
-	const met = _checkCriteria(criteriaArgs);
+	const met = checkBuriedFirmamentCriteria(criteriaArgs);
 
 	if (met) {
-		await user.addItemsToBank({ items: _grantBank(), collectionLog: true });
+		await user.addItemsToBank({ items: grantBuriedFirmamentBank(), collectionLog: true });
 		return '\n\n*Through great effort your minion has attended to every task, every trial, and every secret of the Verdant Island. Your minion has proven itself, and the island has seen it all. At long last, it offers you a final secret.*';
 	}
 
@@ -845,7 +850,7 @@ export const islandUpgradeCommand = defineCommand({
 
 			str += `\nUse \`/island view\` to see full details for a category.`;
 
-			const bonusLine = await _checkAndGrant(user, currentUpgrades);
+			const bonusLine = await checkAndGrantBuriedFirmament(user, currentUpgrades);
 			if (bonusLine) str += bonusLine;
 
 			return str;
@@ -912,7 +917,7 @@ export const islandUpgradeCommand = defineCommand({
 				str += '**Fully upgraded!**\n';
 			}
 
-			const bonusLine = await _checkAndGrant(user, currentUpgrades);
+			const bonusLine = await checkAndGrantBuriedFirmament(user, currentUpgrades);
 			if (bonusLine) str += bonusLine;
 
 			return str;
@@ -939,7 +944,7 @@ export const islandUpgradeCommand = defineCommand({
 			str += canAfford ? 'You have everything needed.' : 'You are missing some items.';
 			str += `\nDemand resets in **${formatDuration(timeToReset)}**.`;
 
-			const bonusLine = await _checkAndGrant(user, currentUpgrades);
+			const bonusLine = await checkAndGrantBuriedFirmament(user, currentUpgrades);
 			if (bonusLine) str += bonusLine;
 
 			return str;
@@ -1026,7 +1031,7 @@ export const islandUpgradeCommand = defineCommand({
 				updatedMaintenanceSpent.toJSON()
 			);
 
-			const bonusLine = await _checkAndGrant(user, currentUpgrades);
+			const bonusLine = await checkAndGrantBuriedFirmament(user, currentUpgrades);
 
 			let content =
 				`**${meta.label} - Maintained!**\n\n` +
@@ -1258,7 +1263,9 @@ export const islandUpgradeCommand = defineCommand({
 				: '';
 
 			const bonusLine =
-				!_everEarned(user) && !_userOwnsOrEquips(user) ? await _checkAndGrant(user, newUpgrades) : '';
+				!hasEarnedBuriedFirmament(user) && !userOwnsOrEquipsBuriedFirmament(user)
+					? await checkAndGrantBuriedFirmament(user, newUpgrades)
+					: '';
 
 			return (
 				`## ${nextUpgrade.name} Complete!\n\n` +

@@ -4,6 +4,7 @@ import { describe, expect, test } from 'vitest';
 import {
 	DAILY_QUEUE_CAP,
 	describeActivity,
+	getDailyQueueCap,
 	getDailyQueuedTripsRemaining,
 	getDailyQueuedTripsUsed,
 	getESTDateKey,
@@ -21,8 +22,19 @@ describe('Trip Queueing System', () => {
 			expect(getMaxQueueDepth(PerkTier.Three)).toBe(0);
 			expect(getMaxQueueDepth(PerkTier.Four)).toBe(1); // Tier 3 Patron
 			expect(getMaxQueueDepth(PerkTier.Five)).toBe(2); // Tier 4 Patron
-			expect(getMaxQueueDepth(PerkTier.Six)).toBe(4); // Tier 5 Patron
+			expect(getMaxQueueDepth(PerkTier.Six)).toBe(4);
 			expect(getMaxQueueDepth(PerkTier.Seven)).toBe(4);
+			expect(getMaxQueueDepth(PerkTier.Eight)).toBe(4);
+		});
+
+		test('scales daily queue cap by tier', () => {
+			expect(getDailyQueueCap(PerkTier.Zero)).toBe(0);
+			expect(getDailyQueueCap(PerkTier.Three)).toBe(0);
+			expect(getDailyQueueCap(PerkTier.Four)).toBe(1);
+			expect(getDailyQueueCap(PerkTier.Five)).toBe(2);
+			expect(getDailyQueueCap(PerkTier.Six)).toBe(4);
+			expect(getDailyQueueCap(PerkTier.Seven)).toBe(5);
+			expect(getDailyQueueCap(PerkTier.Eight)).toBe(6);
 		});
 	});
 
@@ -70,6 +82,18 @@ describe('Trip Queueing System', () => {
 			} as any;
 			expect(getDailyQueuedTripsUsed(mockUserToday)).toBe(2);
 			expect(getDailyQueuedTripsRemaining(mockUserToday)).toBe(2);
+			expect(getDailyQueuedTripsRemaining(mockUserToday, PerkTier.Five)).toBe(0);
+			expect(getDailyQueuedTripsRemaining(mockUserToday, PerkTier.Six)).toBe(2);
+
+			// User with 1 run today on Tier 3 Patron (PerkTier.Four)
+			const mockUserT3 = {
+				user: {
+					queued_trips_daily_date: today,
+					queued_trips_daily_count: 1
+				}
+			} as any;
+			expect(getDailyQueuedTripsRemaining(mockUserT3, PerkTier.Four)).toBe(0);
+			expect(getDailyQueuedTripsRemaining(mockUserT3, PerkTier.Five)).toBe(1);
 
 			// User at daily cap
 			const mockUserMaxed = {
@@ -87,12 +111,13 @@ describe('Trip Queueing System', () => {
 		test('scales trip bonus according to requested tiers', () => {
 			expect(patronMaxTripBonus(PerkTier.Zero)).toBe(0);
 			expect(patronMaxTripBonus(PerkTier.One)).toBe(0);
-			expect(patronMaxTripBonus(PerkTier.Two)).toBe(Time.Minute * 3); // Tier 1 Patron
-			expect(patronMaxTripBonus(PerkTier.Three)).toBe(Time.Minute * 6); // Tier 2 Patron
-			expect(patronMaxTripBonus(PerkTier.Four)).toBe(Time.Minute * 15); // Tier 3 Patron
-			expect(patronMaxTripBonus(PerkTier.Five)).toBe(Time.Minute * 20); // Tier 4 Patron
-			expect(patronMaxTripBonus(PerkTier.Six)).toBe(Time.Minute * 25); // Tier 5 Patron
+			expect(patronMaxTripBonus(PerkTier.Two)).toBe(Time.Minute * 5);
+			expect(patronMaxTripBonus(PerkTier.Three)).toBe(Time.Minute * 10);
+			expect(patronMaxTripBonus(PerkTier.Four)).toBe(Time.Minute * 15);
+			expect(patronMaxTripBonus(PerkTier.Five)).toBe(Time.Minute * 20);
+			expect(patronMaxTripBonus(PerkTier.Six)).toBe(Time.Minute * 25);
 			expect(patronMaxTripBonus(PerkTier.Seven)).toBe(Time.Minute * 25);
+			expect(patronMaxTripBonus(PerkTier.Eight)).toBe(Time.Minute * 25);
 		});
 
 		test('calculates max trip length with patron bonuses', async () => {

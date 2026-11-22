@@ -8,12 +8,14 @@ import type { GEListing, GETransaction } from '@/prisma/main.js';
 import { defineOption } from '@/discord/index.js';
 import { itemArr, itemOption } from '@/discord/presetCommandOptions.js';
 import { marketPricemap } from '@/lib/cache.js';
+import { createGEPriceChart } from '@/lib/canvas/geChartImage.js';
 import { GeImageGenerator } from '@/lib/canvas/geImage.js';
-import { PerkTier } from '@/lib/constants.js';
 import { createGECancelButton, GrandExchange } from '@/lib/grandExchange.js';
-import { createChart } from '@/lib/util/chart.js';
 import itemIsTradeable from '@/lib/util/itemIsTradeable.js';
-import { cancelGEListingCommand } from '@/mahoji/lib/abstracted_commands/cancelGEListingCommand.js';
+import {
+	cancelGEListingCommand,
+	cancelUsersListings
+} from '@/mahoji/lib/abstracted_commands/cancelGEListingCommand.js';
 
 export type GEListingWithTransactions = GEListing & {
 	buyTransactions: GETransaction[];
@@ -162,21 +164,29 @@ export const geCommand = defineCommand({
 		{
 			type: 'Subcommand',
 			name: 'cancel',
-			description: 'Cancel one of your listings.',
+			description: 'Cancel one or all of your listings.',
 			options: [
 				{
 					type: 'String',
 					name: 'listing',
-					description: 'The listing to cancel.',
+					description: 'The listing to cancel (or All Active Listings).',
 					required: true,
 					autocomplete: async ({ userId }: StringAutoComplete) => {
 						const listings = await prisma.gEListing.findMany({ where: { user_id: userId } });
-						return listings
-							.filter(i => !i.cancelled_at && !i.fulfilled_at && i.quantity_remaining > 0)
-							.map(l => ({
-								name: `${l.type} ${l.total_quantity}x ${Items.itemNameFromId(l.item_id)!}`,
-								value: l.userfacing_id
-							}));
+						const active = listings.filter(
+							i => !i.cancelled_at && !i.fulfilled_at && i.quantity_remaining > 0
+						);
+						const choices = active.map(l => ({
+							name: `${l.type} ${l.total_quantity}x ${Items.itemNameFromId(l.item_id)!}`,
+							value: l.userfacing_id
+						}));
+						if (active.length > 1) {
+							choices.unshift({
+								name: `All Active Listings (${active.length})`,
+								value: 'all'
+							});
+						}
+						return choices;
 					}
 				}
 			]
@@ -219,7 +229,7 @@ export const geCommand = defineCommand({
 			description: 'Lookup information about an item on the g.e',
 			options: [
 				{
-					...itemOption(item => Boolean(item.tradeable_on_ge)),
+					...itemOption(item => !isGEUntradeable(item)),
 					name: 'item',
 					required: true,
 					description: 'The item to view.'
@@ -336,40 +346,72 @@ The next buy limit reset is at: ${dateFm(GrandExchange.getInterval().end)}, it r
 			});
 
 			const slots = await GrandExchange.calculateSlotsOfUser(user);
-			const image = await GeImageGenerator.createInterface({
-				maxSlots: slots.maxPossible,
-				slotsUsed: slots.slots,
-				page: options.my_listings.page ?? 1,
-				activeListings,
-				user
-			});
+			const totalPages = Math.max(1, Math.ceil(slots.maxPossible / 8));
+			const startingPage = Math.min(Math.max((options.my_listings.page ?? 1) - 1, 0), totalPages - 1);
 
-			const geResult = {
-				content: `**Active Listings**\n${(
+			const activeBuyGP = sumArr(
+				activeListings
+					.filter(l => l.type === 'Buy')
+					.map(l => Number(l.asking_price_per_item) * l.quantity_remaining)
+			);
+			const activeSellGP = sumArr(
+				activeListings
+					.filter(l => l.type === 'Sell')
+					.map(l => Number(l.asking_price_per_item) * l.quantity_remaining)
+			);
+
+			const recentText = recentInactiveListings.map(i => geListingToString(i)).join('\n');
+			const totalsLine = `**Active Buy Value:** ${toKMB(activeBuyGP)} (${activeBuyGP.toLocaleString()} GP) | **Active Sell Value:** ${toKMB(activeSellGP)} (${activeSellGP.toLocaleString()} GP)`;
+
+			const renderListingsPage = async (pageIndex: number) => {
+				const pageNumber = pageIndex + 1;
+				const image = await GeImageGenerator.createInterface({
+					maxSlots: slots.maxPossible,
+					slotsUsed: slots.slots,
+					page: pageNumber,
+					activeListings,
+					user
+				});
+				const pageListings = activeListings.slice(pageIndex * 8, pageIndex * 8 + 8);
+				const pageListingText = (
 					await Promise.all(
-						activeListings.map(async listing => {
+						pageListings.map(async listing => {
 							const buyLimit = await GrandExchange.checkBuyLimitForListing(listing);
 							return geListingToString(listing, buyLimit);
 						})
 					)
-				).join('\n')}\n\n**Recent Fulfilled/Cancelled Listings**\n${recentInactiveListings
-					.map(i => geListingToString(i))
-					.join('\n')}`,
-				files: [
-					{
-						name: 'ge.png',
-						buffer: image!
-					}
-				]
+				).join('\n');
+				const content = `**Active Listings (Page ${pageNumber}/${totalPages})**\n${pageListingText || 'No active listings on this page.'}\n${totalsLine}\n\n**Recent Fulfilled/Cancelled Listings**\n${recentText}`;
+				return {
+					content: content.slice(0, 1990),
+					files: [
+						{
+							name: 'ge.png',
+							buffer: image!
+						}
+					]
+				};
 			};
 
-			return interaction.returnStringOrFile(geResult);
+			if (totalPages === 1) {
+				return renderListingsPage(0);
+			}
+
+			return interaction.makePaginatedMessage({
+				pages: {
+					numPages: totalPages,
+					generate: async ({ currentPage }) => renderListingsPage(currentPage)
+				},
+				startingPage
+			});
 		}
 
 		if (options.view) {
 			const item = Items.getItem(options.view.item);
 			if (!item) return 'Invalid item.';
-			if (!itemIsTradeable(item.id)) return 'That item is not tradeable on the Grand Exchange.';
+			if (isGEUntradeable(item) || !itemIsTradeable(item.id)) {
+				return 'That item is not tradeable on the Grand Exchange.';
+			}
 			const priceData = marketPricemap.get(item.id);
 			let baseMessage = `**${item.name}**
 **Buy Limit Per 4 hours:** ${GrandExchange.getItemBuyLimit(item).toLocaleString()}`;
@@ -380,15 +422,12 @@ The next buy limit reset is at: ${dateFm(GrandExchange.getInterval().end)}, it r
 
 `;
 			}
-			if ((await user.fetchPerkTier()) < PerkTier.Four) {
-				return baseMessage;
-			}
 			let result = await prisma.$queryRawUnsafe<
-				{ total_quantity_bought: number; average_price_per_item_before_tax: number; week: Date }[]
+				{ total_quantity_bought: bigint; average_price_per_item_before_tax: number; week: Date }[]
 			>(`SELECT
   DATE_TRUNC('week', sellTransactions.created_at) AS week,
   AVG(sellTransactions.price_per_item_before_tax) AS average_price_per_item_before_tax,
-  SUM(sellTransactions.quantity_bought)::int AS total_quantity_bought
+  SUM(sellTransactions.quantity_bought)::bigint AS total_quantity_bought
 FROM
   ge_listing
 INNER JOIN
@@ -406,13 +445,16 @@ ORDER BY
 `);
 			if (result.length < 1) return baseMessage;
 			if (result[0].average_price_per_item_before_tax <= 1_000_000) {
-				result = result.filter(i => i.total_quantity_bought > 1);
+				const filtered = result.filter(i => Number(i.total_quantity_bought) > 1);
+				if (filtered.length > 0) result = filtered;
 			}
-			const buffer = await createChart({
-				title: `Price History for ${item.name}`,
-				format: 'kmb',
-				values: result.map(i => [new Date(i.week).toDateString(), i.average_price_per_item_before_tax]),
-				type: 'line'
+			const buffer = await createGEPriceChart({
+				user,
+				itemName: item.name,
+				points: result.map(i => ({
+					label: new Date(i.week).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+					value: Number(i.average_price_per_item_before_tax)
+				}))
 			});
 
 			return {
@@ -440,6 +482,24 @@ ORDER BY
 		}
 
 		if (options.cancel) {
+			if (options.cancel.listing.toLowerCase() === 'all') {
+				const activeCount = await prisma.gEListing.count({
+					where: {
+						user_id: user.id,
+						quantity_remaining: { gt: 0 },
+						fulfilled_at: null,
+						cancelled_at: null
+					}
+				});
+				if (activeCount === 0) {
+					return 'You do not have any active Grand Exchange listings to cancel.';
+				}
+				await interaction.confirmation(
+					`Are you sure you want to cancel all ${activeCount} of your active Grand Exchange listings?`
+				);
+				await cancelUsersListings(user);
+				return `Successfully cancelled all ${activeCount} of your active Grand Exchange listings.`;
+			}
 			return cancelGEListingCommand(user, options.cancel.listing);
 		}
 

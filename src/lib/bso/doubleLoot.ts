@@ -2,6 +2,7 @@ import { roleMention } from '@oldschoolgg/discord';
 import { formatDuration, Time } from '@oldschoolgg/toolkit';
 
 import { Channel, Roles } from '@/lib/constants.js';
+import { getESTMonthKey, getNextESTMonthReset } from '@/lib/util/estTime.js';
 
 export let DOUBLE_LOOT_FINISH_TIME_CACHE = 0;
 export let DOUBLE_XP_FINISH_TIME_CACHE = 0;
@@ -16,13 +17,11 @@ export function isDoubleXPActive(duration = 0) {
 
 export function hasUsedDoubleLootThisMonth(lastUsage: Date | null, now = Date.now()) {
 	if (lastUsage === null) return false;
-	const nowDate = new Date(now);
-	return lastUsage.getUTCFullYear() === nowDate.getUTCFullYear() && lastUsage.getUTCMonth() === nowDate.getUTCMonth();
+	return getESTMonthKey(lastUsage) === getESTMonthKey(new Date(now));
 }
 
 export function getNextDoubleLootUsageReset(lastUsage: Date | number) {
-	const usageDate = new Date(lastUsage);
-	return Date.UTC(usageDate.getUTCFullYear(), usageDate.getUTCMonth() + 1, 1);
+	return getNextESTMonthReset(new Date(lastUsage)).getTime();
 }
 
 export async function addDoubleTime({
@@ -98,7 +97,9 @@ export async function addPatronLootTime(_tier: number, user: MUser | null) {
 		2: 6,
 		3: 15,
 		4: 25,
-		5: 60
+		5: 60,
+		6: 90,
+		7: 180
 	};
 	const tier = _tier - 1;
 	if (!map[tier]) return;

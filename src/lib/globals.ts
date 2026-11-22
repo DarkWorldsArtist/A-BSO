@@ -36,6 +36,28 @@ async function syncMissingPgLiteColumns(pgLiteClient: PGlite, createDbSQL: strin
 	if (alterStatements.length > 0) {
 		await pgLiteClient.exec(alterStatements.join('\n'));
 	}
+
+	const existingEnumsRes = await pgLiteClient.query<{ typname: string; enumlabel: string }>(
+		'SELECT t.typname, e.enumlabel FROM pg_type t JOIN pg_enum e ON t.oid = e.enumtypid;'
+	);
+	const existingEnumSet = new Set(existingEnumsRes.rows.map(r => `${r.typname}.${r.enumlabel}`));
+	const enumRegex = /CREATE\s+TYPE\s+"([^"]+)"\s+AS\s+ENUM\s*\(([\s\S]*?)\);/gi;
+	const enumStatements: string[] = [];
+
+	for (const match of createDbSQL.matchAll(enumRegex)) {
+		const enumName = match[1]!;
+		const body = match[2]!;
+		for (const valMatch of body.matchAll(/'([^']+)'/g)) {
+			const val = valMatch[1]!;
+			if (!existingEnumSet.has(`${enumName}.${val}`)) {
+				enumStatements.push(`ALTER TYPE "${enumName}" ADD VALUE IF NOT EXISTS '${val}';`);
+			}
+		}
+	}
+
+	if (enumStatements.length > 0) {
+		await pgLiteClient.exec(enumStatements.join('\n'));
+	}
 }
 
 function recoverPgLiteWal(dataDir: string) {

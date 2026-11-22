@@ -3,7 +3,7 @@ import { MathRNG, randArrItem, SeedableRNG } from 'node-rng';
 import { type Item, Items } from 'oldschooljs';
 
 import type { FishingContestCatch } from '@/prisma/main.js';
-import { ISODateString } from '@/lib/util.js';
+import { getESTDateKey } from '@/lib/util/estTime.js';
 
 const warmVerbs = ['freshwater', 'waterborn', 'silver'];
 const coldVerbs = ['pacific', 'long-finned', 'spotted'];
@@ -248,7 +248,7 @@ export function getValidLocationsForFishType(type: FishType) {
 export async function getTopDailyFishingCatch() {
 	const topThreeCatches: FishingContestCatch[] = await prisma.$queryRawUnsafe(`SELECT *
 FROM fishing_contest_catch
-WHERE date::date = '${ISODateString()}'
+WHERE (date AT TIME ZONE 'UTC' AT TIME ZONE 'America/New_York')::date = '${getESTDateKey()}'::date
 ORDER BY length_cm DESC
 LIMIT 3;`);
 	return topThreeCatches;
@@ -258,7 +258,7 @@ export async function getUsersFishingContestDetails(user: MUser) {
 	const catchesFromToday: FishingContestCatch[] = await prisma.$queryRawUnsafe(`SELECT *
 FROM fishing_contest_catch
 WHERE user_id = ${user.id}::bigint
-AND date::date = '${ISODateString()}'
+AND (date AT TIME ZONE 'UTC' AT TIME ZONE 'America/New_York')::date = '${getESTDateKey()}'::date
 LIMIT 10;`);
 	const catchesAllTime = await prisma.fishingContestCatch.count({
 		where: {

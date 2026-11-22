@@ -1,5 +1,5 @@
 import { calcPercentOfNum, calcWhatPercent, toTitleCase } from '@oldschoolgg/toolkit';
-import { Items } from 'oldschooljs';
+import { Items, toKMB } from 'oldschooljs';
 
 import type { GEListing, GETransaction } from '@/prisma/main.js';
 import { CanvasModule } from '@/lib/canvas/CanvasModule.js';
@@ -84,11 +84,12 @@ class GeImageGeneratorSingleton {
 			lineHeight: 10
 		});
 
-		// Draw item value of the transaction
 		ctx.save();
 		ctx.translate(0, 87);
+		const price = Number(listing.asking_price_per_item);
+		const priceText = price >= 10_000_000 ? `${toKMB(price)} coins` : `${price.toLocaleString()} coins`;
 		canvas.drawText({
-			text: `${Number(listing.asking_price_per_item).toLocaleString()} coins`,
+			text: priceText,
 			x: Math.floor(this.geSlotOpen!.width / 2),
 			y: 17,
 			color: '#ff981f',

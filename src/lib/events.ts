@@ -1,5 +1,5 @@
 import { boxSpawnHandler } from '@/lib/bso/boxSpawns.js';
-import { giveBoxResetTime, itemContractResetTime, spawnLampResetTime } from '@/lib/bso/bsoConstants.js';
+import { SPAWN_BOX_COOLDOWN, spawnLampResetTime } from '@/lib/bso/bsoConstants.js';
 import {
 	DOUBLE_LOOT_FINISH_TIME_CACHE,
 	DOUBLE_XP_FINISH_TIME_CACHE,
@@ -7,6 +7,7 @@ import {
 	isDoubleLootActive,
 	isDoubleXPActive
 } from '@/lib/bso/doubleLoot.js';
+import { DAILY_ITEM_CONTRACTS_LIMIT } from '@/lib/bso/itemContracts.js';
 import { getUsersFishingContestDetails } from '@/lib/bso/minigames/fishingContest.js';
 import { getGuthixianCacheInterval, userHasDoneCurrentGuthixianCache } from '@/lib/bso/minigames/guthixianCache.js';
 import { allIronmanMbTables, allMbTables } from '@/lib/bso/openables/mysteryBoxes.js';
@@ -26,6 +27,7 @@ import { customItems } from '@/lib/customItems/util.js';
 import { roboChimpSyncData } from '@/lib/roboChimp.js';
 import { processNextQueuedTrip } from '@/lib/tripQueue.js';
 import type { ActivityTaskData } from '@/lib/types/minions.js';
+import { getESTDateKey, getNextESTMidnight, getNextESTWeekReset } from '@/lib/util/estTime.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
 import { minionStatsEmbed } from '@/lib/util/minionStatsEmbed.js';
 import { refreshUserCache } from '@/lib/util/refreshCache.js';
@@ -38,27 +40,38 @@ interface CooldownFnParams {
 	perkTier: PerkTier;
 }
 
+interface CooldownStats {
+	last_daily_timestamp: bigint;
+	last_tears_of_guthix_timestamp: bigint;
+	last_daily_date: string | null;
+	ic_daily_date: string | null;
+	ic_daily_count: number;
+}
+
 const cooldownTimers: {
 	name: string;
-	timeStamp: (user: MUser, stats: { last_daily_timestamp: bigint; last_tears_of_guthix_timestamp: bigint }) => number;
+	timeStamp: (user: MUser, stats: CooldownStats) => number;
 	cd: number | ((args: CooldownFnParams) => number);
 	command: [string] | [string, string] | [string, string, string];
 	utcReset: boolean;
-	nextReset?: (lastDone: number) => number;
+	nextReset?: (lastDone: number, user?: MUser, stats?: CooldownStats) => number;
 }[] = [
 	{
 		name: 'Tears of Guthix',
 		timeStamp: (_, stats) => Number(stats.last_tears_of_guthix_timestamp),
 		cd: CONSTANTS.TEARS_OF_GUTHIX_CD,
 		command: ['minigames', 'tears_of_guthix', 'start'],
-		utcReset: true
+		utcReset: false,
+		nextReset: lastDone => (lastDone > 0 ? getNextESTWeekReset(new Date(lastDone)).getTime() : 0)
 	},
 	{
 		name: 'Daily',
 		timeStamp: (_, stats) => Number(stats.last_daily_timestamp),
-		cd: CONSTANTS.DAILY_COOLDOWN,
+		cd: 0,
 		command: ['minion', 'daily'],
-		utcReset: false
+		utcReset: false,
+		nextReset: (_, _user, stats) =>
+			stats?.last_daily_date === getESTDateKey() ? getNextESTMidnight().getTime() : 0
 	},
 	{
 		name: 'Spawn Lamp',
@@ -70,23 +83,29 @@ const cooldownTimers: {
 	{
 		name: 'Spawn Box',
 		timeStamp: (user: MUser) => Number(user.user.last_spawn_box_date ?? 0),
-		cd: Time.Minute * 45,
+		cd: ({ perkTier }) => (perkTier >= 6 ? Time.Minute * 30 : SPAWN_BOX_COOLDOWN),
 		command: ['tools', 'patron', 'spawnbox'],
 		utcReset: false
 	},
 	{
 		name: 'Give Box',
 		timeStamp: (user: MUser) => Number(user.user.lastGivenBoxx),
-		cd: giveBoxResetTime,
+		cd: 0,
 		command: ['tools', 'patron', 'give_box'],
-		utcReset: false
+		utcReset: false,
+		nextReset: lastDone =>
+			lastDone > 0 && getESTDateKey(new Date(lastDone)) === getESTDateKey() ? getNextESTMidnight().getTime() : 0
 	},
 	{
 		name: 'Item Contract',
 		timeStamp: (user: MUser) => Number(user.user.last_item_contract_date),
-		cd: itemContractResetTime,
+		cd: 0,
 		command: ['ic', 'info'],
-		utcReset: false
+		utcReset: false,
+		nextReset: (_, _user, stats) =>
+			stats?.ic_daily_date === getESTDateKey() && stats.ic_daily_count >= DAILY_ITEM_CONTRACTS_LIMIT
+				? getNextESTMidnight().getTime()
+				: 0
 	},
 	{
 		name: 'Monthly Double Loot',
@@ -99,9 +118,10 @@ const cooldownTimers: {
 	{
 		name: 'Balthazars Big Bonanza',
 		timeStamp: (user: MUser) => Number(user.user.last_bonanza_date),
-		cd: Time.Day * 7,
+		cd: 0,
 		command: ['bsominigames', 'balthazars_big_bonanza', 'start'],
-		utcReset: false
+		utcReset: false,
+		nextReset: lastDone => (lastDone > 0 ? getNextESTWeekReset(new Date(lastDone)).getTime() : 0)
 	}
 ];
 
@@ -258,7 +278,7 @@ const mentionCommands: MentionCommand[] = [
 					const lastDone = cd.timeStamp(user, stats);
 					const cooldown = isFunction(cd.cd) ? cd.cd({ user, perkTier }) : cd.cd;
 					const nextReset = cd.nextReset
-						? cd.nextReset(lastDone)
+						? cd.nextReset(lastDone, user, stats)
 						: cd.utcReset
 							? getNextUTCReset(lastDone, cooldown)
 							: lastDone + cooldown;
@@ -282,9 +302,7 @@ const mentionCommands: MentionCommand[] = [
 			const fishingDetails = await getUsersFishingContestDetails(user);
 			content += '\n';
 			if (fishingDetails.catchesFromToday.length > 0) {
-				const nextReset = new Date();
-				nextReset.setUTCHours(24, 0, 0, 0);
-				content += `Fishing Contest: ${dateFm(nextReset)}`;
+				content += `Fishing Contest: ${dateFm(getNextESTMidnight())}`;
 			} else {
 				content += bold(`Fishing Contest: Ready ${mentionCommand('bsominigames', 'fishing_contest', 'fish')}`);
 			}

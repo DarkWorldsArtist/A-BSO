@@ -82,7 +82,11 @@ export const kingGoldemarTask: MinionTask = {
 		const teamLoot = new TeamLoot([]);
 		const totalLoot = new Bank();
 		for (const user of users.filter(u => !deaths.includes(u))) {
-			const loot = new Bank().add(KingGoldemarLootTable.roll());
+			const loot = new Bank().add(
+				KingGoldemarLootTable.roll(1, {
+					tertiaryItemPercentageChanges: user.buildTertiaryItemChanges(false, false, false)
+				})
+			);
 			if (dwwhRecipient === user) {
 				loot.add('Broken dwarven warhammer');
 			}

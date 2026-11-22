@@ -6,9 +6,9 @@ import { Time } from '@oldschoolgg/toolkit';
 import { roll } from 'node-rng';
 import { Bank, LootTable, Monsters, resolveItems } from 'oldschooljs';
 
-export function rollNaxxusLoot(quantity = 1, cl?: Bank) {
+export function rollNaxxusLoot(quantity = 1, cl?: Bank, tertiaryItemPercentageChanges?: Map<string, number>) {
 	const loot = new Bank();
-	loot.add(NaxxusLootTable.roll(quantity));
+	loot.add(NaxxusLootTable.roll(quantity, { tertiaryItemPercentageChanges }));
 
 	// Handle uniques => Don't give duplicates until log full
 	const uniqueChance = 150;

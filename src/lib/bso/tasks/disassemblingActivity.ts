@@ -19,6 +19,10 @@ export const disassemblingTask: MinionTask = {
 			materialLoot.mutIncreaseAllValuesByPercent(inventionBoosts.inventionMasterCape.extraMaterialsPercent);
 			messages.push(`${inventionBoosts.inventionMasterCape.extraMaterialsPercent}% bonus materials for mastery`);
 		}
+		if (user.usingPet('Cogsworth')) {
+			materialLoot.mutIncreaseAllValuesByPercent(10);
+			messages.push('10% bonus materials for Cogsworth');
+		}
 		if (user.hasEquippedOrInBank('Scroll of the salvager')) {
 			let duplicatedCount = 0;
 			for (const { type, quantity } of materialLoot.values()) {

@@ -1,4 +1,12 @@
 export function generateHexColorForCashStack(coins: number): string {
+	if (coins > 999_999_999_999) {
+		return '#D580FF';
+	}
+
+	if (coins > 9_999_999_999) {
+		return '#00FFFF';
+	}
+
 	if (coins > 9_999_999) {
 		return '#00FF80';
 	}
@@ -11,7 +19,11 @@ export function generateHexColorForCashStack(coins: number): string {
 }
 
 export function formatItemStackQuantity(quantity: number): string {
-	if (quantity > 9_999_999) {
+	if (quantity > 999_999_999_999) {
+		return `${Math.floor(quantity / 1_000_000_000_000)}T`;
+	} else if (quantity > 999_999_999) {
+		return `${Math.floor(quantity / 1_000_000_000)}B`;
+	} else if (quantity > 9_999_999) {
 		return `${Math.floor(quantity / 1_000_000)}M`;
 	} else if (quantity > 99_999) {
 		return `${Math.floor(quantity / 1000)}K`;

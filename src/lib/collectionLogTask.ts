@@ -340,36 +340,44 @@ class CollectionLogTask {
 		});
 
 		if (collectionLog.completions && ['collection', 'bank', 'tame'].includes(type)) {
-			const baseText = collectionLog.isActivity ? 'Completions: ' : 'Kills: ';
+			const entries = objectEntries(collectionLog.completions);
+			const hasDefault = 'Default' in collectionLog.completions;
+			const baseText = hasDefault ? (collectionLog.isActivity ? 'Completions: ' : 'Kills: ') : '';
+			const measure = (str: string) => canvas.measureTextWidth(`${str}|`) - canvas.measureTextWidth('|');
 			let drawnSoFar = baseText;
-			// Times done/killed
-			canvas.drawText({
-				text: baseText,
-				x: 0,
-				y: 25,
-				color: this.COLORS.ORANGEY
-			});
+			if (baseText) {
+				canvas.drawText({
+					text: baseText,
+					x: 0,
+					y: 25,
+					color: this.COLORS.ORANGEY
+				});
+			}
 			let pixelLevel = 25;
-			for (const [type, value] of objectEntries(collectionLog.completions)) {
-				const xxxx = canvas.measureTextWidth(`${drawnSoFar} / ${type}: ${value.toLocaleString()}`);
-				if (xxxx >= 255) {
+			for (let idx = 0; idx < entries.length; idx++) {
+				const [entryType, value] = entries[idx];
+				const prefix =
+					entryType === 'Default' ? '' : idx === 0 && !hasDefault ? `${entryType}: ` : ` / ${entryType}: `;
+				const nextSegment = `${prefix}${value.toLocaleString()}`;
+				if (measure(`${drawnSoFar}${nextSegment}`) >= 255 && drawnSoFar.length > 0) {
 					pixelLevel += 10;
 					drawnSoFar = '';
 				}
-				if (type !== 'Default') {
+				const effectivePrefix = drawnSoFar === '' && prefix.startsWith(' / ') ? prefix.slice(3) : prefix;
+				if (effectivePrefix) {
 					canvas.drawText({
-						text: ` / ${type}: `,
-						x: canvas.measureTextWidth(drawnSoFar),
+						text: effectivePrefix,
+						x: measure(drawnSoFar),
 						y: pixelLevel,
 						color: this.COLORS.ORANGEY
 					});
-					drawnSoFar += ` / ${type}: `;
+					drawnSoFar += effectivePrefix;
 				}
 
 				const valueStr = value.toLocaleString();
 				canvas.drawText({
 					text: valueStr,
-					x: canvas.measureTextWidth(drawnSoFar),
+					x: measure(drawnSoFar),
 					y: pixelLevel,
 					color: this.COLORS.WHITE
 				});
@@ -378,7 +386,7 @@ class CollectionLogTask {
 			if (collectionLog.name === 'Guardians of the Rift') {
 				canvas.drawText({
 					text: ' Rifts searches: ',
-					x: canvas.measureTextWidth(drawnSoFar),
+					x: measure(drawnSoFar),
 					y: pixelLevel,
 					color: this.COLORS.ORANGEY
 				});
@@ -386,7 +394,7 @@ class CollectionLogTask {
 
 				canvas.drawText({
 					text: options.stats?.gotrRiftSearches.toLocaleString() ?? '',
-					x: canvas.measureTextWidth(drawnSoFar),
+					x: measure(drawnSoFar),
 					y: pixelLevel,
 					color: this.COLORS.WHITE
 				});

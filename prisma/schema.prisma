@@ -367,6 +367,9 @@ model User {
   minion_birdhouseTraps           Json?     @map("minion.birdhouseTraps") @db.Json
   finished_quest_ids              Int[]     @default([])
 
+  // Maps guild hunters to blocked creature IDs. Missing hunters are unblocked.
+  rumour_blocked_ids Json @default("{}") @db.Json
+
   // Relations
   farmedCrops    FarmedCrop[]
   botItemSell    BotItemSell[]
@@ -387,6 +390,9 @@ model User {
   minion_icon                String?            @map("minion.icon")
   minion_name                String?            @map("minion.name") @db.Text()
   bank_bg_hex                String?
+  unique_outline_hex         String?
+  bank_title_hex             String?
+  default_bank_flag          String?
   bankBackground             Int                @default(1)
   attack_style               String[]           @default([])
   combat_options             Int[]              @default([])
@@ -479,6 +485,9 @@ model User {
   prismare_ring_charges    Int      @default(0)
 
   last_patron_double_time_trigger DateTime? @db.Timestamp(6)
+  patron_double_time_used_mins    Int       @default(0)
+  last_party_room_date            BigInt?
+  last_box_frenzy_date            BigInt?
   lottery_input                   Json      @default("{}") @db.Json
   gear_template                   Int       @default(0) @db.SmallInt
   unlocked_gear_templates         Int[]     @default([])
@@ -700,6 +709,7 @@ model Minigame {
   shades_of_morton        Int    @default(0)
   tombs_of_amascut        Int    @default(0)
   colosseum               Int    @default(0)
+  stealing_artefacts      Int    @default(0)
 
   // BSO
   ourania_delivery_service Int  @default(0)
@@ -896,6 +906,19 @@ model EconomyTransaction {
   @@map("economy_transaction")
 }
 
+model GamblingTransaction {
+  id            Int      @id @default(autoincrement())
+  user_id       BigInt
+  date          DateTime @default(now())
+  type          String   @db.VarChar(32)
+  amount_staked BigInt
+  pnl           BigInt
+
+  @@index([user_id, date])
+  @@index([type, date])
+  @@map("gambling_transaction")
+}
+
 model StashUnit {
   stash_id        Int
   user_id         BigInt
@@ -907,6 +930,9 @@ model StashUnit {
 }
 
 model UserStats {
+  // Completed rumour counts keyed by tier.
+  rumours Json @default("{}") @db.Json
+
   user_id                BigInt @id
   sell_gp                BigInt @default(0)
   items_sold_bank        Json   @default("{}") @db.Json
@@ -949,7 +975,14 @@ model UserStats {
   doug_loot_bank       Json @default("{}") @db.Json
   harry_loot_bank      Json @default("{}") @db.Json
   smokey_loot_bank     Json @default("{}") @db.Json
+  doopy_loot_bank      Json @default("{}") @db.Json
   doubled_loot_bank    Json @default("{}") @db.Json
+
+  daily_streak     Int     @default(0)
+  last_daily_date  String? @db.VarChar(10)
+  ic_daily_date    String? @db.VarChar(10)
+  ic_daily_count   Int     @default(0)
+  ic_free_skip_date String? @db.VarChar(10)
 
   silverhawk_boots_passive_xp BigInt @default(0)
   bonecrusher_prayer_xp       BigInt @default(0)
@@ -1180,6 +1213,7 @@ model HistoricalData {
 }
 
 enum activity_type_enum {
+  Rumour
   Agility
   Cooking
   MonsterKilling
@@ -1239,6 +1273,7 @@ enum activity_type_enum {
   GnomeRestaurant
   SoulWars
   RoguesDenMaze
+  StealingArtefacts
   KalphiteKing
   Gauntlet
   Dungeoneering
@@ -1579,6 +1614,8 @@ model UserCounter {
 }
 
 enum command_name_enum {
+  partyroom
+  rumours
   cache_refresh
   buried_treasure
   testpotato

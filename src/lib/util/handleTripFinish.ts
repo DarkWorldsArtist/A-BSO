@@ -7,8 +7,14 @@ import { MysteryBoxes } from '@/lib/bso/openables/tables.js';
 import { chargePortentIfHasCharges, getAllPortentCharges, PortentID } from '@/lib/bso/skills/divination.js';
 import { calculateZygomiteLoot } from '@/lib/bso/skills/farming/zygomites.js';
 import { InventionID, inventionBoosts, inventionItemBoost } from '@/lib/bso/skills/invention/inventions.js';
-import { RuneTable, WilvusTable, WoodTable } from '@/lib/bso/tables/seedTable.js';
-import { DougTable, PekyTable } from '@/lib/bso/tables/sharedTables.js';
+import {
+	rollBrockLoot,
+	rollDoopyLoot,
+	rollDougLoot,
+	rollObisLoot,
+	rollPekyLoot,
+	rollWilvusLoot
+} from '@/lib/bso/tables/gatheringPetTables.js';
 
 import { type ButtonBuilder, bold } from '@oldschoolgg/discord';
 import { getNextUTCReset, notEmpty, Time } from '@oldschoolgg/toolkit';
@@ -24,6 +30,7 @@ import { combatAchievementTripEffect } from '@/lib/combat_achievements/combatAch
 import { BitField, CONSTANTS, PerkTier } from '@/lib/constants.js';
 import { handleGrowablePetGrowth } from '@/lib/growablePets.js';
 import { handlePassiveImplings } from '@/lib/implings.js';
+import { marketPriceOfBank } from '@/lib/marketPrices.js';
 import { triggerRandomEvent } from '@/lib/randomEvents.js';
 import { canShowAutoFarmButton } from '@/lib/skilling/skills/farming/utils/farmingHelpers.js';
 import type { ActivityTaskData } from '@/lib/types/minions.js';
@@ -250,53 +257,47 @@ const tripFinishEffects: TripFinishEffect[] = [
 
 			switch (pet) {
 				case itemID('Peky'): {
-					for (let i = 0; i < minutes; i++) {
-						if (roll(10)) {
-							bonusLoot.add(PekyTable.roll());
-						}
-					}
-					if (bonusLoot.length === 0 && data.type === 'Farming') {
-						bonusLoot.add(PekyTable.roll());
-					}
+					const rolls = Math.max(data.type === 'Farming' ? 1 : 0, Math.floor(minutes / 3));
+					bonusLoot.add(rollPekyLoot(user.skillLevel('farming'), rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('peky_loot_bank', bonusLoot);
 						messages.push(
-							`<:peky:1560880908729581588> Peky flew off and got you some seeds during this trip: ${bonusLoot}.`
+							`<:peky:1560880908729581588> Peky flew off and got you some seeds and nests during this trip: ${bonusLoot}.`
 						);
 					}
 					break;
 				}
 				case itemID('Obis'): {
-					const rolls = minutes / 3;
-					for (let i = 0; i < rolls; i++) {
-						bonusLoot.add(RuneTable.roll());
+					const rolls = Math.floor(minutes / 3);
+					bonusLoot.add(rollObisLoot(user.skillLevel('runecraft'), rolls));
+					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('obis_loot_bank', bonusLoot);
+						messages.push(
+							`<:obis:1560880915326963726> Obis did some runecrafting during this trip and got you: ${bonusLoot}.`
+						);
 					}
-					await user.statsBankUpdate('obis_loot_bank', bonusLoot);
-					messages.push(
-						`<:obis:1560880915326963726> Obis did some runecrafting during this trip and got you: ${bonusLoot}.`
-					);
 					break;
 				}
 				case itemID('Brock'): {
-					const rolls = minutes / 3;
-					for (let i = 0; i < rolls; i++) {
-						bonusLoot.add(WoodTable.roll());
+					const rolls = Math.floor(minutes / 3);
+					bonusLoot.add(rollBrockLoot(user.skillLevel('woodcutting'), rolls));
+					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('brock_loot_bank', bonusLoot);
+						messages.push(
+							`<:brock:1560880869655191594> Brock did some woodcutting during this trip and got you: ${bonusLoot}.`
+						);
 					}
-					await user.statsBankUpdate('brock_loot_bank', bonusLoot);
-					messages.push(
-						`<:brock:1560880869655191594> Brock did some woodcutting during this trip and got you: ${bonusLoot}.`
-					);
 					break;
 				}
 				case itemID('Wilvus'): {
-					const rolls = minutes / 6;
-					for (let i = 0; i < rolls; i++) {
-						bonusLoot.add(WilvusTable.roll());
+					const rolls = Math.ceil(minutes / 6);
+					bonusLoot.add(rollWilvusLoot(user.skillLevel('thieving'), rolls));
+					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('wilvus_loot_bank', bonusLoot);
+						messages.push(
+							`<:wilvus:1560880920339419198> Wilvus did some pickpocketing during this trip and got you: ${bonusLoot}.`
+						);
 					}
-					await user.statsBankUpdate('wilvus_loot_bank', bonusLoot);
-					messages.push(
-						`<:wilvus:1560880920339419198> Wilvus did some pickpocketing during this trip and got you: ${bonusLoot}.`
-					);
 					break;
 				}
 				case itemID('Smokey'): {
@@ -305,8 +306,8 @@ const tripFinishEffects: TripFinishEffect[] = [
 							bonusLoot.add(MysteryBoxes.roll());
 						}
 					}
-					await user.statsBankUpdate('smokey_loot_bank', bonusLoot);
 					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('smokey_loot_bank', bonusLoot);
 						messages.push(
 							`<:smokey:1560872757007360020> Smokey did some walking around while you were on your trip and found you ${bonusLoot}.`
 						);
@@ -314,11 +315,21 @@ const tripFinishEffects: TripFinishEffect[] = [
 					break;
 				}
 				case itemID('Doug'): {
-					for (let i = 0; i < minutes / 2; i++) {
-						bonusLoot.add(DougTable.roll());
+					const rolls = Math.floor(minutes / 2);
+					bonusLoot.add(rollDougLoot(user.skillLevel('mining'), rolls));
+					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('doug_loot_bank', bonusLoot);
+						messages.push(`Doug mined you these items: ${bonusLoot}.`);
 					}
-					await user.statsBankUpdate('doug_loot_bank', bonusLoot);
-					messages.push(`Doug mined you these items: ${bonusLoot}.`);
+					break;
+				}
+				case itemID('Doopy'): {
+					const rolls = Math.floor(minutes / 2);
+					bonusLoot.add(rollDoopyLoot(user, rolls));
+					if (bonusLoot.length > 0) {
+						await user.statsBankUpdate('doopy_loot_bank', bonusLoot);
+						messages.push(`Doopy harvested this energy for you: ${bonusLoot}.`);
+					}
 					break;
 				}
 				case itemID('Harry'): {
@@ -336,6 +347,19 @@ const tripFinishEffects: TripFinishEffect[] = [
 			return {
 				itemsToAddWithCL: bonusLoot
 			};
+		}
+	},
+	{
+		name: 'Elder Knowledge',
+		fn: async ({ data, messages, user, rng }) => {
+			if (!user.bitfield.includes(BitField.HasConsumedElderKnowledge)) return;
+			if (data.duration < Time.Minute * 25) return;
+			if (rng.roll(100)) {
+				messages.push('Your minion found an Elder scroll piece during the trip!');
+				return {
+					itemsToAddWithCL: new Bank().add('Elder scroll piece')
+				};
+			}
 		}
 	},
 	{
@@ -704,6 +728,18 @@ const tripFinishEffects: TripFinishEffect[] = [
 			return {
 				itemsToAddWithCL: mysteriousLoot
 			};
+		}
+	},
+	{
+		name: 'Trip Loot Value Summary',
+		requiredPerkTier: PerkTier.Two,
+		fn: async ({ user, loot, messages }) => {
+			if (!user.bitfield.includes(BitField.ShowTripLootValue)) return;
+			if (!loot || loot.length === 0) return;
+			const val = loot.value();
+			const mv = marketPriceOfBank(loot);
+			if (val === 0 && mv === 0) return;
+			messages.push(`Loot Value: ${toKMB(val)} (MV: ${toKMB(mv)})`);
 		}
 	},
 	{

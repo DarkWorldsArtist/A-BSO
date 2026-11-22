@@ -60,7 +60,8 @@ export enum PerkTier {
 	/**
 	 * Tier 6 Patron
 	 */
-	Seven = 7
+	Seven = 7,
+	Eight = 8
 }
 
 export const alphabeticalSort = (a: string, b: string): number => a.localeCompare(b);

@@ -1,9 +1,24 @@
-import { GeneralBank, type GeneralBankType } from '@oldschoolgg/toolkit';
+import { GeneralBank, type GeneralBankType, sumArr } from '@oldschoolgg/toolkit';
 import { Bank } from 'oldschooljs';
 import * as z from 'zod';
 
 import { type DegradeableItem, degradeableItems } from '@/lib/degradeableItems.js';
+import { type RumourOption, RumourOptions } from '@/lib/skilling/skills/hunter/rumours/util.js';
 import { assert } from '@/lib/util/logError.js';
+
+export class RumourTierBank extends GeneralBank<RumourOption> {
+	constructor(initialBank?: GeneralBankType<RumourOption>) {
+		super({ initialBank: initialBank ? { ...initialBank } : undefined, allowedKeys: RumourOptions });
+	}
+
+	get total() {
+		return sumArr(this.entries().map(([, quantity]) => quantity));
+	}
+
+	toJSON() {
+		return { ...this._bank };
+	}
+}
 
 export const ZRawItemBank = z.record(z.string(), z.number().int().positive());
 

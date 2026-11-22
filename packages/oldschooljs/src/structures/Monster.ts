@@ -49,6 +49,7 @@ export interface MonsterKillOptions {
 	/** Take eggs instead of normal Maggot King rewards. */
 	takeEggs?: boolean;
 	lootTableOptions?: LootTableRollOptions;
+	tertiaryItemPercentageChanges?: Map<string, number>;
 	rng?: RNGProvider;
 }
 

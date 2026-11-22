@@ -8,7 +8,7 @@ import { hasWildyHuntGearEquipped } from '@/lib/gear/functions/hasWildyHuntGearE
 import type { UserFullGearSetup } from '@/lib/gear/types.js';
 import { trackLoot } from '@/lib/lootTrack.js';
 import { soteSkillRequirements } from '@/lib/skilling/functions/questRequirements.js';
-import Hunter from '@/lib/skilling/skills/hunter/hunter.js';
+import Hunter, { hunterOutfitBonus } from '@/lib/skilling/skills/hunter/hunter.js';
 import { type Creature, HunterTechniqueEnum } from '@/lib/skilling/types.js';
 import type { Skills } from '@/lib/types/index.js';
 import type { HunterActivityTaskOptions } from '@/lib/types/minions.js';
@@ -54,6 +54,8 @@ export function calculateHunterInput({
 	user: MUser;
 }) {
 	const messages: string[] = [];
+	const outfitMod = hunterOutfitBonus(user);
+	if (outfitMod > 0) messages.push(`+${outfitMod}% catch chance from the Guild hunter outfit`);
 	let traps = 1;
 	let wildyScore = 0;
 

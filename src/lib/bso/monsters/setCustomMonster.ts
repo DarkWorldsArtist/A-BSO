@@ -1,15 +1,9 @@
-import { Bank, type LootTable, type Monster, Monsters } from 'oldschooljs';
+import { type LootTable, type LootTableRollOptions, type Monster, Monsters } from 'oldschooljs';
 
 export function makeKillTable(table: LootTable) {
 	return {
-		kill: (quantity: number) => {
-			const loot = new Bank();
-
-			for (let i = 0; i < quantity; i++) {
-				loot.add(table.roll());
-			}
-
-			return loot;
+		kill: (quantity: number, options: LootTableRollOptions = {}) => {
+			return table.roll(quantity, { ...options, targetBank: undefined });
 		}
 	};
 }

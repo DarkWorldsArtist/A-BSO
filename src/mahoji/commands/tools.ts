@@ -1,6 +1,14 @@
-import { giveBox, spawnBoxCommand, spawnLampCommand } from '@/lib/bso/commands/spawnBoxLampCommand.js';
-import { addToDoubleLootTimer, hasUsedDoubleLootThisMonth } from '@/lib/bso/doubleLoot.js';
+import { boxFrenzyCommand } from '@/lib/bso/boxFrenzy.js';
+import {
+	giveBox,
+	SPAWN_CHALLENGE_MODES,
+	type SpawnChallengeMode,
+	spawnBoxCommand,
+	spawnLampCommand
+} from '@/lib/bso/commands/spawnBoxLampCommand.js';
+import { addDoubleTime, hasUsedDoubleLootThisMonth } from '@/lib/bso/doubleLoot.js';
 import { keyCrates } from '@/lib/bso/keyCrates.js';
+import { patronPartyRoomCommand } from '@/lib/bso/partyRoom.js';
 import { findGroupOfUser } from '@/lib/bso/util/findGroupOfUser.js';
 import { repairBrokenItemsFromUser } from '@/lib/bso/util/repairBrokenItems.js';
 
@@ -30,6 +38,7 @@ import {
 	stashUnitViewCommand
 } from '@/mahoji/lib/abstracted_commands/stashUnitsCommand.js';
 import { dataPoints, statsCommand } from '@/mahoji/lib/abstracted_commands/statCommand.js';
+import { closestCLCommand, dryCalcCommand } from '@/mahoji/lib/abstracted_commands/userToolsCommand.js';
 
 const skillsVals = Object.values(Skills);
 
@@ -761,20 +770,24 @@ ${massStr}`.slice(0, 1999);
 }
 
 function calcTime(perkTier: PerkTier) {
-	for (const [bit, dur] of [
-		[PerkTier.Seven, Time.Minute * 90],
-		[PerkTier.Six, Time.Minute * 40],
-		[PerkTier.Five, Time.Minute * 20]
-	] as const) {
-		if (perkTier === bit) return dur;
-	}
+	if (perkTier >= PerkTier.Eight) return Time.Minute * 180;
+	if (perkTier === PerkTier.Seven) return Time.Minute * 90;
+	if (perkTier === PerkTier.Six) return Time.Minute * 45;
+	if (perkTier === PerkTier.Five) return Time.Minute * 20;
 	throw new Error('User is not a Tier 4+ Patron');
 }
 
-async function patronTriggerDoubleLoot(user: MUser) {
+const DOUBLE_TIME_TYPES = ['double_loot', 'double_xp', 'both'] as const;
+type DoubleTimeType = (typeof DOUBLE_TIME_TYPES)[number];
+
+async function patronTriggerDoubleLoot(user: MUser, type: DoubleTimeType = 'double_loot') {
 	const perkTier = await user.fetchPerkTier();
 	if (perkTier < PerkTier.Five) {
-		return 'Only T4, T5 or T6 patrons can use this command.';
+		return 'Only T4, T5, T6, or T7 patrons can use this command.';
+	}
+
+	if (type === 'both' && perkTier < PerkTier.Seven) {
+		return 'Simultaneous Double Loot and Double XP (both) is a Tier 6+ patron perk.';
 	}
 
 	const lastTime = user.user.last_patron_double_time_trigger;
@@ -782,7 +795,11 @@ async function patronTriggerDoubleLoot(user: MUser) {
 		return 'This command is still on cooldown, you can use it again on the 1st of next month.';
 	}
 
-	const time = calcTime(perkTier);
+	const baseTime = calcTime(perkTier);
+	const effectiveTime = type === 'both' ? Math.floor(baseTime / 2) : baseTime;
+	const isLoot = type === 'double_loot' || type === 'both';
+	const isXp = type === 'double_xp' || type === 'both';
+	const label = type === 'both' ? 'Double Loot and Double XP' : type === 'double_xp' ? 'Double XP' : 'Double Loot';
 
 	const group = await findGroupOfUser(user.id);
 	await prisma.user.updateMany({
@@ -796,11 +813,13 @@ async function patronTriggerDoubleLoot(user: MUser) {
 		}
 	});
 
-	await addToDoubleLootTimer(
-		time,
-		`${userMention(user.id)} used their monthly Tier ${perkTier - 1} double loot time`
-	);
-	return `Added ${formatDuration(time)} of double loot.`;
+	await addDoubleTime({
+		amount: effectiveTime,
+		reason: `${userMention(user.id)} used their monthly Tier ${perkTier - 1} ${label} time`,
+		loot: isLoot,
+		xp: isXp
+	});
+	return `Added ${formatDuration(effectiveTime)} of ${label}.`;
 }
 
 export const toolsCommand = defineCommand({
@@ -975,12 +994,40 @@ export const toolsCommand = defineCommand({
 				{
 					type: 'Subcommand',
 					name: 'spawnlamp',
-					description: 'Allows you to spawn a lamp.'
+					description: 'Allows you to spawn a lamp.',
+					options: [
+						{
+							type: 'String',
+							name: 'mode',
+							description: 'Optional challenge mode.',
+							required: false,
+							choices: choicesOf(SPAWN_CHALLENGE_MODES)
+						}
+					]
 				},
 				{
 					type: 'Subcommand',
 					name: 'spawnbox',
-					description: 'Allows you to spawn a mystery box.'
+					description: 'Allows you to spawn a mystery box.',
+					options: [
+						{
+							type: 'String',
+							name: 'mode',
+							description: 'Optional challenge mode.',
+							required: false,
+							choices: choicesOf(SPAWN_CHALLENGE_MODES)
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'box_frenzy',
+					description: 'Patron T5+: Start a Box Frenzy item-guessing event.'
+				},
+				{
+					type: 'Subcommand',
+					name: 'party_room',
+					description: 'Patron T4+: Start a bot-funded Falador Party Room balloon drop party.'
 				},
 				{
 					type: 'Subcommand',
@@ -1012,7 +1059,16 @@ export const toolsCommand = defineCommand({
 				{
 					type: 'Subcommand',
 					name: 'doubleloot',
-					description: 'Add double loot time.'
+					description: 'Trigger your monthly patron Double Loot or Double XP time.',
+					options: [
+						{
+							type: 'String',
+							name: 'type',
+							description: 'Choose Double Loot, Double XP, or Both (T6+).',
+							required: false,
+							choices: choicesOf(DOUBLE_TIME_TYPES)
+						}
+					]
 				}
 			]
 		},
@@ -1048,6 +1104,102 @@ export const toolsCommand = defineCommand({
 					type: 'Subcommand',
 					name: 'fixbank',
 					description: 'Fix broken items in your bank/gear/etc.'
+				},
+				{
+					type: 'Subcommand',
+					name: 'stats',
+					description: 'Check your personal stats and analytics.',
+					options: [
+						{
+							type: 'String',
+							name: 'stat',
+							description: 'The stat you want to check.',
+							autocomplete: async ({ value }: StringAutoComplete) => {
+								return dataPoints
+									.filter(i => i.perkTierNeeded === null)
+									.map(i => i.name)
+									.filter(i => (!value ? true : i.toLowerCase().includes(value.toLowerCase())))
+									.map(i => ({
+										name: i,
+										value: i
+									}));
+							},
+							required: true
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'cl_bank',
+					description: 'View your entire Collection Log as a bank image.',
+					options: [
+						{
+							type: 'String',
+							name: 'format',
+							description: 'Bank Image or Json format (Json requires Tier 1 Patron).',
+							required: false,
+							choices: choicesOf(['bank', 'json'])
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'sacrificed_bank',
+					description: 'View an image of all items you have sacrificed.'
+				},
+				{
+					type: 'Subcommand',
+					name: 'closest_cl',
+					description: 'View the Collection Logs you are closest to completing.',
+					options: [
+						{
+							type: 'String',
+							name: 'group',
+							description:
+								'Optional Collection Log category group (e.g. Boss, Clues, Minigames, Skilling).',
+							required: false
+						},
+						{
+							type: 'String',
+							name: 'sort',
+							description: 'Sort by highest completion percentage or fewest missing items.',
+							required: false,
+							choices: choicesOf(['percent', 'missing'] as const)
+						},
+						{
+							type: 'Boolean',
+							name: 'include_zero',
+							description: 'Include logs with 0 items obtained.',
+							required: false
+						}
+					]
+				},
+				{
+					type: 'Subcommand',
+					name: 'drycalc',
+					description: 'Calculate your OSRS drop rate and dry streak odds.',
+					options: [
+						{
+							type: 'String',
+							name: 'drop_rate',
+							description: 'Drop rate (e.g. 1/500, 500, or 0.2%).',
+							required: true
+						},
+						{
+							type: 'Integer',
+							name: 'kills',
+							description: 'Number of kills or rolls completed.',
+							required: true,
+							min_value: 1
+						},
+						{
+							type: 'Integer',
+							name: 'drops',
+							description: 'Number of drops obtained (defaults to 0).',
+							required: false,
+							min_value: 0
+						}
+					]
 				}
 			]
 		},
@@ -1143,7 +1295,6 @@ export const toolsCommand = defineCommand({
 				return mostDrops(user, patron.mostdrops.item, String(patron.mostdrops.filter));
 			}
 			if (patron.sacrificed_bank) {
-				if ((await user.fetchPerkTier()) < PerkTier.Two) return patronMsg(PerkTier.Two);
 				const sacBank = await user.fetchStats();
 				const image = await makeBankImage({
 					bank: new Bank(sacBank.sacrificed_bank as ItemBank),
@@ -1154,9 +1305,9 @@ export const toolsCommand = defineCommand({
 				};
 			}
 			if (patron.cl_bank) {
-				if ((await user.fetchPerkTier()) < PerkTier.Two) return patronMsg(PerkTier.Two);
 				const clBank = user.cl;
 				if (patron.cl_bank.format === 'json') {
+					if ((await user.fetchPerkTier()) < PerkTier.Two) return patronMsg(PerkTier.Two);
 					const json = JSON.stringify(clBank);
 					return {
 						files: [{ buffer: Buffer.from(json), name: 'clbank.json' }]
@@ -1188,14 +1339,22 @@ export const toolsCommand = defineCommand({
 				return result;
 			}
 			if (patron.spawnlamp) {
-				return spawnLampCommand(user, interaction);
+				return spawnLampCommand(user, interaction, (patron.spawnlamp.mode as SpawnChallengeMode) ?? 'random');
 			}
-			if (patron.spawnbox) return spawnBoxCommand(user, interaction);
+			if (patron.spawnbox) {
+				return spawnBoxCommand(user, interaction, (patron.spawnbox.mode as SpawnChallengeMode) ?? 'random');
+			}
+			if (patron.box_frenzy) {
+				return boxFrenzyCommand(user, interaction);
+			}
+			if (patron.party_room) {
+				return patronPartyRoomCommand(user, interaction);
+			}
 			if (patron.stats) {
 				return statsCommand(user, patron.stats.stat);
 			}
 			if (patron.doubleloot) {
-				return patronTriggerDoubleLoot(user);
+				return patronTriggerDoubleLoot(user, (patron.doubleloot.type as DoubleTimeType) ?? 'double_loot');
 			}
 		}
 		if (options.user) {
@@ -1213,6 +1372,50 @@ export const toolsCommand = defineCommand({
 				return {
 					files: [await makeBankImage({ bank: b, title: `Your Chat Pets (${b.length}/${pets.length})` })]
 				};
+			}
+			if (options.user.stats) {
+				return statsCommand(user, options.user.stats.stat);
+			}
+			if (options.user.sacrificed_bank) {
+				const sacBank = await user.fetchStats();
+				const image = await makeBankImage({
+					bank: new Bank(sacBank.sacrificed_bank as ItemBank),
+					title: 'Your Sacrificed Items'
+				});
+				return {
+					files: [image]
+				};
+			}
+			if (options.user.cl_bank) {
+				const clBank = user.cl;
+				if (options.user.cl_bank.format === 'json') {
+					if ((await user.fetchPerkTier()) < PerkTier.Two) return patronMsg(PerkTier.Two);
+					const json = JSON.stringify(clBank);
+					return {
+						files: [{ buffer: Buffer.from(json), name: 'clbank.json' }]
+					};
+				}
+				const image = await makeBankImage({
+					bank: clBank,
+					title: 'Your Entire Collection Log'
+				});
+				return {
+					files: [image]
+				};
+			}
+			if (options.user.closest_cl) {
+				return closestCLCommand(user, {
+					group: options.user.closest_cl.group,
+					sort: options.user.closest_cl.sort as 'percent' | 'missing' | undefined,
+					include_zero: options.user.closest_cl.include_zero
+				});
+			}
+			if (options.user.drycalc) {
+				return dryCalcCommand({
+					drop_rate: options.user.drycalc.drop_rate,
+					kills: options.user.drycalc.kills,
+					drops: options.user.drycalc.drops
+				});
 			}
 		}
 
