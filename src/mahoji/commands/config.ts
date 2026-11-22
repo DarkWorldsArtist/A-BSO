@@ -373,14 +373,53 @@ const NAMED_HEX_PRESETS: Record<string, string> = {
 	cyan: '#00FFFF',
 	green: '#00FF80',
 	red: '#FF4444',
+	crimson: '#DC143C',
 	pink: '#FF66CC',
 	white: '#FFFFFF',
 	orange: '#FF981F',
-	blue: '#4E82F5'
+	blue: '#4E82F5',
+	yellow: '#FFFF00',
+	lime: '#32CD32',
+	teal: '#008080',
+	aqua: '#00D8FF',
+	magenta: '#FF00FF',
+	violet: '#8A2BE2',
+	indigo: '#4B0082',
+	coral: '#FF7F50',
+	salmon: '#FA8072',
+	silver: '#C0C0C0',
+	gray: '#808080',
+	black: '#000000',
+	emerald: '#50C878',
+	mint: '#98FF98'
 };
 
 const HEX_COLOR_ERROR_MSG =
-	"That's not a valid hex color. Provide a 6-character hex code (such as #4e42f5 or 4e42f5), a preset (purple, gold, cyan, green, red, pink, white, orange, blue), or 'reset'.";
+	"That's not a valid hex color. Provide a 6-character hex code (such as #4e42f5 or 4e42f5), a preset color (e.g. gold, cyan, crimson, green, purple), or 'reset'.";
+
+async function colorAutocomplete({ value }: StringAutoComplete) {
+	const query = value?.trim().toLowerCase() ?? '';
+	const options = [
+		...Object.entries(NAMED_HEX_PRESETS).map(([name, hex]) => ({
+			name: `${name.charAt(0).toUpperCase() + name.slice(1)} (${hex})`,
+			value: name
+		})),
+		{ name: 'Reset to default', value: 'reset' }
+	];
+
+	const filtered = query
+		? options.filter(opt => opt.name.toLowerCase().includes(query) || opt.value.includes(query))
+		: options;
+
+	if (query) {
+		const candidate = (query.startsWith('#') ? query : `#${query}`).toUpperCase();
+		if (isValidHexColor(candidate)) {
+			return [{ name: `Custom hex (${candidate})`, value: candidate }, ...filtered].slice(0, 25);
+		}
+	}
+
+	return filtered.slice(0, 25);
+}
 
 function parseHexColorInput(
 	input?: string
@@ -1127,8 +1166,9 @@ export const configCommand = defineCommand({
 						{
 							type: 'String',
 							name: 'color',
-							description: 'Hex color (e.g. #4e42f5), preset (gold, cyan, crimson, etc.), or reset.',
-							required: false
+							description: 'Pick a preset color, enter any 6-char hex code (e.g. #4e42f5), or type reset.',
+							required: false,
+							autocomplete: colorAutocomplete
 						}
 					]
 				},
@@ -1140,8 +1180,9 @@ export const configCommand = defineCommand({
 						{
 							type: 'String',
 							name: 'color',
-							description: 'Hex color (e.g. #4e42f5), preset (gold, cyan, purple, etc.), or reset.',
-							required: false
+							description: 'Pick a preset color, enter any 6-char hex code (e.g. #4e42f5), or type reset.',
+							required: false,
+							autocomplete: colorAutocomplete
 						}
 					]
 				},
