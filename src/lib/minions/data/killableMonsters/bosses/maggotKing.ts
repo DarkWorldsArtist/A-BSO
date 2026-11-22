@@ -138,9 +138,9 @@ const mageKillable: KillableMonster = {
 			required: false,
 			items: [
 				{ itemID: itemID('Void staff'), boostPercent: 15 },
-				{ itemID: itemID("Tumeken's shadow"), boostPercent: 10 },
 				{ itemID: itemID('Harmonised nightmare staff'), boostPercent: 8 },
-				{ itemID: itemID('Twinflame staff'), boostPercent: 6 }
+				{ itemID: itemID('Twinflame staff'), boostPercent: 6 },
+				{ itemID: itemID("Tumeken's shadow"), boostPercent: 3 }
 			]
 		},
 		{
