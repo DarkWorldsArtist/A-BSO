@@ -257,7 +257,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 
 			switch (pet) {
 				case itemID('Peky'): {
-					const rolls = Math.max(data.type === 'Farming' ? 1 : 0, Math.floor(minutes / 3));
+					const rolls = Math.max(data.type === 'Farming' ? 1 : 0, Math.floor(minutes / 5));
 					bonusLoot.add(rollPekyLoot(user.skillLevel('farming'), rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('peky_loot_bank', bonusLoot);
@@ -268,7 +268,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					break;
 				}
 				case itemID('Obis'): {
-					const rolls = Math.floor(minutes / 3);
+					const rolls = Math.floor(minutes / 4);
 					bonusLoot.add(rollObisLoot(user.skillLevel('runecraft'), rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('obis_loot_bank', bonusLoot);
@@ -279,7 +279,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					break;
 				}
 				case itemID('Brock'): {
-					const rolls = Math.floor(minutes / 3);
+					const rolls = Math.floor(minutes / 4);
 					bonusLoot.add(rollBrockLoot(user.skillLevel('woodcutting'), rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('brock_loot_bank', bonusLoot);
@@ -290,7 +290,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					break;
 				}
 				case itemID('Wilvus'): {
-					const rolls = Math.ceil(minutes / 6);
+					const rolls = Math.max(1, Math.floor(minutes / 6));
 					bonusLoot.add(rollWilvusLoot(user.skillLevel('thieving'), rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('wilvus_loot_bank', bonusLoot);
@@ -315,7 +315,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					break;
 				}
 				case itemID('Doug'): {
-					const rolls = Math.floor(minutes / 2);
+					const rolls = Math.floor(minutes / 3);
 					bonusLoot.add(rollDougLoot(user.skillLevel('mining'), rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('doug_loot_bank', bonusLoot);
@@ -324,7 +324,7 @@ const tripFinishEffects: TripFinishEffect[] = [
 					break;
 				}
 				case itemID('Doopy'): {
-					const rolls = Math.floor(minutes / 2);
+					const rolls = Math.floor(minutes / 3);
 					bonusLoot.add(rollDoopyLoot(user, rolls));
 					if (bonusLoot.length > 0) {
 						await user.statsBankUpdate('doopy_loot_bank', bonusLoot);

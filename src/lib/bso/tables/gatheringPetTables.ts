@@ -25,19 +25,19 @@ const PekyMasterCustomSeeds = new LootTable()
 export function rollPekyLoot(farmingLevel: number, rolls: number): Bank {
 	const loot = new Bank();
 	for (let i = 0; i < rolls; i++) {
-		loot.add(nestTable.roll());
+		if (roll(2)) loot.add(nestTable.roll());
 		if (farmingLevel >= 105) {
-			loot.add(HighSeedPackTable.roll());
-			if (roll(3)) loot.add(ExoticSeedsTable.roll());
-			if (roll(4)) loot.add(PekyHighCustomSeeds.roll());
-			if (roll(5)) loot.add(PekyMasterCustomSeeds.roll());
-		} else if (farmingLevel >= 99) {
-			loot.add(roll(3) ? HighSeedPackTable.roll() : MediumSeedPackTable.roll());
-			if (roll(4)) loot.add(ExoticSeedsTable.roll());
-			if (roll(5)) loot.add(PekyHighCustomSeeds.roll());
-		} else if (farmingLevel >= 70) {
 			loot.add(roll(2) ? HighSeedPackTable.roll() : MediumSeedPackTable.roll());
+			if (roll(4)) loot.add(ExoticSeedsTable.roll());
+			if (roll(6)) loot.add(PekyHighCustomSeeds.roll());
+			if (roll(10)) loot.add(PekyMasterCustomSeeds.roll());
+		} else if (farmingLevel >= 99) {
+			loot.add(roll(4) ? HighSeedPackTable.roll() : MediumSeedPackTable.roll());
 			if (roll(5)) loot.add(ExoticSeedsTable.roll());
+			if (roll(8)) loot.add(PekyHighCustomSeeds.roll());
+		} else if (farmingLevel >= 70) {
+			loot.add(roll(3) ? HighSeedPackTable.roll() : MediumSeedPackTable.roll());
+			if (roll(6)) loot.add(ExoticSeedsTable.roll());
 		} else {
 			loot.add(roll(3) ? MediumSeedPackTable.roll() : LowSeedPackTable.roll());
 		}
@@ -58,13 +58,13 @@ const ComboRuneTable = new LootTable()
 export function rollObisLoot(rcLevel: number, rolls: number): Bank {
 	const loot = new Bank();
 	for (let i = 0; i < rolls; i++) {
-		if (rcLevel >= 99 && roll(5)) {
-			loot.add('Elder rune', rcLevel >= 110 ? randInt(4, 12) : randInt(2, 6));
+		if (rcLevel >= 99 && roll(8)) {
+			loot.add('Elder rune', rcLevel >= 110 ? randInt(2, 7) : randInt(1, 4));
 		} else if (rcLevel >= 77 && roll(2)) {
 			if (rcLevel >= 95 && roll(4)) {
-				loot.add('Wrath rune', randInt(25, 65));
+				loot.add('Wrath rune', randInt(15, 40));
 			} else if (roll(2)) {
-				loot.add('Blood rune', randInt(30, 80));
+				loot.add('Blood rune', randInt(20, 50));
 			} else {
 				loot.add(HighRuneTable.roll());
 			}
@@ -80,12 +80,12 @@ export function rollObisLoot(rcLevel: number, rolls: number): Bank {
 export function rollBrockLoot(wcLevel: number, rolls: number): Bank {
 	const loot = new Bank();
 	for (let i = 0; i < rolls; i++) {
-		if (wcLevel >= 105 && roll(4)) {
-			loot.add('Elder logs', randInt(5, 20));
+		if (wcLevel >= 105 && roll(7)) {
+			loot.add('Elder logs', randInt(3, 12));
 		} else if (wcLevel >= 90 && roll(3)) {
-			loot.add('Redwood logs', randInt(15, 45));
+			loot.add('Redwood logs', randInt(10, 30));
 		} else if (wcLevel >= 75 && roll(3)) {
-			loot.add(roll(2) ? 'Magic logs' : 'Yew logs', randInt(15, 45));
+			loot.add(roll(2) ? 'Magic logs' : 'Yew logs', randInt(10, 30));
 		} else {
 			loot.add(WoodTable.roll());
 		}
@@ -96,12 +96,12 @@ export function rollBrockLoot(wcLevel: number, rolls: number): Bank {
 export function rollDougLoot(miningLevel: number, rolls: number): Bank {
 	const loot = new Bank();
 	for (let i = 0; i < rolls; i++) {
-		if (miningLevel >= 105 && roll(4)) {
-			loot.add('Dark animica', randInt(5, 18));
-		} else if (miningLevel >= 80 && roll(5)) {
-			loot.add('Obsidian shards', randInt(20, 60));
+		if (miningLevel >= 105 && roll(7)) {
+			loot.add('Dark animica', randInt(4, 12));
+		} else if (miningLevel >= 80 && roll(6)) {
+			loot.add('Obsidian shards', randInt(12, 35));
 		} else if (miningLevel >= 85 && roll(3)) {
-			loot.add(roll(2) ? 'Runite ore' : 'Amethyst', randInt(5, 22));
+			loot.add(roll(2) ? 'Runite ore' : 'Amethyst', randInt(4, 15));
 		} else {
 			loot.add(DougTable.roll());
 		}
@@ -132,7 +132,7 @@ export function rollDoopyLoot(user: MUser, rolls: number): Bank {
 						: rollWeight <= 85
 							? pool[1]
 							: pool[0];
-		const baseQty = randInt(15, 40) + Math.floor(divLevel / 6);
+		const baseQty = randInt(10, 25) + Math.floor(divLevel / 8);
 		loot.add(picked.item.id, Math.max(1, Math.round(baseQty * atlantisBonus)));
 	}
 	return loot;
@@ -143,14 +143,14 @@ export function rollWilvusLoot(thievingLevel: number, rolls: number): Bank {
 	for (let i = 0; i < rolls; i++) {
 		loot.add(WilvusTable.roll());
 		if (thievingLevel >= 105) {
-			loot.add('Coins', randInt(75_000, 200_000));
-			if (roll(3)) loot.add('Crystal shard', randInt(2, 6));
-			if (roll(4)) loot.add(HighSeedPackTable.roll());
+			if (roll(2)) loot.add('Coins', randInt(40_000, 100_000));
+			if (roll(5)) loot.add('Crystal shard', randInt(1, 4));
+			if (roll(6)) loot.add(HighSeedPackTable.roll());
 		} else if (thievingLevel >= 99) {
-			loot.add('Coins', randInt(50_000, 140_000));
-			if (roll(4)) loot.add('Crystal shard', randInt(1, 4));
-		} else if (thievingLevel >= 80 && roll(2)) {
-			loot.add('Coins', randInt(25_000, 75_000));
+			if (roll(2)) loot.add('Coins', randInt(25_000, 70_000));
+			if (roll(6)) loot.add('Crystal shard', randInt(1, 3));
+		} else if (thievingLevel >= 80 && roll(3)) {
+			loot.add('Coins', randInt(15_000, 45_000));
 		}
 	}
 	return loot;
