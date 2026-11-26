@@ -77,7 +77,7 @@ const inhibitors: Inhibitor[] = [
 			if (!interaction.guildId || interaction.guildId !== globalConfig.supportServerID || !interaction.channelId)
 				return false;
 			if (![Channel.ServerGeneral, Channel.GeneralChannel].includes(interaction.channelId)) return false;
-			if (command.name === 'trade') return false;
+			if (['trade', 'giveaway'].includes(command.name)) return false;
 			const perkTier = await user.fetchPerkTier();
 			if (interaction.member && perkTier >= PerkTier.Two) {
 				return false;
