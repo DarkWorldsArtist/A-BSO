@@ -1183,6 +1183,12 @@ export const adminCommand = defineCommand({
 					type: 'String',
 					name: 'reason',
 					description: 'The reason'
+				},
+				{
+					type: 'Boolean',
+					name: 'collection_log',
+					description: 'Whether to add the items to the collection log (default: false)',
+					required: false
 				}
 			]
 		},
@@ -1488,23 +1494,26 @@ ${META_CONSTANTS.RENDERED_STR}`
 			const itemErrors = items.validate();
 			if (itemErrors.length > 0) return `Invalid items: ${itemErrors.join(', ')}`;
 
+			const collectionLog = Boolean(options.give_items.collection_log);
+			const clSuffix = collectionLog ? ' (added to CL)' : '';
+
 			if (options.give_items.all) {
-				await interaction.confirmation(`Are you sure you want to give ${items} to ALL users?`);
+				await interaction.confirmation(`Are you sure you want to give ${items} to ALL users${clSuffix}?`);
 				const allUsers = await prisma.user.findMany({
 					select: { id: true }
 				});
 				for (const u of allUsers) {
 					const target = await mUserFetch(u.id);
-					await target.addItemsToBank({ items, collectionLog: false });
+					await target.addItemsToBank({ items, collectionLog });
 				}
 				const auditMessage = {
-					content: `${adminUser.logName} sent \`${items}\` to ALL users (${allUsers.length} users) for ${
+					content: `${adminUser.logName} sent \`${items}\` to ALL users (${allUsers.length} users)${clSuffix} for ${
 						options.give_items.reason ?? 'No reason'
 					}`
 				};
 				await globalClient.sendMessage(Channel.BotLogs, auditMessage).catch(noOp);
 				await dmCyrAudit(auditMessage.content);
-				return `Gave ${items} to all ${allUsers.length} users.`;
+				return `Gave ${items} to all ${allUsers.length} users${clSuffix}.`;
 			}
 
 			const destination = options.give_items.destination;
@@ -1513,18 +1522,18 @@ ${META_CONSTANTS.RENDERED_STR}`
 			if (!destination) {
 				if (!targetUser) return 'You need to specify a user or a destination.';
 				await interaction.confirmation(
-					`Are you sure you want to give ${items} to ${targetUser.usernameOrMention}?`
+					`Are you sure you want to give ${items} to ${targetUser.usernameOrMention}${clSuffix}?`
 				);
 				const auditMessage = {
-					content: `${adminUser.logName} sent \`${items}\` to ${targetUser.logName} for ${
+					content: `${adminUser.logName} sent \`${items}\` to ${targetUser.logName}${clSuffix} for ${
 						options.give_items.reason ?? 'No reason'
 					}`
 				};
 				await globalClient.sendMessage(Channel.BotLogs, auditMessage).catch(noOp);
 				await dmCyrAudit(auditMessage.content);
 
-				await targetUser.addItemsToBank({ items, collectionLog: false });
-				return `Gave ${items} to ${targetUser.mention}`;
+				await targetUser.addItemsToBank({ items, collectionLog });
+				return `Gave ${items} to ${targetUser.mention}${clSuffix}`;
 			}
 
 			if (destination !== 'Lottery Bank') return 'Invalid destination.';
