@@ -1816,7 +1816,11 @@ ${META_CONSTANTS.RENDERED_STR}`
 				select: {
 					id: true,
 					channel_id: true,
-					message_id: true
+					message_id: true,
+					user_id: true,
+					finish_date: true,
+					users_entered: true,
+					allow_ironmen: true
 				}
 			});
 			let fixed = 0;
@@ -1826,6 +1830,12 @@ ${META_CONSTANTS.RENDERED_STR}`
 			for (const giveaway of giveaways) {
 				try {
 					await globalClient.editMessage(giveaway.channel_id, giveaway.message_id, {
+						content: generateGiveawayContent(
+							giveaway.user_id,
+							giveaway.finish_date,
+							giveaway.users_entered,
+							giveaway.allow_ironmen
+						),
 						components: makeGiveawayButtons(giveaway.id)
 					});
 					fixed++;
@@ -1880,7 +1890,8 @@ ${META_CONSTANTS.RENDERED_STR}`
 						updatedGiveaway.finish_date,
 						updatedGiveaway.users_entered,
 						updatedGiveaway.allow_ironmen
-					)
+					),
+					components: makeGiveawayButtons(updatedGiveaway.id)
 				});
 			} catch (err) {
 				Logging.logError(err as Error, {

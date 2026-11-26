@@ -1,9 +1,22 @@
-import { time, userMention } from '@oldschoolgg/discord';
+import { ButtonBuilder, ButtonStyle, time, userMention } from '@oldschoolgg/discord';
 import { debounce, Events, Time } from '@oldschoolgg/toolkit';
 import { Bank, type ItemBank } from 'oldschooljs';
 
 import type { Giveaway } from '@/prisma/main.js';
 import { flagSuspiciousBondEconomyActivity } from '@/lib/bonds.js';
+
+export function makeGiveawayButtons(giveawayID: number) {
+	return [
+		new ButtonBuilder()
+			.setCustomId(`GIVEAWAY_ENTER_${giveawayID}`)
+			.setLabel('Join Giveaway')
+			.setStyle(ButtonStyle.Primary),
+		new ButtonBuilder()
+			.setCustomId(`GIVEAWAY_LEAVE_${giveawayID}`)
+			.setLabel('Leave Giveaway')
+			.setStyle(ButtonStyle.Secondary)
+	];
+}
 
 async function refundGiveaway(creator: MUser, loot: Bank) {
 	await creator.transactItems({
@@ -82,14 +95,12 @@ export const updateGiveawayMessage = debounce(async (_giveaway: Giveaway, winner
 			giveaway.allow_ironmen
 		);
 	}
-	const edits: BaseSendableMessage = {};
-	if (giveaway.completed) edits.components = [];
-	if (message.content !== newContent) {
-		edits.content = newContent;
-	}
-	if (Object.keys(edits).length > 0) {
-		await globalClient.editMessage(giveaway.channel_id, giveaway.message_id, edits);
-	}
+	if (!giveaway.completed && message.content === newContent) return;
+	const edits: BaseSendableMessage = {
+		content: newContent,
+		components: giveaway.completed ? [] : makeGiveawayButtons(giveaway.id)
+	};
+	await globalClient.editMessage(giveaway.channel_id, giveaway.message_id, edits);
 }, Time.Second * 2);
 
 export async function handleGiveawayCompletion(_giveaway: Giveaway) {

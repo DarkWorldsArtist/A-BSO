@@ -12,26 +12,15 @@ import { BitField } from '@/lib/constants.js';
 import { EmojiId } from '@/lib/data/emojis.js';
 import { baseFilters, filterableTypes } from '@/lib/data/filterables.js';
 import { marketPriceOfBank } from '@/lib/marketPrices.js';
-import { generateGiveawayContent } from '@/lib/util/giveaway.js';
+import { generateGiveawayContent, makeGiveawayButtons } from '@/lib/util/giveaway.js';
 import itemIsTradeable from '@/lib/util/itemIsTradeable.js';
 import { makeBankImage } from '@/lib/util/makeBankImage.js';
 import { parseBank } from '@/lib/util/parseStringBank.js';
 
+export { makeGiveawayButtons };
+
 function userHasUnlimitedGiveaways(user: MUser) {
 	return user.isTrusted || user.bitfield.includes(BitField.UnlimitedGiveaways);
-}
-
-export function makeGiveawayButtons(giveawayID: number) {
-	return [
-		new ButtonBuilder()
-			.setCustomId(`GIVEAWAY_ENTER_${giveawayID}`)
-			.setLabel('Join Giveaway')
-			.setStyle(ButtonStyle.Primary),
-		new ButtonBuilder()
-			.setCustomId(`GIVEAWAY_LEAVE_${giveawayID}`)
-			.setLabel('Leave Giveaway')
-			.setStyle(ButtonStyle.Secondary)
-	];
 }
 
 function makeGiveawayRepeatButton(giveawayID: number) {
